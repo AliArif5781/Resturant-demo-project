@@ -30,11 +30,11 @@ export default function Header({ mode = "dine-in", tableNumber = "T12" }: Header
 
           <div className="flex items-center gap-2">
             <Button size="icon" variant="ghost" data-testid="button-language">
-              <Globe className="h-4 w-4" />
+              <Globe className="h-4 w-4 text-white" />
             </Button>
             <Link href="/cart">
               <Button size="icon" variant="ghost" className="relative" data-testid="button-cart">
-                <ShoppingCart className="h-4 w-4" />
+                <ShoppingCart className="h-4 w-4 text-white" />
                 {totalItems > 0 && (
                   <Badge
                     className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs bg-primary"
