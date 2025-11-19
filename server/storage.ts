@@ -6,8 +6,8 @@ import { randomUUID } from "crypto";
 
 export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
-  getUserByUsername(username: string): Promise<User | undefined>;
-  createUser(user: InsertUser): Promise<User>;
+  getUserByFirebaseUid(firebaseUid: string): Promise<User | undefined>;
+  upsertUser(user: InsertUser): Promise<User>;
 }
 
 export class MemStorage implements IStorage {
@@ -21,13 +21,21 @@ export class MemStorage implements IStorage {
     return this.users.get(id);
   }
 
-  async getUserByUsername(username: string): Promise<User | undefined> {
+  async getUserByFirebaseUid(firebaseUid: string): Promise<User | undefined> {
     return Array.from(this.users.values()).find(
-      (user) => user.username === username,
+      (user) => user.firebaseUid === firebaseUid,
     );
   }
 
-  async createUser(insertUser: InsertUser): Promise<User> {
+  async upsertUser(insertUser: InsertUser): Promise<User> {
+    const existingUser = await this.getUserByFirebaseUid(insertUser.firebaseUid);
+    
+    if (existingUser) {
+      const updatedUser: User = { ...existingUser, ...insertUser };
+      this.users.set(existingUser.id, updatedUser);
+      return updatedUser;
+    }
+
     const id = randomUUID();
     const user: User = { ...insertUser, id };
     this.users.set(id, user);
