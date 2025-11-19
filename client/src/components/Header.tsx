@@ -35,7 +35,7 @@ export default function Header({ mode = "dine-in", tableNumber = "T12" }: Header
             <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold text-lg">
               K
             </div>
-            <span className="font-bold text-lg hidden sm:inline">Karahi Point</span>
+            <span className="font-bold text-lg hidden sm:inline text-white">Karahi Point</span>
           </div>
 
           <Badge variant="secondary" className="text-xs" data-testid="badge-context">
