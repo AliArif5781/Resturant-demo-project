@@ -9,6 +9,7 @@ export const users = pgTable("users", {
   email: text("email").notNull(),
   displayName: text("display_name"),
   photoURL: text("photo_url"),
+  role: text("role").notNull().default("user"),
 });
 
 export const insertUserSchema = createInsertSchema(users).omit({

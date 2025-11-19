@@ -6,7 +6,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // User sync endpoint - creates or updates user from Firebase auth
   app.post("/api/auth/sync", async (req, res) => {
     try {
-      const { firebaseUid, email, displayName, photoURL } = req.body;
+      const { firebaseUid, email, displayName, photoURL, role } = req.body;
 
       if (!firebaseUid || !email) {
         return res.status(400).json({ message: "Missing required fields" });
@@ -17,6 +17,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         email,
         displayName: displayName || null,
         photoURL: photoURL || null,
+        role: role || "user",
       });
 
       res.json({ user });

@@ -36,6 +36,7 @@ export class MemStorage implements IStorage {
         email: insertUser.email,
         displayName: insertUser.displayName ?? null,
         photoURL: insertUser.photoURL ?? null,
+        role: insertUser.role ?? existingUser.role,
       };
       this.users.set(existingUser.id, updatedUser);
       return updatedUser;
@@ -48,6 +49,7 @@ export class MemStorage implements IStorage {
       email: insertUser.email,
       displayName: insertUser.displayName ?? null,
       photoURL: insertUser.photoURL ?? null,
+      role: insertUser.role ?? "user",
     };
     this.users.set(id, user);
     return user;
