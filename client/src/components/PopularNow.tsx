@@ -8,6 +8,8 @@ import biryaniImage from "@assets/generated_images/Chicken_Biryani_overhead_shot
 import butterChickenImage from "@assets/generated_images/Butter_chicken_curry_8dff6ea9.png";
 import naanImage from "@assets/generated_images/Garlic_naan_bread_closeup_e1772073.png";
 import lassiImage from "@assets/generated_images/Mango_lassi_beverage_bebcb27b.png";
+import { useCart } from "@/contexts/CartContext";
+import { useToast } from "@/hooks/use-toast";
 
 const popularItems = [
   { id: 1, name: "Chicken Karahi", orders: 24, price: "$24.99", calories: 520, protein: 42, image: karahiImage },
@@ -19,6 +21,24 @@ const popularItems = [
 ];
 
 export default function PopularNow() {
+  const { addToCart } = useCart();
+  const { toast } = useToast();
+
+  const handleAddToCart = (item: typeof popularItems[0]) => {
+    addToCart({
+      id: item.id,
+      name: item.name,
+      price: item.price,
+      image: item.image,
+      calories: item.calories,
+      protein: item.protein,
+    });
+    toast({
+      title: "Added to cart",
+      description: `${item.name} has been added to your cart.`,
+    });
+  };
+
   return (
     <div className="space-y-6">
       <div>
@@ -52,7 +72,7 @@ export default function PopularNow() {
                     <h3 className="font-bold" data-testid={`text-popular-name-${item.id}`}>{item.name}</h3>
                     <p className="text-lg font-bold text-primary" data-testid={`text-popular-price-${item.id}`}>{item.price}</p>
                   </div>
-                  <Button size="icon" data-testid={`button-add-popular-${item.id}`}>
+                  <Button size="icon" onClick={() => handleAddToCart(item)} data-testid={`button-add-popular-${item.id}`}>
                     <Plus className="h-4 w-4" />
                   </Button>
                 </div>

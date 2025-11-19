@@ -5,6 +5,8 @@ import butterChickenImage from "@assets/generated_images/Butter_chicken_curry_8d
 import biryaniImage from "@assets/generated_images/Chicken_Biryani_overhead_shot_73a10a24.png";
 import bbqImage from "@assets/generated_images/BBQ_mixed_grill_platter_6ba4d702.png";
 import naanImage from "@assets/generated_images/Garlic_naan_bread_closeup_e1772073.png";
+import { useCart } from "@/contexts/CartContext";
+import { useToast } from "@/hooks/use-toast";
 
 const recommendations = [
   {
@@ -50,6 +52,24 @@ const recommendations = [
 ];
 
 export default function RecommendedForYou() {
+  const { addToCart } = useCart();
+  const { toast } = useToast();
+
+  const handleQuickAdd = (item: typeof recommendations[0]) => {
+    addToCart({
+      id: item.id,
+      name: item.name,
+      price: item.price,
+      image: item.image,
+      calories: item.calories,
+      protein: item.protein,
+    });
+    toast({
+      title: "Added to cart",
+      description: `${item.name} has been added to your cart.`,
+    });
+  };
+
   return (
     <div className="space-y-6">
       <div>
@@ -92,7 +112,7 @@ export default function RecommendedForYou() {
               </div>
             </CardContent>
             <CardFooter className="p-4 pt-0 gap-2">
-              <Button className="flex-1" data-testid={`button-quick-add-${item.id}`}>Quick Add</Button>
+              <Button className="flex-1" onClick={() => handleQuickAdd(item)} data-testid={`button-quick-add-${item.id}`}>Quick Add</Button>
               <Button variant="outline" data-testid={`button-details-${item.id}`}>Details</Button>
             </CardFooter>
           </Card>

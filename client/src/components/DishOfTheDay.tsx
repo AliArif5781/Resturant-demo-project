@@ -2,6 +2,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import chickenKarahiImage from "@assets/generated_images/Chicken_Karahi_dish_closeup_1ee23ad4.png";
+import { useCart } from "@/contexts/CartContext";
+import { useToast } from "@/hooks/use-toast";
 
 interface DishOfTheDayProps {
   onAddToOrder?: () => void;
@@ -9,6 +11,24 @@ interface DishOfTheDayProps {
 }
 
 export default function DishOfTheDay({ onAddToOrder, onSeeSimilar }: DishOfTheDayProps) {
+  const { addToCart } = useCart();
+  const { toast } = useToast();
+
+  const handleAddToOrder = () => {
+    addToCart({
+      id: 1,
+      name: "Chicken Karahi (Bone-In)",
+      price: "$24.99",
+      image: chickenKarahiImage,
+      calories: 520,
+      protein: 42,
+    });
+    toast({
+      title: "Added to cart",
+      description: "Chicken Karahi (Bone-In) has been added to your cart.",
+    });
+    onAddToOrder?.();
+  };
   return (
     <Card className="overflow-hidden hover-elevate active-elevate-2 border-0" data-testid="card-dish-of-day">
       <CardContent className="p-0">
@@ -42,7 +62,7 @@ export default function DishOfTheDay({ onAddToOrder, onSeeSimilar }: DishOfTheDa
               <p className="text-3xl font-bold text-primary" data-testid="text-price">$24.99</p>
             </div>
             <div className="flex gap-3">
-              <Button onClick={onAddToOrder} className="flex-1" data-testid="button-add-to-order">
+              <Button onClick={handleAddToOrder} className="flex-1" data-testid="button-add-to-order">
                 Add to Order
               </Button>
               <Button variant="outline" onClick={onSeeSimilar} data-testid="button-see-similar">
