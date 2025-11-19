@@ -3,7 +3,12 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 
 export async function registerRoutes(app: Express): Promise<Server> {
-  const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || "").split(",").filter(Boolean);
+  const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || "")
+    .split(",")
+    .map(email => email.trim())
+    .filter(Boolean);
+
+  console.log("Configured admin emails:", ADMIN_EMAILS);
 
   // User sync endpoint - creates or updates user from Firebase auth
   app.post("/api/auth/sync", async (req, res) => {
@@ -18,6 +23,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       if (role === "admin") {
         const isAdminEmail = ADMIN_EMAILS.includes(email);
+        console.log(`Admin check - Email: ${email}, Is Admin: ${isAdminEmail}, Admin Emails:`, ADMIN_EMAILS);
         if (!isAdminEmail) {
           validatedRole = "user";
         }
@@ -35,6 +41,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const user = await storage.upsertUser(userPayload);
+
+      console.log(`User synced - Email: ${email}, Role: ${user.role}`);
 
       res.json({ user });
     } catch (error: any) {
