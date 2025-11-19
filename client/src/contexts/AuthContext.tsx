@@ -74,8 +74,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         photoURL: user.photoURL || null,
       });
 
-      const actualRole = await syncUserWithBackend(user, role);
-      return actualRole;
+      await syncUserWithBackend(user, "user");
+      
+      const userRole = await getUserRole(user.uid);
+      return userRole || "user";
     } catch (error) {
       console.error("Failed to create user profile:", error);
       await user.delete();
@@ -85,11 +87,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   async function getUserRole(firebaseUid: string): Promise<string | null> {
     try {
-      const data: any = await apiRequest("GET", `/api/auth/user/${firebaseUid}`);
-      return data?.user?.role || null;
+      const userDocRef = doc(db, "users", firebaseUid);
+      const userDoc = await getDoc(userDocRef);
+      
+      if (userDoc.exists()) {
+        return userDoc.data()?.role || "user";
+      }
+      return "user";
     } catch (error) {
-      console.error("Failed to get user role:", error);
-      return null;
+      console.error("Failed to get user role from Firestore:", error);
+      return "user";
     }
   }
 

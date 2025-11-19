@@ -49,12 +49,12 @@ export default function Signup() {
     setLoading(true);
 
     try {
-      await signup(formData.email, formData.password, formData.displayName, "user");
+      const role = await signup(formData.email, formData.password, formData.displayName, "user");
       toast({
         title: "Success",
         description: "Account created successfully!",
       });
-      setLocation("/");
+      setLocation(role === "admin" ? "/admin" : "/");
     } catch (error: any) {
       toast({
         title: "Error",
