@@ -45,14 +45,6 @@ export default function Home() {
 
       <Footer />
 
-      <StickyCart
-        mode={cartMode}
-        cartData={{ itemCount: 2, total: "$31.98" }}
-        orderData={{ orderNumber: "A124", status: "In the kitchen", timeLeft: "7 min" }}
-        onOpenCart={() => setOrderPanelOpen(true)}
-        onTrackOrder={() => setOrderPanelOpen(true)}
-      />
-
       <OrderStatusPanel
         open={orderPanelOpen}
         onOpenChange={setOrderPanelOpen}
