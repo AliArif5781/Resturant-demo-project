@@ -139,7 +139,6 @@ export default function RecommendedForYou() {
       return allMenuItems.slice(0, 4);
     }
 
-    const cartItemIds = new Set(cartItems.map(item => item.id));
     const cartCategories = cartItems
       .map(item => allMenuItems.find(menuItem => menuItem.id === item.id))
       .filter((item): item is MenuItem => item !== undefined);
@@ -150,7 +149,6 @@ export default function RecommendedForYou() {
     });
 
     const recommendedItems = allMenuItems
-      .filter(item => !cartItemIds.has(item.id))
       .map(item => {
         let score = 0;
         let badge = "Popular choice";
