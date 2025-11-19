@@ -61,7 +61,7 @@ export default function DealsCarousel() {
         >
           {deals.map((deal) => (
             <div key={deal.id} className="min-w-full px-2">
-              <Card className="overflow-hidden hover-elevate active-elevate-2" data-testid={`card-deal-${deal.id}`}>
+              <Card className="overflow-hidden hover-elevate active-elevate-2 border-0" data-testid={`card-deal-${deal.id}`}>
                 <CardContent className="p-0">
                   <div className="relative h-64">
                     <img

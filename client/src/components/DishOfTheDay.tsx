@@ -10,7 +10,7 @@ interface DishOfTheDayProps {
 
 export default function DishOfTheDay({ onAddToOrder, onSeeSimilar }: DishOfTheDayProps) {
   return (
-    <Card className="overflow-hidden hover-elevate active-elevate-2" data-testid="card-dish-of-day">
+    <Card className="overflow-hidden hover-elevate active-elevate-2 border-0" data-testid="card-dish-of-day">
       <CardContent className="p-0">
         <div className="grid md:grid-cols-2 gap-6 items-center">
           <div className="relative h-64 md:h-full">

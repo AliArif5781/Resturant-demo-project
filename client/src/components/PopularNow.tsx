@@ -30,7 +30,7 @@ export default function PopularNow() {
         {popularItems.map((item, idx) => (
           <Card
             key={item.id}
-            className="min-w-[280px] overflow-hidden hover-elevate active-elevate-2"
+            className="min-w-[280px] overflow-hidden hover-elevate active-elevate-2 border-0"
             style={{ animationDelay: `${idx * 100}ms` }}
             data-testid={`card-popular-${item.id}`}
           >

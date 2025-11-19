@@ -48,7 +48,7 @@ export default function QuickCategories() {
         {categoryTiles.map((tile) => (
           <Card
             key={tile.id}
-            className="relative overflow-hidden group cursor-pointer hover-elevate active-elevate-2"
+            className="relative overflow-hidden group cursor-pointer hover-elevate active-elevate-2 border-0"
             data-testid={`card-category-${tile.id}`}
           >
             <div className="relative h-48">

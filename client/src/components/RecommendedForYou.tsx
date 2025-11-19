@@ -55,7 +55,7 @@ export default function RecommendedForYou() {
         {recommendations.map((item, idx) => (
           <Card
             key={item.id}
-            className="overflow-hidden hover-elevate active-elevate-2 group"
+            className="overflow-hidden hover-elevate active-elevate-2 group border-0"
             style={{ animationDelay: `${idx * 50}ms` }}
             data-testid={`card-recommended-${item.id}`}
           >

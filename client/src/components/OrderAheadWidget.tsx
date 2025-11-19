@@ -21,7 +21,7 @@ export default function OrderAheadWidget({ onPlanOrder }: OrderAheadWidgetProps)
   const [selectedTime, setSelectedTime] = useState("asap");
 
   return (
-    <Card className="overflow-hidden" data-testid="card-order-ahead">
+    <Card className="overflow-hidden border-0" data-testid="card-order-ahead">
       <CardContent className="p-6">
         <div className="grid md:grid-cols-2 gap-6 items-center">
           <div className="space-y-4">
