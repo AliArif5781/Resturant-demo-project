@@ -12,6 +12,8 @@ const recommendations = [
     name: "Chicken Tikka Biryani",
     description: "Aromatic rice layered with spicy grilled chicken tikka, served with raita.",
     price: "$21.99",
+    calories: 680,
+    protein: 38,
     image: biryaniImage,
     badge: "You ordered similar last time",
   },
@@ -20,6 +22,8 @@ const recommendations = [
     name: "Butter Chicken",
     description: "Rich, creamy tomato-based curry with tender chicken pieces.",
     price: "$19.99",
+    calories: 480,
+    protein: 32,
     image: butterChickenImage,
     badge: "Guests who like BBQ pick this",
   },
@@ -28,6 +32,8 @@ const recommendations = [
     name: "Mixed Grill Platter",
     description: "Seekh kabab, chicken tikka, and beef boti on a sizzling plate.",
     price: "$28.99",
+    calories: 720,
+    protein: 65,
     image: bbqImage,
     badge: "Popular with your table",
   },
@@ -36,6 +42,8 @@ const recommendations = [
     name: "Garlic Naan",
     description: "Freshly baked bread with garlic and butter.",
     price: "$3.99",
+    calories: 290,
+    protein: 8,
     image: naanImage,
     badge: "Perfect with karahi",
   },
@@ -76,6 +84,10 @@ export default function RecommendedForYou() {
                 <p className="text-sm text-muted-foreground line-clamp-2" data-testid={`text-recommended-desc-${item.id}`}>
                   {item.description}
                 </p>
+                <div className="flex gap-2 text-xs text-muted-foreground">
+                  <span data-testid={`text-recommended-calories-${item.id}`}>🔥 {item.calories} cal</span>
+                  <span data-testid={`text-recommended-protein-${item.id}`}>💪 {item.protein}g protein</span>
+                </div>
                 <p className="text-lg font-bold text-primary" data-testid={`text-recommended-price-${item.id}`}>{item.price}</p>
               </div>
             </CardContent>

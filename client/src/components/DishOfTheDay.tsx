@@ -34,6 +34,10 @@ export default function DishOfTheDay({ onAddToOrder, onSeeSimilar }: DishOfTheDa
               <Badge variant="secondary" data-testid="badge-serves">👥 Serves 2</Badge>
               <Badge variant="secondary" data-testid="badge-time">⏱ ~25 min</Badge>
             </div>
+            <div className="flex flex-wrap gap-2">
+              <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200" data-testid="badge-calories">🔥 520 cal</Badge>
+              <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200" data-testid="badge-protein">💪 42g protein</Badge>
+            </div>
             <div className="flex items-center justify-between pt-2">
               <p className="text-3xl font-bold text-primary" data-testid="text-price">$24.99</p>
             </div>

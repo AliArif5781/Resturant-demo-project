@@ -10,12 +10,12 @@ import naanImage from "@assets/generated_images/Garlic_naan_bread_closeup_e17720
 import lassiImage from "@assets/generated_images/Mango_lassi_beverage_bebcb27b.png";
 
 const popularItems = [
-  { id: 1, name: "Chicken Karahi", orders: 24, price: "$24.99", image: karahiImage },
-  { id: 2, name: "Beef Bihari Kabab", orders: 18, price: "$26.99", image: kabobImage },
-  { id: 3, name: "Chicken Biryani", orders: 21, price: "$21.99", image: biryaniImage },
-  { id: 4, name: "Butter Chicken", orders: 15, price: "$19.99", image: butterChickenImage },
-  { id: 5, name: "Garlic Naan", orders: 32, price: "$3.99", image: naanImage },
-  { id: 6, name: "Mango Lassi", orders: 14, price: "$5.99", image: lassiImage },
+  { id: 1, name: "Chicken Karahi", orders: 24, price: "$24.99", calories: 520, protein: 42, image: karahiImage },
+  { id: 2, name: "Beef Bihari Kabab", orders: 18, price: "$26.99", calories: 380, protein: 38, image: kabobImage },
+  { id: 3, name: "Chicken Biryani", orders: 21, price: "$21.99", calories: 650, protein: 35, image: biryaniImage },
+  { id: 4, name: "Butter Chicken", orders: 15, price: "$19.99", calories: 480, protein: 32, image: butterChickenImage },
+  { id: 5, name: "Garlic Naan", orders: 32, price: "$3.99", calories: 290, protein: 8, image: naanImage },
+  { id: 6, name: "Mango Lassi", orders: 14, price: "$5.99", calories: 180, protein: 6, image: lassiImage },
 ];
 
 export default function PopularNow() {
@@ -55,6 +55,10 @@ export default function PopularNow() {
                   <Button size="icon" data-testid={`button-add-popular-${item.id}`}>
                     <Plus className="h-4 w-4" />
                   </Button>
+                </div>
+                <div className="flex gap-2 text-xs text-muted-foreground mb-2">
+                  <span data-testid={`text-popular-calories-${item.id}`}>🔥 {item.calories} cal</span>
+                  <span data-testid={`text-popular-protein-${item.id}`}>💪 {item.protein}g protein</span>
                 </div>
                 <div className="h-1 bg-muted rounded-full overflow-hidden">
                   <div
