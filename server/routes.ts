@@ -3,6 +3,8 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || "").split(",").filter(Boolean);
+
   // User sync endpoint - creates or updates user from Firebase auth
   app.post("/api/auth/sync", async (req, res) => {
     try {
@@ -12,13 +14,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Missing required fields" });
       }
 
-      const user = await storage.upsertUser({
+      let validatedRole = role;
+      
+      if (role === "admin") {
+        const isAdminEmail = ADMIN_EMAILS.includes(email);
+        if (!isAdminEmail) {
+          validatedRole = "user";
+        }
+      }
+
+      const userPayload: any = {
         firebaseUid,
         email,
         displayName: displayName || null,
         photoURL: photoURL || null,
-        role: role || "user",
-      });
+      };
+
+      if (validatedRole !== undefined) {
+        userPayload.role = validatedRole;
+      }
+
+      const user = await storage.upsertUser(userPayload);
 
       res.json({ user });
     } catch (error: any) {

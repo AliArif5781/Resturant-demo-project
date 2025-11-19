@@ -9,6 +9,7 @@ import Home from "@/pages/Home";
 import Cart from "@/pages/Cart";
 import Signin from "@/pages/Signin";
 import Signup from "@/pages/Signup";
+import AdminDashboard from "@/pages/AdminDashboard";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -18,6 +19,7 @@ function Router() {
       <Route path="/cart" component={Cart} />
       <Route path="/signin" component={Signin} />
       <Route path="/signup" component={Signup} />
+      <Route path="/admin" component={AdminDashboard} />
       <Route component={NotFound} />
     </Switch>
   );

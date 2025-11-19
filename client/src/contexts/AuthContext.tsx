@@ -38,13 +38,18 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   async function syncUserWithBackend(user: User, role?: string) {
     try {
-      await apiRequest("POST", "/api/auth/sync", {
+      const payload: any = {
         firebaseUid: user.uid,
         email: user.email,
         displayName: user.displayName,
         photoURL: user.photoURL,
-        role: role || "user",
-      });
+      };
+      
+      if (role !== undefined) {
+        payload.role = role;
+      }
+      
+      await apiRequest("POST", "/api/auth/sync", payload);
     } catch (error) {
       console.error("Failed to sync user with backend:", error);
     }
