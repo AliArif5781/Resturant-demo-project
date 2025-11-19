@@ -1,7 +1,9 @@
-import { Globe, User } from "lucide-react";
+import { Globe, User, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { useCart } from "@/contexts/CartContext";
+import { Link } from "wouter";
 
 interface HeaderProps {
   mode?: "dine-in" | "pickup";
@@ -9,6 +11,8 @@ interface HeaderProps {
 }
 
 export default function Header({ mode = "dine-in", tableNumber = "T12" }: HeaderProps) {
+  const { totalItems } = useCart();
+
   return (
     <header
       className="bg-transparent"
@@ -28,6 +32,19 @@ export default function Header({ mode = "dine-in", tableNumber = "T12" }: Header
             <Button size="icon" variant="ghost" data-testid="button-language">
               <Globe className="h-4 w-4" />
             </Button>
+            <Link href="/cart">
+              <Button size="icon" variant="ghost" className="relative" data-testid="button-cart">
+                <ShoppingCart className="h-4 w-4" />
+                {totalItems > 0 && (
+                  <Badge
+                    className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs bg-primary"
+                    data-testid="badge-cart-count"
+                  >
+                    {totalItems}
+                  </Badge>
+                )}
+              </Button>
+            </Link>
             <Avatar className="h-8 w-8" data-testid="avatar-user">
               <AvatarFallback className="bg-accent text-xs">
                 <User className="h-4 w-4" />
