@@ -80,7 +80,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   async function signin(email: string, password: string): Promise<string> {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
+    console.log("Signin - Firebase UID:", user.uid);
     const role = await getUserRole(user.uid);
+    console.log("Signin - Retrieved role:", role);
     return role || "user";
   }
 
