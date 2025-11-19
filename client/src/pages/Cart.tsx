@@ -183,7 +183,7 @@ export default function Cart() {
 
                 <div className="space-y-2 pt-4">
                   <Button className="w-full" size="lg" data-testid="button-checkout">
-                    Proceed to Checkout
+                    Continue
                   </Button>
                   <Link href="/">
                     <Button variant="outline" className="w-full" data-testid="button-continue-shopping">
