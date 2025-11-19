@@ -62,19 +62,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
 
-    await updateProfile(user, { displayName });
+    try {
+      await updateProfile(user, { displayName });
 
-    await setDoc(doc(db, "users", user.uid), {
-      uid: user.uid,
-      email: user.email,
-      displayName: displayName,
-      role: "user",
-      createdAt: serverTimestamp(),
-      photoURL: user.photoURL || null,
-    });
+      await setDoc(doc(db, "users", user.uid), {
+        uid: user.uid,
+        email: user.email,
+        displayName: displayName,
+        role: "user",
+        createdAt: serverTimestamp(),
+        photoURL: user.photoURL || null,
+      });
 
-    const actualRole = await syncUserWithBackend(user, role);
-    return actualRole;
+      const actualRole = await syncUserWithBackend(user, role);
+      return actualRole;
+    } catch (error) {
+      console.error("Failed to create user profile:", error);
+      await user.delete();
+      throw new Error("Failed to create user profile. Please try again.");
+    }
   }
 
   async function getUserRole(firebaseUid: string): Promise<string | null> {
@@ -105,23 +111,28 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const userCredential = await signInWithPopup(auth, provider);
     const user = userCredential.user;
 
-    const userDocRef = doc(db, "users", user.uid);
-    const userDoc = await getDoc(userDocRef);
+    try {
+      const userDocRef = doc(db, "users", user.uid);
+      const userDoc = await getDoc(userDocRef);
 
-    if (!userDoc.exists()) {
-      await setDoc(userDocRef, {
-        uid: user.uid,
-        email: user.email,
-        displayName: user.displayName,
-        role: "user",
-        createdAt: serverTimestamp(),
-        photoURL: user.photoURL || null,
-      });
+      if (!userDoc.exists()) {
+        await setDoc(userDocRef, {
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName,
+          role: "user",
+          createdAt: serverTimestamp(),
+          photoURL: user.photoURL || null,
+        });
+      }
+
+      await syncUserWithBackend(user);
+      const role = await getUserRole(user.uid);
+      return role || "user";
+    } catch (error) {
+      console.error("Failed to setup user profile:", error);
+      throw new Error("Failed to setup user profile. Please try signing in again.");
     }
-
-    await syncUserWithBackend(user);
-    const role = await getUserRole(user.uid);
-    return role || "user";
   }
 
   useEffect(() => {
