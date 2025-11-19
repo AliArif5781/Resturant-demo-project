@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Minus, Plus, Trash2, ArrowLeft, ShoppingBag } from "lucide-react";
 import { Link } from "wouter";
+import RecommendedForYou from "@/components/RecommendedForYou";
 
 export default function Cart() {
   const { items, removeFromCart, updateQuantity, clearCart, totalPrice, totalItems } = useCart();
@@ -199,6 +200,10 @@ export default function Cart() {
               </CardContent>
             </Card>
           </div>
+        </div>
+
+        <div className="mt-12">
+          <RecommendedForYou />
         </div>
       </div>
     </div>
