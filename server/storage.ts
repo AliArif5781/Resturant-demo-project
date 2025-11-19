@@ -31,13 +31,24 @@ export class MemStorage implements IStorage {
     const existingUser = await this.getUserByFirebaseUid(insertUser.firebaseUid);
     
     if (existingUser) {
-      const updatedUser: User = { ...existingUser, ...insertUser };
+      const updatedUser: User = {
+        ...existingUser,
+        email: insertUser.email,
+        displayName: insertUser.displayName ?? null,
+        photoURL: insertUser.photoURL ?? null,
+      };
       this.users.set(existingUser.id, updatedUser);
       return updatedUser;
     }
 
     const id = randomUUID();
-    const user: User = { ...insertUser, id };
+    const user: User = {
+      id,
+      firebaseUid: insertUser.firebaseUid,
+      email: insertUser.email,
+      displayName: insertUser.displayName ?? null,
+      photoURL: insertUser.photoURL ?? null,
+    };
     this.users.set(id, user);
     return user;
   }

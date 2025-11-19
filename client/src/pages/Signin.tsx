@@ -150,14 +150,13 @@ export default function Signin() {
         <CardFooter className="flex flex-col gap-2">
           <p className="text-sm text-muted-foreground text-center">
             Don't have an account?{" "}
-            <Button
-              variant="link"
-              className="p-0 h-auto"
+            <button
+              className="text-primary underline-offset-4 hover:underline p-0"
               onClick={() => setLocation("/signup")}
               data-testid="link-signup"
             >
               Sign up
-            </Button>
+            </button>
           </p>
         </CardFooter>
       </Card>

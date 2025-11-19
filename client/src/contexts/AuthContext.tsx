@@ -37,14 +37,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   async function syncUserWithBackend(user: User) {
     try {
-      await apiRequest("/api/auth/sync", {
-        method: "POST",
-        body: {
-          firebaseUid: user.uid,
-          email: user.email,
-          displayName: user.displayName,
-          photoURL: user.photoURL,
-        },
+      await apiRequest("POST", "/api/auth/sync", {
+        firebaseUid: user.uid,
+        email: user.email,
+        displayName: user.displayName,
+        photoURL: user.photoURL,
       });
     } catch (error) {
       console.error("Failed to sync user with backend:", error);
