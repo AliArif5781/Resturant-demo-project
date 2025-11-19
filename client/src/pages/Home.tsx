@@ -16,7 +16,7 @@ export default function Home() {
   const [cartMode] = useState<"cart" | "order">("cart");
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-orange-900">
       <Header mode="dine-in" tableNumber="T12" />
 
       <Hero
@@ -26,7 +26,7 @@ export default function Home() {
         onOrderLater={() => console.log("Order later")}
       />
 
-      <main className="container mx-auto px-4 space-y-16 py-12">
+      <main className="container mx-auto px-4 space-y-16 py-12 text-white">
         <DishOfTheDay
           onAddToOrder={() => console.log("Added dish of the day")}
           onSeeSimilar={() => console.log("See similar dishes")}
