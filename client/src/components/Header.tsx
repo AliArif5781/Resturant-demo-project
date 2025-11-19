@@ -11,7 +11,7 @@ interface HeaderProps {
 export default function Header({ mode = "dine-in", tableNumber = "T12" }: HeaderProps) {
   return (
     <header
-      className="sticky top-0 z-50 bg-transparent"
+      className="bg-transparent"
       data-testid="header-main"
     >
       <div className="container mx-auto px-4 py-3">
