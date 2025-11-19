@@ -2,7 +2,14 @@ import { Globe, User, ShoppingCart, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { Link, useLocation } from "wouter";
@@ -13,7 +20,10 @@ interface HeaderProps {
   tableNumber?: string;
 }
 
-export default function Header({ mode = "dine-in", tableNumber = "T12" }: HeaderProps) {
+export default function Header({
+  mode = "dine-in",
+  tableNumber = "T12",
+}: HeaderProps) {
   const { totalItems } = useCart();
   const { currentUser, signout } = useAuth();
   const [, setLocation] = useLocation();
@@ -37,10 +47,7 @@ export default function Header({ mode = "dine-in", tableNumber = "T12" }: Header
   };
 
   return (
-    <header
-      className="bg-transparent"
-      data-testid="header-main"
-    >
+    <header className="bg-transparent" data-testid="header-main">
       <div className="container mx-auto px-4 py-3">
         <div className="flex items-center justify-between gap-4">
           <Link href="/">
@@ -49,8 +56,14 @@ export default function Header({ mode = "dine-in", tableNumber = "T12" }: Header
             </div>
           </Link>
 
-          <Badge variant="secondary" className="text-xs" data-testid="badge-context">
-            {mode === "dine-in" ? `Dine-in · Table ${tableNumber}` : "Pickup · Choose time"}
+          <Badge
+            variant="secondary"
+            className="text-xs"
+            data-testid="badge-context"
+          >
+            {mode === "dine-in"
+              ? `Dine-in · Table ${tableNumber}`
+              : "Pickup · Choose time"}
           </Badge>
 
           <div className="flex items-center gap-2">
@@ -58,7 +71,12 @@ export default function Header({ mode = "dine-in", tableNumber = "T12" }: Header
               <Globe className="h-4 w-4 text-white" />
             </Button>
             <Link href="/cart">
-              <Button size="icon" variant="ghost" className="relative" data-testid="button-cart">
+              <Button
+                size="icon"
+                variant="ghost"
+                className="relative"
+                data-testid="button-cart"
+              >
                 <ShoppingCart className="h-4 w-4 text-white" />
                 {totalItems > 0 && (
                   <Badge
@@ -70,14 +88,23 @@ export default function Header({ mode = "dine-in", tableNumber = "T12" }: Header
                 )}
               </Button>
             </Link>
-            
+
             {currentUser ? (
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Avatar className="h-8 w-8 cursor-pointer" data-testid="avatar-user">
-                    {currentUser.photoURL && <AvatarImage src={currentUser.photoURL} />}
+                  <Avatar
+                    className="h-8 w-8 cursor-pointer"
+                    data-testid="avatar-user"
+                  >
+                    {currentUser.photoURL && (
+                      <AvatarImage src={currentUser.photoURL} />
+                    )}
                     <AvatarFallback className="bg-accent text-xs">
-                      {currentUser.displayName ? currentUser.displayName.charAt(0).toUpperCase() : <User className="h-4 w-4" />}
+                      {currentUser.displayName ? (
+                        currentUser.displayName.charAt(0).toUpperCase()
+                      ) : (
+                        <User className="h-4 w-4" />
+                      )}
                     </AvatarFallback>
                   </Avatar>
                 </DropdownMenuTrigger>
@@ -85,11 +112,17 @@ export default function Header({ mode = "dine-in", tableNumber = "T12" }: Header
                   <DropdownMenuLabel data-testid="text-user-name">
                     {currentUser.displayName || currentUser.email}
                   </DropdownMenuLabel>
-                  <DropdownMenuLabel className="text-xs text-muted-foreground font-normal" data-testid="text-user-email">
+                  <DropdownMenuLabel
+                    className="text-xs text-muted-foreground font-normal"
+                    data-testid="text-user-email"
+                  >
                     {currentUser.email}
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleSignout} data-testid="button-signout">
+                  <DropdownMenuItem
+                    onClick={handleSignout}
+                    data-testid="button-signout"
+                  >
                     <LogOut className="mr-2 h-4 w-4" />
                     Sign out
                   </DropdownMenuItem>
@@ -98,12 +131,16 @@ export default function Header({ mode = "dine-in", tableNumber = "T12" }: Header
             ) : (
               <div className="flex items-center gap-2">
                 <Link href="/signin">
-                  <Button variant="ghost" size="sm" data-testid="button-signin">
+                  <Button variant="white" size="sm" data-testid="button-signin">
                     Sign In
                   </Button>
                 </Link>
                 <Link href="/signup">
-                  <Button variant="default" size="sm" data-testid="button-signup">
+                  <Button
+                    variant="default"
+                    size="sm"
+                    data-testid="button-signup"
+                  >
                     Sign Up
                   </Button>
                 </Link>
