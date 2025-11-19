@@ -69,12 +69,12 @@ export default function Signup() {
   const handleGoogleSignin = async () => {
     setLoading(true);
     try {
-      await signinWithGoogle();
+      const role = await signinWithGoogle();
       toast({
         title: "Success",
         description: "Signed in with Google successfully!",
       });
-      setLocation("/");
+      setLocation(role === "admin" ? "/admin" : "/");
     } catch (error: any) {
       toast({
         title: "Error",
