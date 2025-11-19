@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Separator } from "@/components/ui/separator";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 
 export default function Signup() {
   const [, setLocation] = useLocation();
@@ -19,6 +20,7 @@ export default function Signup() {
     password: "",
     confirmPassword: "",
     displayName: "",
+    role: "user",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -49,12 +51,12 @@ export default function Signup() {
     setLoading(true);
 
     try {
-      await signup(formData.email, formData.password, formData.displayName);
+      await signup(formData.email, formData.password, formData.displayName, formData.role);
       toast({
         title: "Success",
         description: "Account created successfully!",
       });
-      setLocation("/");
+      setLocation(formData.role === "admin" ? "/admin" : "/");
     } catch (error: any) {
       toast({
         title: "Error",
@@ -108,6 +110,28 @@ export default function Signup() {
                 disabled={loading}
                 data-testid="input-displayname"
               />
+            </div>
+            <div className="space-y-2">
+              <Label>Account Type</Label>
+              <RadioGroup
+                value={formData.role}
+                onValueChange={(value) => setFormData({ ...formData, role: value })}
+                disabled={loading}
+                data-testid="radio-group-role"
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="user" id="user" data-testid="radio-user" />
+                  <Label htmlFor="user" className="font-normal cursor-pointer">
+                    User - Order food and browse menu
+                  </Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="admin" id="admin" data-testid="radio-admin" />
+                  <Label htmlFor="admin" className="font-normal cursor-pointer">
+                    Admin - Manage restaurant and orders
+                  </Label>
+                </div>
+              </RadioGroup>
             </div>
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
