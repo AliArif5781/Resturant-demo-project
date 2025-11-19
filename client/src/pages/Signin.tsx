@@ -7,11 +7,10 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Separator } from "@/components/ui/separator";
-import { auth } from "@/lib/firebase";
 
 export default function Signin() {
   const [, setLocation] = useLocation();
-  const { signin, signinWithGoogle, getUserRole, currentUser } = useAuth();
+  const { signin, signinWithGoogle } = useAuth();
   const { toast } = useToast();
   const [loading, setLoading] = useState(false);
 
@@ -29,17 +28,12 @@ export default function Signin() {
     setLoading(true);
 
     try {
-      await signin(formData.email, formData.password);
-      
-      const authUser = auth.currentUser;
-      if (authUser) {
-        const role = await getUserRole(authUser.uid);
-        toast({
-          title: "Success",
-          description: "Signed in successfully!",
-        });
-        setLocation(role === "admin" ? "/admin" : "/");
-      }
+      const role = await signin(formData.email, formData.password);
+      toast({
+        title: "Success",
+        description: "Signed in successfully!",
+      });
+      setLocation(role === "admin" ? "/admin" : "/");
     } catch (error: any) {
       toast({
         title: "Error",
@@ -54,17 +48,12 @@ export default function Signin() {
   const handleGoogleSignin = async () => {
     setLoading(true);
     try {
-      await signinWithGoogle();
-      
-      const authUser = auth.currentUser;
-      if (authUser) {
-        const role = await getUserRole(authUser.uid);
-        toast({
-          title: "Success",
-          description: "Signed in with Google successfully!",
-        });
-        setLocation(role === "admin" ? "/admin" : "/");
-      }
+      const role = await signinWithGoogle();
+      toast({
+        title: "Success",
+        description: "Signed in with Google successfully!",
+      });
+      setLocation(role === "admin" ? "/admin" : "/");
     } catch (error: any) {
       toast({
         title: "Error",

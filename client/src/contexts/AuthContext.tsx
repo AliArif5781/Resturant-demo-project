@@ -16,9 +16,9 @@ interface AuthContextType {
   currentUser: User | null;
   loading: boolean;
   signup: (email: string, password: string, displayName: string, role?: string) => Promise<string>;
-  signin: (email: string, password: string) => Promise<void>;
+  signin: (email: string, password: string) => Promise<string>;
   signout: () => Promise<void>;
-  signinWithGoogle: () => Promise<void>;
+  signinWithGoogle: () => Promise<string>;
   getUserRole: (firebaseUid: string) => Promise<string | null>;
 }
 
@@ -77,20 +77,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  async function signin(email: string, password: string) {
-    await signInWithEmailAndPassword(auth, email, password);
+  async function signin(email: string, password: string): Promise<string> {
+    const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+    const role = await getUserRole(user.uid);
+    return role || "user";
   }
 
   async function signout() {
     await signOut(auth);
   }
 
-  async function signinWithGoogle() {
+  async function signinWithGoogle(): Promise<string> {
     const provider = new GoogleAuthProvider();
     const userCredential = await signInWithPopup(auth, provider);
     const user = userCredential.user;
 
     await syncUserWithBackend(user);
+    const role = await getUserRole(user.uid);
+    return role || "user";
   }
 
   useEffect(() => {
