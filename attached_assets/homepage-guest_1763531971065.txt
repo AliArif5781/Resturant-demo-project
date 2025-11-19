@@ -1,0 +1,282 @@
+Here’s a complete guest homepage:
+•	Modern, mobile-first, responsive
+•	Vibrant animations
+•	High-quality imagery
+•	Uses “slick widgets” and micro-interactions
+•	Includes actual text content you can copy-paste
+I’ll refer to the restaurant generically as “Karahi Point” – swap the name/logo as needed.
+________________________________________
+1. Overall Concept for Guest Homepage
+This is the page guests see when:
+•	They scan the QR on the table (dine-in), or
+•	They open the restaurant link from home (pickup / order-ahead).
+Primary goals for the page:
+1.	“Where am I?” → Clear restaurant identity
+2.	“What can I do?” → Start ordering fast (browse, recommend, order-ahead)
+3.	“What looks good?” → Beautiful dishes & deals
+4.	“What’s my status?” → See active order
+________________________________________
+2. Layout Overview (Sections)
+1.	Sticky header
+2.	Hero: Welcome + quick actions + live status
+3.	Dish of the Day & Today’s Deals (widget-style cards)
+4.	Recommended for You (AI widget)
+5.	Quick Categories (pills + carousel)
+6.	Popular Now (horizontal swipe cards)
+7.	Order Ahead Widget (if at home)
+8.	Sticky Cart / Active Order widget
+9.	Footer (light)
+I’ll give content + design + animation for each.
+________________________________________
+3. Sticky Header
+Design:
+•	Transparent over hero at top; becomes solid on scroll.
+•	Subtle blur & drop shadow when scrolling.
+•	Left: restaurant logo (round) + “Karahi Point”
+•	Center: small context pill
+o	Dine-in · Table T12 (if QR)
+o	Pickup · Choose time (if remote)
+•	Right: icons (minimal):
+o	Profile / initials (if logged in)
+o	Language icon (🌐) if you want multilingual
+Microcopy example:
+•	Context pill text:
+You’re at: Karahi Point Oakville
+Animation:
+•	On scroll: header slides slightly up and locks, background fades to solid.
+•	Links/icons scale up very slightly on hover.
+________________________________________
+4. Hero Section – Welcome + Quick Actions + Status
+Background:
+•	Full width gradient: deep navy → warm orange
+•	A subtle animated pattern (blurred circles / gradient orbs)
+•	On desktop: split layout; on mobile: stacked
+4.1 Left side – Welcome & CTAs
+Text:
+•	Eyebrow (small, in accent color):
+Order from your phone. Skip the wait.
+•	Main heading:
+Good evening, let’s get your food started.
+•	Subheading:
+Browse the full Karahi Point menu, get smart suggestions, and order without waiting for a server.
+Quick action buttons (widgets in a row):
+•	Primary button:
+Start Ordering
+Subtext (small): “Browse menu & add items”
+•	Secondary pill buttons (inline):
+o	◻️ Surprise me
+“Let AI pick something for you”
+o	◻️ View my favorites
+“Reorder what you loved last time”
+o	◻️ Order for later (shown more if remote)
+“Schedule a pickup time”
+Each pill is a rounded “chip” with icon + label + subtle shadow.
+Animations:
+•	On page load:
+o	Heading fades in from left.
+o	Buttons pop in with 50ms stagger.
+•	On hover: buttons scale to 1.03, glow border with accent color.
+________________________________________
+4.2 Right side – Hero Visual
+Widget: Floating device + food
+•	Centered phone mockup showing:
+o	Digital menu with food cards
+o	A “Now Cooking” banner
+•	Overlapping smaller cards floating around:
+o	“Dish of the Day” mini-card (image + label)
+o	Small QR code tile (“Scan again to reopen menu”)
+o	“Order Ready” badge
+Animation ideas:
+•	Very slow float/bob animation for the cards (CSS keyframes).
+•	Subtle parallax on mouse move (desktop) – cards move slightly.
+•	On mobile: keep simpler; slow fade and small vertical movement.
+Image guidelines:
+•	High-quality food shots (biryani, karahi, naan).
+•	Bright, saturated colors; shallow depth of field.
+________________________________________
+4.3 Live Status Chip (if they have an active order)
+Below the hero text or as a small strip above it:
+Order #A124 · In the kitchen · ~7 min left
+[View details]
+•	Use a pill with an animated progress bar (thin line that animates).
+•	Icon: 🍲 or a small animated loader.
+________________________________________
+5. Dish of the Day & Today’s Deals (Modern Widgets)
+Background: Slightly darker section with soft shadowed cards.
+5.1 Dish of the Day Widget
+Card design:
+•	Large image on the left (or top on mobile)
+•	Right side:
+o	Label pill: “Dish of the Day” in orange
+o	Name:
+Chicken Karahi (Bone-In)
+o	Short description:
+Slow-cooked tomato-based karahi with fresh ginger, chilies & coriander.
+o	Tags row:
+	🌶 Medium spice
+	👥 Serves 2
+	⏱ ~25 min
+o	Price: $24.99
+o	Button row:
+	Add to Order
+	“See similar dishes” (ghost btn)
+Animation:
+•	On scroll: card slides up & fades in.
+•	The “Dish of the Day” pill can have a soft pulsing glow.
+________________________________________
+5.2 Today’s Deals Carousel
+Under or next to Dish of the Day:
+Title:
+Today’s Specials
+Horizontal carousel of modern cards:
+•	Example cards:
+1.	BBQ Combo for 2
+2 BBQ items + naan + drink
+From $34.99
+2.	Family Feast 4–5
+Mixed karahi + biryani + naan
+3.	Late Night Biryani
+After 9 PM · Save 10%
+Each card has:
+•	Image background with gradient overlay
+•	Title & short text
+•	Badge: “Save 15%”, “New”, “Limited”
+Interaction:
+•	Swipe horizontally on mobile.
+•	Click arrows on desktop.
+•	A small progress dot indicator at bottom.
+________________________________________
+6. Recommended for You (AI Widget)
+Section heading:
+Recommended for you
+Subtext:
+Based on what you’ve ordered and what’s popular tonight.
+Grid or horizontal cards:
+Each card:
+•	Image
+•	Dish name (e.g., “Chicken Tikka Biryani”)
+•	Short AI description:
+Aromatic rice layered with spicy grilled chicken tikka, served with raita.
+•	Badges:
+o	“You ordered similar last time”
+o	“Guests who like BBQ pick this”
+•	Buttons:
+o	Quick Add
+o	“More details”
+Animation:
+•	Cards appear with staggered fade/slide.
+•	On hover: card slightly tilts, shadow deepens.
+If user is new:
+“Try these favorites our guests love most.”
+________________________________________
+7. Quick Categories (Pill Widgets + Image Grid)
+Title:
+Browse by craving
+Scrollable pill row:
+•	🍗 Starters
+•	🔥 Sizzling BBQ
+•	🍛 Karahi & Curries
+•	🥦 Vegetarian
+•	🍚 Rice & Biryani
+•	🫓 Naans & Breads
+•	🍰 Desserts
+•	🥤 Drinks
+Clicking a pill:
+•	Smooth scrolls down to that category in the menu section,
+and highlights it.
+Below pills: “Category preview cards”
+•	2–3 big tiles:
+o	BBQ tile with skewers image
+o	Karahi tile with sizzling pan
+o	Biryani tile with rice close-up
+Each tile:
+•	Image with overlay gradient
+•	Category name
+•	“See all XX dishes” label
+Animation:
+•	Slight zoom on hover.
+•	Text slides up when hovered.
+________________________________________
+8. Popular Now (Modern Card Carousel)
+Title:
+Popular right now
+Subtext:
+What guests are loving this hour.
+Horizontally scrollable cards:
+•	Show 6–10 most-ordered dishes:
+o	Chicken Karahi (Boneless)
+o	Beef Bihari Kabab
+o	Chicken Biryani
+o	Butter Chicken
+o	Garlic Naan
+o	Mango Lassi
+Each card:
+•	Small image
+•	Name
+•	Small “🔥 24 orders today” tag
+•	“Add” button
+Animation:
+•	Cards slide in from the right as they become visible.
+•	A thin animated “heat bar” showing popularity.
+________________________________________
+9. Order Ahead Widget (If Not in Restaurant)
+If user is at home / remote:
+Card centered:
+Left side:
+Skip the wait. Order ahead.
+Choose a time and we’ll prep your order just in time for your arrival.
+Right side:
+•	Time picker:
+o	Dropdown or slider:
+ASAP (≈ 25 min)
+6:30 PM
+7:00 PM
+7:30 PM
+•	Button:
+Plan my order
+When clicked, transitions into menu browsing with that time attached.
+Animation:
+•	Time picker has a smooth sliding interaction.
+•	Button has a slight ripple when clicked.
+________________________________________
+10. Sticky Cart / Active Order Widget
+Sticky bottom bar (mobile) or right sidebar (desktop):
+When items are in cart:
+🛒 2 items · $31.98
+[Review & checkout]
+If order placed:
+🍲 Order #A124 · In the kitchen · ~7 min
+[Track status]
+Clicking opens a panel with:
+•	Items
+•	Status timeline:
+o	Received → In Kitchen → Almost Ready → Ready
+•	“I’ve arrived” button (for order-ahead)
+•	Option to add note (if allowed early)
+Animation:
+•	Slide-up panel with smooth ease.
+•	Confetti or subtle burst animation when order is just placed.
+________________________________________
+11. Footer (Guest-Friendly)
+Keep it minimal:
+•	“Need help? Ask our staff or call [phone].”
+•	Links:
+o	Allergy & dietary info
+o	Terms & privacy
+•	Small line:
+Powered by [Your Platform Name]
+________________________________________
+12. Modern / Sleek Widgets Summary
+Here are the “modern widgets” you’re using (so devs/designers know what to build):
+•	Hero quick-action chips (Surprise me, Favorites, Order later)
+•	Dish of the Day large spotlight card with pulse badge
+•	Deals carousel with horizontally scrollable cards
+•	AI “Recommended for you” grid with micro-tags (“because you liked…”)
+•	Scrollable category pill row + category tiles
+•	Popular Now heat-bar cards
+•	Order Ahead time picker widget
+•	Sticky bottom cart / order status bar
+•	Slide-up order panel with timeline
+•	Subtle confetti or celebration animation after order placed
+•	Skeleton loaders on first load (shimmer placeholders for cards)
+
