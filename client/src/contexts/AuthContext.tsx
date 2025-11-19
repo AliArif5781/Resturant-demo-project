@@ -9,7 +9,8 @@ import {
   signInWithPopup,
   updateProfile,
 } from "firebase/auth";
-import { auth } from "@/lib/firebase";
+import { doc, setDoc, getDoc, serverTimestamp } from "firebase/firestore";
+import { auth, db } from "@/lib/firebase";
 import { apiRequest } from "@/lib/queryClient";
 
 interface AuthContextType {
@@ -63,6 +64,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     await updateProfile(user, { displayName });
 
+    await setDoc(doc(db, "users", user.uid), {
+      uid: user.uid,
+      email: user.email,
+      displayName: displayName,
+      role: "user",
+      createdAt: serverTimestamp(),
+      photoURL: user.photoURL || null,
+    });
+
     const actualRole = await syncUserWithBackend(user, role);
     return actualRole;
   }
@@ -94,6 +104,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const provider = new GoogleAuthProvider();
     const userCredential = await signInWithPopup(auth, provider);
     const user = userCredential.user;
+
+    const userDocRef = doc(db, "users", user.uid);
+    const userDoc = await getDoc(userDocRef);
+
+    if (!userDoc.exists()) {
+      await setDoc(userDocRef, {
+        uid: user.uid,
+        email: user.email,
+        displayName: user.displayName,
+        role: "user",
+        createdAt: serverTimestamp(),
+        photoURL: user.photoURL || null,
+      });
+    }
 
     await syncUserWithBackend(user);
     const role = await getUserRole(user.uid);
