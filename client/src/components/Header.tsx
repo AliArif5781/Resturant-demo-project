@@ -1,4 +1,4 @@
-import { Globe, User, ShoppingCart, LogOut } from "lucide-react";
+import { User, ShoppingCart, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -56,20 +56,7 @@ export default function Header({
             </div>
           </Link>
 
-          <Badge
-            variant="secondary"
-            className="text-xs"
-            data-testid="badge-context"
-          >
-            {mode === "dine-in"
-              ? `Dine-in · Table ${tableNumber}`
-              : "Pickup · Choose time"}
-          </Badge>
-
           <div className="flex items-center gap-2">
-            <Button size="icon" variant="ghost" data-testid="button-language">
-              <Globe className="h-4 w-4 text-white" />
-            </Button>
             <Link href="/cart">
               <Button
                 size="icon"

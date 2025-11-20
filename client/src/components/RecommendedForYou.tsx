@@ -254,7 +254,7 @@ export default function RecommendedForYou() {
             </CardContent>
             <CardFooter className="p-4 pt-0 gap-2">
               <Button className="flex-1" onClick={() => handleQuickAdd(item)} data-testid={`button-quick-add-${item.id}`}>Quick Add</Button>
-              <Button variant="outline" data-testid={`button-details-${item.id}`}>Details</Button>
+              {/* <Button variant="outline" data-testid={`button-details-${item.id}`}>Details</Button> */}
             </CardFooter>
           </Card>
         ))}
