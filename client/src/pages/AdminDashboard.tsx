@@ -220,10 +220,10 @@ export default function AdminDashboard() {
                             <div className="flex gap-2 flex-wrap">
                               <Button
                                 size="sm"
-                                variant="default"
+                                variant="outline"
                                 onClick={() => updateOrderStatusMutation.mutate({ orderId: order.id, status: "completed" })}
                                 disabled={updateOrderStatusMutation.isPending}
-                                className="gap-2"
+                                className="gap-2 bg-green-100 dark:bg-green-900 text-green-900 dark:text-green-100 border-green-300 dark:border-green-700"
                                 data-testid={`button-proceed-${order.id}`}
                               >
                                 <Check className="h-4 w-4" />
@@ -231,10 +231,10 @@ export default function AdminDashboard() {
                               </Button>
                               <Button
                                 size="sm"
-                                variant="destructive"
+                                variant="outline"
                                 onClick={() => updateOrderStatusMutation.mutate({ orderId: order.id, status: "cancelled" })}
                                 disabled={updateOrderStatusMutation.isPending}
-                                className="gap-2"
+                                className="gap-2 bg-red-100 dark:bg-red-900 text-red-900 dark:text-red-100 border-red-300 dark:border-red-700"
                                 data-testid={`button-cancel-${order.id}`}
                               >
                                 <X className="h-4 w-4" />
