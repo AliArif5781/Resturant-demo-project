@@ -67,7 +67,7 @@ export default function Header({
                 <ShoppingCart className="h-5 w-5 text-white" />
                 {totalItems > 0 && (
                   <Badge
-                    className="absolute -top-1.5 -right-1.5 h-5 w-5 min-w-[1.25rem] flex items-center justify-center p-0 text-xs font-semibold bg-primary text-primary-foreground rounded-full border-2 border-background shadow-lg"
+                    className="absolute -top-2 left-1/2 -translate-x-1/2 h-4 w-4 min-w-[1rem] flex items-center justify-center p-0 text-[10px] font-semibold bg-primary text-primary-foreground rounded-full"
                     data-testid="badge-cart-count"
                   >
                     {totalItems}
