@@ -11,6 +11,7 @@ export interface IStorage {
   createOrder(order: InsertOrder): Promise<Order>;
   getRecentOrders(limit?: number): Promise<Order[]>;
   getOrdersByUser(firebaseUid: string): Promise<Order[]>;
+  updateOrderStatus(orderId: string, status: string): Promise<Order>;
 }
 
 export class MemStorage implements IStorage {
@@ -89,6 +90,16 @@ export class MemStorage implements IStorage {
     return Array.from(this.orders.values())
       .filter((order) => order.firebaseUid === firebaseUid)
       .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+  }
+
+  async updateOrderStatus(orderId: string, status: string): Promise<Order> {
+    const order = this.orders.get(orderId);
+    if (!order) {
+      throw new Error("Order not found");
+    }
+    const updatedOrder = { ...order, status };
+    this.orders.set(orderId, updatedOrder);
+    return updatedOrder;
   }
 }
 

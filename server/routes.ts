@@ -163,6 +163,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Update order status (ADMIN ONLY)
+  app.patch("/api/orders/:orderId/status", async (req, res) => {
+    try {
+      const firebaseUid = req.headers["x-firebase-uid"] as string;
+      const { orderId } = req.params;
+      const { status } = req.body;
+      
+      if (!firebaseUid) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      // Verify user exists and is admin
+      const user = await storage.getUserByFirebaseUid(firebaseUid);
+      if (!user) {
+        return res.status(401).json({ message: "User not found" });
+      }
+
+      if (user.role !== "admin") {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      if (!status) {
+        return res.status(400).json({ message: "Status is required" });
+      }
+
+      const updatedOrder = await storage.updateOrderStatus(orderId, status);
+      res.json({ order: updatedOrder });
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
   const httpServer = createServer(app);
 
   return httpServer;

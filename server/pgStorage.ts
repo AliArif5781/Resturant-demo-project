@@ -72,4 +72,18 @@ export class PgStorage implements IStorage {
       .orderBy(desc(orders.createdAt));
     return result;
   }
+
+  async updateOrderStatus(orderId: string, status: string): Promise<Order> {
+    const [updatedOrder] = await db
+      .update(orders)
+      .set({ status })
+      .where(eq(orders.id, orderId))
+      .returning();
+    
+    if (!updatedOrder) {
+      throw new Error("Order not found");
+    }
+    
+    return updatedOrder;
+  }
 }
