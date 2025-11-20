@@ -1,6 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
+import { insertOrderSchema } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || "")
@@ -68,6 +69,95 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log(`Retrieved user - Email: ${user.email}, Role: ${user.role}`);
 
       res.json({ user });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Create a new order
+  app.post("/api/orders", async (req, res) => {
+    try {
+      const firebaseUid = req.headers["x-firebase-uid"] as string;
+      
+      if (!firebaseUid) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      // Verify user exists in our system
+      const user = await storage.getUserByFirebaseUid(firebaseUid);
+      if (!user) {
+        return res.status(401).json({ message: "User not found" });
+      }
+
+      // Use server-verified user data instead of trusting client
+      const orderData = {
+        firebaseUid: user.firebaseUid,
+        userEmail: user.email,
+        userName: user.displayName,
+        items: req.body.items,
+        subtotal: req.body.subtotal,
+        tax: req.body.tax,
+        total: req.body.total,
+        status: "pending",
+      };
+
+      const validatedOrder = insertOrderSchema.parse(orderData);
+      const order = await storage.createOrder(validatedOrder);
+      res.json({ order });
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  // Get recent orders (for admin dashboard - ADMIN ONLY)
+  app.get("/api/orders", async (req, res) => {
+    try {
+      const firebaseUid = req.headers["x-firebase-uid"] as string;
+      
+      if (!firebaseUid) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      // Verify user exists and is admin
+      const user = await storage.getUserByFirebaseUid(firebaseUid);
+      if (!user) {
+        return res.status(401).json({ message: "User not found" });
+      }
+
+      if (user.role !== "admin") {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;
+      const orders = await storage.getRecentOrders(limit);
+      res.json({ orders });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Get orders by user
+  app.get("/api/orders/user/:firebaseUid", async (req, res) => {
+    try {
+      const requestingUid = req.headers["x-firebase-uid"] as string;
+      const { firebaseUid } = req.params;
+      
+      if (!requestingUid) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      // Users can only see their own orders, admins can see anyone's
+      const user = await storage.getUserByFirebaseUid(requestingUid);
+      if (!user) {
+        return res.status(401).json({ message: "User not found" });
+      }
+
+      if (user.role !== "admin" && requestingUid !== firebaseUid) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      const orders = await storage.getOrdersByUser(firebaseUid);
+      res.json({ orders });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }

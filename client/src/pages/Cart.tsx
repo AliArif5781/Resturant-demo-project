@@ -1,13 +1,66 @@
 import { useCart } from "@/contexts/CartContext";
+import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Minus, Plus, Trash2, ArrowLeft, ShoppingBag } from "lucide-react";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 import RecommendedForYou from "@/components/RecommendedForYou";
+import { useMutation } from "@tanstack/react-query";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 
 export default function Cart() {
   const { items, removeFromCart, updateQuantity, clearCart, totalPrice, totalItems } = useCart();
+  const { currentUser } = useAuth();
+  const [, setLocation] = useLocation();
+  const { toast } = useToast();
+
+  const createOrderMutation = useMutation({
+    mutationFn: async (orderData: any) => {
+      const response = await apiRequest("POST", "/api/orders", orderData);
+      return await response.json();
+    },
+    onSuccess: () => {
+      toast({
+        title: "Order placed successfully!",
+        description: "Your order has been submitted.",
+      });
+      // Invalidate orders query to refresh admin dashboard
+      queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
+      clearCart();
+      setLocation("/");
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to place order",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleCheckout = () => {
+    if (!currentUser) {
+      toast({
+        title: "Please sign in",
+        description: "You need to be signed in to place an order.",
+        variant: "destructive",
+      });
+      setLocation("/signin");
+      return;
+    }
+
+    // Server will get user data from authenticated UID
+    const orderData = {
+      items: items,
+      subtotal: totalPrice.toFixed(2),
+      tax: (totalPrice * 0.08).toFixed(2),
+      total: (totalPrice * 1.08).toFixed(2),
+    };
+
+    createOrderMutation.mutate(orderData);
+  };
 
   if (items.length === 0) {
     return (
@@ -182,8 +235,14 @@ export default function Cart() {
                 </div>
 
                 <div className="space-y-2 pt-4">
-                  <Button className="w-full" size="lg" data-testid="button-checkout">
-                    Continue
+                  <Button 
+                    className="w-full" 
+                    size="lg" 
+                    data-testid="button-checkout"
+                    onClick={handleCheckout}
+                    disabled={createOrderMutation.isPending}
+                  >
+                    {createOrderMutation.isPending ? "Placing Order..." : "Continue"}
                   </Button>
                   <Link href="/">
                     <Button variant="outline" className="w-full" data-testid="button-continue-shopping">

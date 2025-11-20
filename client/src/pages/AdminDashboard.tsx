@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Package, Home } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import type { Order } from "@shared/schema";
 
 export default function AdminDashboard() {
   const [, setLocation] = useLocation();
@@ -12,6 +14,13 @@ export default function AdminDashboard() {
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
+
+  const { data: ordersData, isLoading: ordersLoading } = useQuery<{ orders: Order[] }>({
+    queryKey: ["/api/orders"],
+    enabled: isAdmin,
+  });
+
+  const orders = ordersData?.orders || [];
 
   useEffect(() => {
     const checkAdminAccess = async () => {
@@ -116,8 +125,10 @@ export default function AdminDashboard() {
               <Package className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">0</div>
-              <p className="text-xs text-muted-foreground">No orders yet</p>
+              <div className="text-2xl font-bold">{orders.length}</div>
+              <p className="text-xs text-muted-foreground">
+                {orders.length === 0 ? "No orders yet" : `${orders.length} total orders`}
+              </p>
             </CardContent>
           </Card>
         </div>
@@ -128,9 +139,57 @@ export default function AdminDashboard() {
             <CardDescription>Latest orders from customers</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-center py-8 text-muted-foreground">
-              No orders yet
-            </div>
+            {ordersLoading ? (
+              <div className="text-center py-8 text-muted-foreground">
+                Loading orders...
+              </div>
+            ) : orders.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">
+                No orders yet
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {orders.map((order) => {
+                  const items = Array.isArray(order.items) ? order.items : [];
+                  return (
+                    <Card key={order.id} className="border" data-testid={`card-order-${order.id}`}>
+                      <CardContent className="p-4">
+                        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                          <div className="flex-1 space-y-2">
+                            <div className="flex items-center gap-2 flex-wrap">
+                              <h3 className="font-semibold" data-testid={`text-order-user-${order.id}`}>
+                                {order.userName || order.userEmail}
+                              </h3>
+                              <span className="text-xs text-muted-foreground">
+                                {new Date(order.createdAt).toLocaleDateString()} {new Date(order.createdAt).toLocaleTimeString()}
+                              </span>
+                            </div>
+                            <div className="text-sm text-muted-foreground">
+                              {items.length} {items.length === 1 ? "item" : "items"}
+                            </div>
+                            <div className="flex flex-wrap gap-1">
+                              {items.map((item: any, idx: number) => (
+                                <span key={idx} className="text-xs bg-muted px-2 py-1 rounded-md">
+                                  {item.name} x{item.quantity}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                          <div className="text-right">
+                            <div className="text-lg font-bold" data-testid={`text-order-total-${order.id}`}>
+                              ${order.total}
+                            </div>
+                            <div className="text-xs text-muted-foreground">
+                              Status: {order.status}
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+              </div>
+            )}
           </CardContent>
         </Card>
       </main>

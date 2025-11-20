@@ -1,6 +1,6 @@
-import { eq } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 import { db } from "./db";
-import { users, type User, type InsertUser } from "@shared/schema";
+import { users, orders, type User, type InsertUser, type Order, type InsertOrder } from "@shared/schema";
 import { IStorage } from "./storage";
 
 export class PgStorage implements IStorage {
@@ -45,5 +45,31 @@ export class PgStorage implements IStorage {
       })
       .returning();
     return newUser;
+  }
+
+  async createOrder(insertOrder: InsertOrder): Promise<Order> {
+    const [newOrder] = await db
+      .insert(orders)
+      .values(insertOrder)
+      .returning();
+    return newOrder;
+  }
+
+  async getRecentOrders(limit: number = 10): Promise<Order[]> {
+    const result = await db
+      .select()
+      .from(orders)
+      .orderBy(desc(orders.createdAt))
+      .limit(limit);
+    return result;
+  }
+
+  async getOrdersByUser(firebaseUid: string): Promise<Order[]> {
+    const result = await db
+      .select()
+      .from(orders)
+      .where(eq(orders.firebaseUid, firebaseUid))
+      .orderBy(desc(orders.createdAt));
+    return result;
   }
 }
