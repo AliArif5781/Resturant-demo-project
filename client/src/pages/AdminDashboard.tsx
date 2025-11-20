@@ -4,7 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Settings, Package, Users, BarChart } from "lucide-react";
+import { Package } from "lucide-react";
 
 export default function AdminDashboard() {
   const [, setLocation] = useLocation();
@@ -95,7 +95,7 @@ export default function AdminDashboard() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="max-w-sm mb-8">
           <Card data-testid="card-stats-orders">
             <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">Total Orders</CardTitle>
@@ -106,95 +106,19 @@ export default function AdminDashboard() {
               <p className="text-xs text-muted-foreground">No orders yet</p>
             </CardContent>
           </Card>
-
-          <Card data-testid="card-stats-users">
-            <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Users</CardTitle>
-              <Users className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">1</div>
-              <p className="text-xs text-muted-foreground">Active users</p>
-            </CardContent>
-          </Card>
-
-          <Card data-testid="card-stats-revenue">
-            <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Revenue</CardTitle>
-              <BarChart className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">$0</div>
-              <p className="text-xs text-muted-foreground">Total earnings</p>
-            </CardContent>
-          </Card>
-
-          <Card data-testid="card-stats-menu">
-            <CardHeader className="flex flex-row items-center justify-between gap-2 space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Menu Items</CardTitle>
-              <Settings className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">0</div>
-              <p className="text-xs text-muted-foreground">Items available</p>
-            </CardContent>
-          </Card>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle data-testid="title-recent-orders">Recent Orders</CardTitle>
-              <CardDescription>Latest orders from customers</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center py-8 text-muted-foreground">
-                No orders yet
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle data-testid="title-quick-actions">Quick Actions</CardTitle>
-              <CardDescription>Common administrative tasks</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-2">
-              <Button
-                variant="outline"
-                className="w-full justify-start"
-                data-testid="button-manage-menu"
-              >
-                <Package className="mr-2 h-4 w-4" />
-                Manage Menu
-              </Button>
-              <Button
-                variant="outline"
-                className="w-full justify-start"
-                data-testid="button-view-orders"
-              >
-                <BarChart className="mr-2 h-4 w-4" />
-                View All Orders
-              </Button>
-              <Button
-                variant="outline"
-                className="w-full justify-start"
-                data-testid="button-manage-users"
-              >
-                <Users className="mr-2 h-4 w-4" />
-                Manage Users
-              </Button>
-              <Button
-                variant="outline"
-                className="w-full justify-start"
-                data-testid="button-settings"
-              >
-                <Settings className="mr-2 h-4 w-4" />
-                Settings
-              </Button>
-            </CardContent>
-          </Card>
-        </div>
+        <Card>
+          <CardHeader>
+            <CardTitle data-testid="title-recent-orders">Recent Orders</CardTitle>
+            <CardDescription>Latest orders from customers</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="text-center py-8 text-muted-foreground">
+              No orders yet
+            </div>
+          </CardContent>
+        </Card>
       </main>
     </div>
   );
