@@ -141,9 +141,13 @@ export default function Cart() {
                             {item.name}
                           </h3>
                           {item.calories && item.protein && (
-                            <div className="flex gap-3 text-xs text-muted-foreground mb-2">
-                              <span data-testid={`text-cart-item-calories-${item.id}`}>🔥 {item.calories} cal</span>
-                              <span data-testid={`text-cart-item-protein-${item.id}`}>💪 {item.protein}g protein</span>
+                            <div className="flex gap-2 mb-2 flex-wrap">
+                              <Badge variant="outline" className="bg-orange-50 dark:bg-orange-950 text-orange-700 dark:text-orange-300 border-orange-200 dark:border-orange-800" data-testid={`text-cart-item-calories-${item.id}`}>
+                                🔥 {item.calories} cal
+                              </Badge>
+                              <Badge variant="outline" className="bg-green-50 dark:bg-green-950 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800" data-testid={`text-cart-item-protein-${item.id}`}>
+                                💪 {item.protein}g protein
+                              </Badge>
                             </div>
                           )}
                           <p className="text-lg font-bold text-primary" data-testid={`text-cart-item-price-${item.id}`}>

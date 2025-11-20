@@ -245,9 +245,13 @@ export default function RecommendedForYou() {
                 <p className="text-sm text-muted-foreground line-clamp-2" data-testid={`text-recommended-desc-${item.id}`}>
                   {item.description}
                 </p>
-                <div className="flex gap-2 text-xs text-muted-foreground">
-                  <span data-testid={`text-recommended-calories-${item.id}`}>🔥 {item.calories} cal</span>
-                  <span data-testid={`text-recommended-protein-${item.id}`}>💪 {item.protein}g protein</span>
+                <div className="flex gap-2 flex-wrap">
+                  <Badge variant="outline" className="bg-orange-50 dark:bg-orange-950 text-orange-700 dark:text-orange-300 border-orange-200 dark:border-orange-800" data-testid={`text-recommended-calories-${item.id}`}>
+                    🔥 {item.calories} cal
+                  </Badge>
+                  <Badge variant="outline" className="bg-green-50 dark:bg-green-950 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800" data-testid={`text-recommended-protein-${item.id}`}>
+                    💪 {item.protein}g protein
+                  </Badge>
                 </div>
                 <p className="text-lg font-bold text-primary" data-testid={`text-recommended-price-${item.id}`}>{item.price}</p>
               </div>

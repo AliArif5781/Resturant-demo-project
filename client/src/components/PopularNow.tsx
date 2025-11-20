@@ -1,5 +1,6 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Plus } from "lucide-react";
 import karahiImage from "@assets/generated_images/Chicken_Karahi_dish_closeup_1ee23ad4.png";
 import kabobImage from "@assets/generated_images/Beef_bihari_kabab_e2e73340.png";
@@ -72,9 +73,13 @@ export default function PopularNow() {
                     <Plus className="h-4 w-4" />
                   </Button>
                 </div>
-                <div className="flex gap-2 text-xs text-muted-foreground mb-2">
-                  <span data-testid={`text-popular-calories-${item.id}`}>🔥 {item.calories} cal</span>
-                  <span data-testid={`text-popular-protein-${item.id}`}>💪 {item.protein}g protein</span>
+                <div className="flex gap-2 mb-2 flex-wrap">
+                  <Badge variant="outline" className="bg-orange-50 dark:bg-orange-950 text-orange-700 dark:text-orange-300 border-orange-200 dark:border-orange-800" data-testid={`text-popular-calories-${item.id}`}>
+                    🔥 {item.calories} cal
+                  </Badge>
+                  <Badge variant="outline" className="bg-green-50 dark:bg-green-950 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800" data-testid={`text-popular-protein-${item.id}`}>
+                    💪 {item.protein}g protein
+                  </Badge>
                 </div>
                 <div className="h-1 bg-muted rounded-full overflow-hidden">
                   <div
