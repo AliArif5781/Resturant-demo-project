@@ -1,9 +1,10 @@
+import { useEffect } from "react";
 import { useCart } from "@/contexts/CartContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Check, ShoppingBag, User, Mail, CreditCard, MapPin } from "lucide-react";
+import { ArrowLeft, Check, ShoppingBag, User, Mail, CreditCard } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -15,6 +16,11 @@ export default function Checkout() {
   const { currentUser } = useAuth();
   const [, setLocation] = useLocation();
   const { toast } = useToast();
+
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const createOrderMutation = useMutation({
     mutationFn: async (orderData: any) => {
@@ -156,20 +162,6 @@ export default function Checkout() {
                   <div>
                     <p className="text-sm text-muted-foreground">Email</p>
                     <p className="font-medium">{currentUser?.email}</p>
-                  </div>
-                </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.6 }}
-                  className="flex items-center gap-3 p-4 bg-muted/50 rounded-lg hover-elevate"
-                  data-testid="row-table-info"
-                >
-                  <MapPin className="h-5 w-5 text-muted-foreground" />
-                  <div>
-                    <p className="text-sm text-muted-foreground">Table</p>
-                    <p className="font-medium">T12 - Dine-in</p>
                   </div>
                 </motion.div>
               </CardContent>
@@ -344,26 +336,6 @@ export default function Checkout() {
                       </>
                     )}
                   </Button>
-                </motion.div>
-
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.9 }}
-                  className="pt-4 space-y-2"
-                >
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <Check className="h-3 w-3 text-green-600" />
-                    <span>Secure checkout</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <Check className="h-3 w-3 text-green-600" />
-                    <span>Order confirmation via email</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <Check className="h-3 w-3 text-green-600" />
-                    <span>Estimated time: 25-30 min</span>
-                  </div>
                 </motion.div>
               </CardContent>
             </Card>
