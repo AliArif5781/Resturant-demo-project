@@ -70,23 +70,33 @@ export default function AdminDashboard() {
   return (
     <div className="min-h-screen bg-background">
       <header className="border-b">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold" data-testid="title-admin-dashboard">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <h1 className="text-xl sm:text-2xl font-bold" data-testid="title-admin-dashboard">
               Karahi Point Admin
             </h1>
-          </div>
-          <div className="flex items-center gap-4">
-            <p className="text-sm text-muted-foreground">
-              {currentUser?.displayName || currentUser?.email}
-            </p>
-            <Button variant="outline" onClick={() => setLocation("/")} data-testid="button-home">
-              <Home className="mr-2 h-4 w-4" />
-              Home
-            </Button>
-            <Button variant="outline" onClick={handleSignOut} data-testid="button-signout">
-              Sign Out
-            </Button>
+            <div className="flex items-center gap-2 flex-wrap">
+              <p className="text-sm text-muted-foreground hidden md:block">
+                {currentUser?.displayName || currentUser?.email}
+              </p>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => setLocation("/")} 
+                data-testid="button-home"
+              >
+                <Home className="h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">Home</span>
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={handleSignOut} 
+                data-testid="button-signout"
+              >
+                Sign Out
+              </Button>
+            </div>
           </div>
         </div>
       </header>
