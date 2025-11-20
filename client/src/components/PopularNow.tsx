@@ -1,6 +1,5 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Plus } from "lucide-react";
 import karahiImage from "@assets/generated_images/Chicken_Karahi_dish_closeup_1ee23ad4.png";
 import kabobImage from "@assets/generated_images/Beef_bihari_kabab_e2e73340.png";
@@ -62,9 +61,6 @@ export default function PopularNow() {
                   className="w-full h-full object-cover"
                   data-testid={`img-popular-${item.id}`}
                 />
-                <Badge className="absolute top-2 right-2 bg-primary/90" data-testid={`badge-popular-orders-${item.id}`}>
-                  🔥 {item.orders} orders today
-                </Badge>
               </div>
               <div className="p-4">
                 <div className="flex items-center justify-between mb-3">
