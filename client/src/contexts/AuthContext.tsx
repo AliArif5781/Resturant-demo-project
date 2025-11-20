@@ -105,11 +105,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const user = userCredential.user;
     console.log("Signin - Firebase UID:", user.uid);
     
-    // Sync user with backend to ensure they exist in the database
-    await syncUserWithBackend(user);
-    
+    // Get role from Firestore first
     const role = await getUserRole(user.uid);
     console.log("Signin - Retrieved role:", role);
+    
+    // Sync user with backend, passing the role from Firestore
+    await syncUserWithBackend(user, role || undefined);
+    
     return role || "user";
   }
 
