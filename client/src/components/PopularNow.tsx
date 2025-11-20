@@ -12,12 +12,12 @@ import { useCart } from "@/contexts/CartContext";
 import { useToast } from "@/hooks/use-toast";
 
 const popularItems = [
-  { id: 1, name: "Chicken Karahi", orders: 24, price: "$24.99", calories: 520, protein: 42, image: karahiImage },
-  { id: 2, name: "Beef Bihari Kabab", orders: 18, price: "$26.99", calories: 380, protein: 38, image: kabobImage },
-  { id: 3, name: "Chicken Biryani", orders: 21, price: "$21.99", calories: 650, protein: 35, image: biryaniImage },
-  { id: 4, name: "Butter Chicken", orders: 15, price: "$19.99", calories: 480, protein: 32, image: butterChickenImage },
-  { id: 5, name: "Garlic Naan", orders: 32, price: "$3.99", calories: 290, protein: 8, image: naanImage },
-  { id: 6, name: "Mango Lassi", orders: 14, price: "$5.99", calories: 180, protein: 6, image: lassiImage },
+  { id: 1, name: "Chicken Karahi", orders: 24, price: "$24.99", calories: 520, protein: 42, image: karahiImage, description: "Tender chicken cooked in a wok with tomatoes, ginger, and aromatic spices" },
+  { id: 2, name: "Beef Bihari Kabab", orders: 18, price: "$26.99", calories: 380, protein: 38, image: kabobImage, description: "Marinated beef strips grilled to perfection with traditional Bihari spices" },
+  { id: 3, name: "Chicken Biryani", orders: 21, price: "$21.99", calories: 650, protein: 35, image: biryaniImage, description: "Fragrant basmati rice layered with spiced chicken and caramelized onions" },
+  { id: 4, name: "Butter Chicken", orders: 15, price: "$19.99", calories: 480, protein: 32, image: butterChickenImage, description: "Creamy tomato curry with tender chicken pieces in rich butter sauce" },
+  { id: 5, name: "Garlic Naan", orders: 32, price: "$3.99", calories: 290, protein: 8, image: naanImage, description: "Soft flatbread brushed with garlic butter and fresh herbs" },
+  { id: 6, name: "Mango Lassi", orders: 14, price: "$5.99", calories: 180, protein: 6, image: lassiImage, description: "Refreshing yogurt-based drink blended with sweet mango pulp" },
 ];
 
 export default function PopularNow() {
@@ -32,6 +32,7 @@ export default function PopularNow() {
       image: item.image,
       calories: item.calories,
       protein: item.protein,
+      description: item.description,
     });
     toast({
       title: "Added to cart",

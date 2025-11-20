@@ -8,6 +8,7 @@ export interface CartItem {
   quantity: number;
   calories?: number;
   protein?: number;
+  description?: string;
 }
 
 interface CartContextType {

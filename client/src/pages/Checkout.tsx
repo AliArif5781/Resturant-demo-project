@@ -216,6 +216,11 @@ export default function Checkout() {
                         <h3 className="font-semibold mb-1" data-testid={`text-checkout-item-name-${item.id}`}>
                           {item.name}
                         </h3>
+                        {item.description && (
+                          <p className="text-sm text-muted-foreground mb-2" data-testid={`text-checkout-item-description-${item.id}`}>
+                            {item.description}
+                          </p>
+                        )}
                         {item.calories && item.protein && (
                           <div className="flex gap-2 mb-2 flex-wrap">
                             <Badge variant="outline" className="bg-orange-50 dark:bg-orange-950 text-orange-700 dark:text-orange-300 border-orange-200 dark:border-orange-800 text-xs">
