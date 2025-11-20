@@ -6,7 +6,6 @@ import DealsCarousel from "@/components/DealsCarousel";
 import RecommendedForYou from "@/components/RecommendedForYou";
 import QuickCategories from "@/components/QuickCategories";
 import PopularNow from "@/components/PopularNow";
-import OrderAheadWidget from "@/components/OrderAheadWidget";
 import StickyCart from "@/components/StickyCart";
 import OrderStatusPanel from "@/components/OrderStatusPanel";
 import Footer from "@/components/Footer";
@@ -39,8 +38,6 @@ export default function Home() {
         <QuickCategories />
 
         <PopularNow />
-
-        <OrderAheadWidget onPlanOrder={(time) => console.log("Plan order for:", time)} />
       </main>
 
       <Footer />
