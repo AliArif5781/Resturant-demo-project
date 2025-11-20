@@ -64,10 +64,10 @@ export default function Header({
                 className="relative"
                 data-testid="button-cart"
               >
-                <ShoppingCart className="h-4 w-4 text-white" />
+                <ShoppingCart className="h-5 w-5 text-white" />
                 {totalItems > 0 && (
                   <Badge
-                    className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs bg-primary"
+                    className="absolute -top-1.5 -right-1.5 h-5 w-5 min-w-[1.25rem] flex items-center justify-center p-0 text-xs font-semibold bg-primary text-primary-foreground rounded-full border-2 border-background shadow-lg"
                     data-testid="badge-cart-count"
                   >
                     {totalItems}
