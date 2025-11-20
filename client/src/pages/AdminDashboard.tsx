@@ -4,7 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Package } from "lucide-react";
+import { Package, Home } from "lucide-react";
 
 export default function AdminDashboard() {
   const [, setLocation] = useLocation();
@@ -80,6 +80,10 @@ export default function AdminDashboard() {
             <p className="text-sm text-muted-foreground">
               {currentUser?.displayName || currentUser?.email}
             </p>
+            <Button variant="outline" onClick={() => setLocation("/")} data-testid="button-home">
+              <Home className="mr-2 h-4 w-4" />
+              Home
+            </Button>
             <Button variant="outline" onClick={handleSignOut} data-testid="button-signout">
               Sign Out
             </Button>
