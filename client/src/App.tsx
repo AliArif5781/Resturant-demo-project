@@ -7,6 +7,7 @@ import { CartProvider } from "@/contexts/CartContext";
 import { AuthProvider } from "@/contexts/AuthContext";
 import Home from "@/pages/Home";
 import Cart from "@/pages/Cart";
+import Checkout from "@/pages/Checkout";
 import Signin from "@/pages/Signin";
 import Signup from "@/pages/Signup";
 import AdminDashboard from "@/pages/AdminDashboard";
@@ -17,6 +18,7 @@ function Router() {
     <Switch>
       <Route path="/" component={Home} />
       <Route path="/cart" component={Cart} />
+      <Route path="/checkout" component={Checkout} />
       <Route path="/signin" component={Signin} />
       <Route path="/signup" component={Signup} />
       <Route path="/admin" component={AdminDashboard} />
