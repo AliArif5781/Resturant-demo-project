@@ -104,6 +104,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
     const user = userCredential.user;
     console.log("Signin - Firebase UID:", user.uid);
+    
+    // Sync user with backend to ensure they exist in the database
+    await syncUserWithBackend(user);
+    
     const role = await getUserRole(user.uid);
     console.log("Signin - Retrieved role:", role);
     return role || "user";
