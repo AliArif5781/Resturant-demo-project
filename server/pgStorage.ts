@@ -103,7 +103,7 @@ export class PgStorage implements IStorage {
   async updateGuestArrived(orderId: string, arrived: boolean): Promise<Order> {
     const [updatedOrder] = await db
       .update(orders)
-      .set({ guestArrived: arrived ? "true" : "false" })
+      .set({ guestArrived: arrived })
       .where(eq(orders.id, orderId))
       .returning();
     

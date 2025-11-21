@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { pgTable, text, varchar, jsonb, decimal, timestamp } from "drizzle-orm/pg-core";
+import { pgTable, text, varchar, jsonb, decimal, timestamp, boolean } from "drizzle-orm/pg-core";
 import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 
@@ -30,7 +30,7 @@ export const orders = pgTable("orders", {
   total: decimal("total", { precision: 10, scale: 2 }).notNull(),
   status: text("status").notNull().default("pending"),
   preparationTime: text("preparation_time"),
-  guestArrived: text("guest_arrived").default("false"),
+  guestArrived: boolean("guest_arrived").default(false).notNull(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 

@@ -76,7 +76,7 @@ export class MemStorage implements IStorage {
       total: insertOrder.total,
       status: insertOrder.status ?? "pending",
       preparationTime: insertOrder.preparationTime ?? null,
-      guestArrived: insertOrder.guestArrived ?? "false",
+      guestArrived: insertOrder.guestArrived ?? false,
       createdAt: new Date(),
     };
     this.orders.set(id, order);
@@ -115,7 +115,7 @@ export class MemStorage implements IStorage {
     if (!order) {
       throw new Error("Order not found");
     }
-    const updatedOrder = { ...order, guestArrived: arrived ? "true" : "false" };
+    const updatedOrder = { ...order, guestArrived: arrived };
     this.orders.set(orderId, updatedOrder);
     return updatedOrder;
   }

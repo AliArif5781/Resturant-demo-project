@@ -249,7 +249,7 @@ export default function AdminDashboard() {
                                 >
                                   {order.status}
                                 </Badge>
-                                {order.guestArrived === "true" && (
+                                {order.guestArrived === true && (
                                   <Badge 
                                     variant="outline" 
                                     className="bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800"

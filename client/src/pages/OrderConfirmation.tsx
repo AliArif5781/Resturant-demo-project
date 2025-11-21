@@ -64,7 +64,7 @@ export default function OrderConfirmation() {
   // Use real-time status if available, otherwise use cached status
   const currentStatus = orderStatusData?.order?.status || orderData?.status || "pending";
   const preparationTime = orderStatusData?.order?.preparationTime;
-  const guestArrived = orderStatusData?.order?.guestArrived === "true";
+  const guestArrived = orderStatusData?.order?.guestArrived === true;
   const isConfirmed = currentStatus === "preparing" || currentStatus === "completed";
 
   // Mutation to mark guest as arrived
