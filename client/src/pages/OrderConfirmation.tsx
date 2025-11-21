@@ -88,11 +88,21 @@ export default function OrderConfirmation() {
   };
 
   const orderSteps = [
-    { icon: Clock, label: "Order Pending", time: "Processing" },
-    { icon: Package, label: "Preparing", time: "Pending" },
-    { icon: Truck, label: "Out for Delivery", time: "Pending" },
-    { icon: CheckCheck, label: "Delivered", time: "Pending" },
+    { id: "pending", icon: Clock, label: "Order Pending", time: "Processing" },
+    { id: "preparing", icon: Package, label: "Preparing", time: "Pending" },
+    { id: "ready", icon: Truck, label: "Out for Delivery", time: "Pending" },
+    { id: "completed", icon: CheckCheck, label: "Delivered", time: "Pending" },
   ];
+  
+  // Map status to step index
+  const statusToStepIndex: Record<string, number> = {
+    pending: 0,
+    preparing: 1,
+    ready: 2,
+    completed: 3,
+  };
+  
+  const currentStepIndex = statusToStepIndex[currentStatus] ?? 0;
 
   return (
     <div className="min-h-screen bg-background">
@@ -221,9 +231,10 @@ export default function OrderConfirmation() {
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-2">
                 {orderSteps.map((step, index) => {
                   const Icon = step.icon;
-                  // Only first step is active - pending if not confirmed, preparing if confirmed
-                  const isActive = index === 0;
-                  const isCompleted = false;
+                  // Check if this step is active (current or completed)
+                  const isActive = index <= currentStepIndex;
+                  const isCompleted = index < currentStepIndex;
+                  const isCurrent = index === currentStepIndex;
                   
                   return (
                     <motion.div
@@ -244,9 +255,11 @@ export default function OrderConfirmation() {
                             isCompleted
                               ? "bg-green-100 dark:bg-green-900/30 border-2 border-green-500"
                               : isActive
-                              ? isConfirmed
+                              ? step.id === "preparing"
                                 ? "bg-green-100 dark:bg-green-900/30 border-2 border-green-500"
-                                : "bg-orange-100 dark:bg-orange-900/30 border-2 border-orange-500 animate-pulse"
+                                : isCurrent
+                                  ? "bg-orange-100 dark:bg-orange-900/30 border-2 border-orange-500 animate-pulse"
+                                  : "bg-green-100 dark:bg-green-900/30 border-2 border-green-500"
                               : "bg-muted border-2 border-muted-foreground/20"
                           }`}
                         >
@@ -255,9 +268,11 @@ export default function OrderConfirmation() {
                               isCompleted
                                 ? "text-green-600 dark:text-green-400"
                                 : isActive
-                                ? isConfirmed
+                                ? step.id === "preparing"
                                   ? "text-green-600 dark:text-green-400"
-                                  : "text-orange-600 dark:text-orange-400"
+                                  : isCurrent
+                                    ? "text-orange-600 dark:text-orange-400"
+                                    : "text-green-600 dark:text-green-400"
                                 : "text-muted-foreground"
                             }`}
                           />
@@ -265,12 +280,24 @@ export default function OrderConfirmation() {
                         <div>
                           <p
                             className={`font-semibold text-sm ${
-                              isActive ? "text-foreground" : "text-muted-foreground"
+                              isActive 
+                                ? step.id === "preparing" && isActive
+                                  ? "text-green-600 dark:text-green-400"
+                                  : "text-foreground"
+                                : "text-muted-foreground"
                             }`}
                           >
                             {step.label}
                           </p>
-                          <p className="text-xs text-muted-foreground mt-1">{step.time}</p>
+                          <p className={`text-xs mt-1 ${
+                            isCurrent 
+                              ? step.id === "preparing"
+                                ? "text-green-600 dark:text-green-400 font-medium"
+                                : "text-orange-600 dark:text-orange-400 font-medium"
+                              : "text-muted-foreground"
+                          }`}>
+                            {isCurrent ? "Processing" : isCompleted ? "Completed" : "Pending"}
+                          </p>
                         </div>
                       </div>
                       {index < orderSteps.length - 1 && (
