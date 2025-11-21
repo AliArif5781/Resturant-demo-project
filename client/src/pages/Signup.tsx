@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useLocation } from "wouter";
+import { Link, useLocation } from "wouter";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Separator } from "@/components/ui/separator";
+import { Home } from "lucide-react";
 
 export default function Signup() {
   const [, setLocation] = useLocation();
@@ -87,8 +88,28 @@ export default function Signup() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen p-4">
-      <Card className="w-full max-w-md">
+    <div className="min-h-screen bg-background">
+      {/* Header */}
+      <header className="border-b sticky top-0 bg-background z-50" data-testid="header-signup">
+        <div className="container mx-auto px-4 py-3">
+          <div className="flex items-center justify-between gap-4">
+            <Link href="/">
+              <div className="flex items-center gap-3 cursor-pointer">
+                <span className="font-bold text-lg" data-testid="text-brand-name">Karahi Point</span>
+              </div>
+            </Link>
+            <Link href="/">
+              <Button variant="ghost" className="gap-2" data-testid="button-home">
+                <Home className="h-4 w-4" />
+                Home
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </header>
+
+      <div className="flex items-center justify-center min-h-[calc(100vh-4rem)] p-4">
+        <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle data-testid="title-signup">Create Account</CardTitle>
           <CardDescription>Sign up to start ordering delicious food</CardDescription>
@@ -209,6 +230,7 @@ export default function Signup() {
           </p>
         </CardFooter>
       </Card>
+      </div>
     </div>
   );
 }

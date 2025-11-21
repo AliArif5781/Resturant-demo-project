@@ -4,7 +4,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Check, ShoppingBag, User, Mail, CreditCard } from "lucide-react";
+import { ArrowLeft, Check, ShoppingBag, User, Mail, CreditCard, Home } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -85,6 +85,25 @@ export default function Checkout() {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Header */}
+      <header className="border-b sticky top-0 bg-background z-50" data-testid="header-checkout">
+        <div className="container mx-auto px-4 py-3">
+          <div className="flex items-center justify-between gap-4">
+            <Link href="/">
+              <div className="flex items-center gap-3 cursor-pointer">
+                <span className="font-bold text-lg" data-testid="text-brand-name">Karahi Point</span>
+              </div>
+            </Link>
+            <Link href="/">
+              <Button variant="ghost" className="gap-2" data-testid="button-home">
+                <Home className="h-4 w-4" />
+                Home
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </header>
+
       <div className="container mx-auto px-4 py-8">
         <motion.div
           initial={{ opacity: 0, x: -20 }}
