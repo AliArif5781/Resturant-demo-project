@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Header from "@/components/Header";
 import Hero from "@/components/Hero";
+import DishOfTheDay from "@/components/DishOfTheDay";
 import DealsCarousel from "@/components/DealsCarousel";
 import RecommendedForYou from "@/components/RecommendedForYou";
 import QuickCategories from "@/components/QuickCategories";
@@ -25,6 +26,11 @@ export default function Home() {
       />
 
       <main className="container mx-auto px-4 space-y-16 py-12 text-white">
+        <DishOfTheDay
+          onAddToOrder={() => console.log("Added dish of the day")}
+          onSeeSimilar={() => console.log("See similar dishes")}
+        />
+
         <DealsCarousel />
 
         <RecommendedForYou />

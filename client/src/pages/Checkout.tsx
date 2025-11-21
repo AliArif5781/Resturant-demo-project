@@ -27,14 +27,32 @@ export default function Checkout() {
       const response = await apiRequest("POST", "/api/orders", orderData);
       return await response.json();
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      // Prepare order confirmation data
+      const orderConfirmationData = {
+        orderNumber: data.order.id.substring(0, 8).toUpperCase(),
+        items: items,
+        subtotal: totalPrice.toFixed(2),
+        tax: (totalPrice * 0.08).toFixed(2),
+        total: (totalPrice * 1.08).toFixed(2),
+        userEmail: currentUser?.email || "",
+        userName: currentUser?.displayName || "Guest User",
+        orderDate: new Date().toLocaleString('en-US', { 
+          dateStyle: 'medium', 
+          timeStyle: 'short' 
+        }),
+      };
+
+      // Save to sessionStorage for the confirmation page
+      sessionStorage.setItem("lastOrder", JSON.stringify(orderConfirmationData));
+
       toast({
         title: "Order placed successfully!",
-        description: "Your order has been confirmed.",
+        description: "Redirecting to order confirmation...",
       });
       queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
       clearCart();
-      setLocation("/");
+      setLocation("/order-confirmation");
     },
     onError: (error: any) => {
       toast({
