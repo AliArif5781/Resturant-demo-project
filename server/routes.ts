@@ -233,6 +233,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Mark guest as arrived
+  app.patch("/api/orders/:orderId/arrived", async (req, res) => {
+    try {
+      const firebaseUid = req.headers["x-firebase-uid"] as string;
+      const { orderId } = req.params;
+      
+      if (!firebaseUid) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      // Verify user exists
+      const user = await storage.getUserByFirebaseUid(firebaseUid);
+      if (!user) {
+        return res.status(401).json({ message: "User not found" });
+      }
+
+      // Get the order to verify ownership
+      const order = await storage.getOrderById(orderId);
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+
+      // Only the order owner can mark themselves as arrived
+      if (order.firebaseUid !== firebaseUid) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      const updatedOrder = await storage.updateGuestArrived(orderId, true);
+      res.json({ order: updatedOrder });
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
   const httpServer = createServer(app);
 
   return httpServer;
