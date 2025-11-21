@@ -30,6 +30,7 @@ export default function Checkout() {
     onSuccess: (data) => {
       // Prepare order confirmation data
       const orderConfirmationData = {
+        orderId: data.order.id,
         orderNumber: data.order.id.substring(0, 8).toUpperCase(),
         items: items,
         subtotal: totalPrice.toFixed(2),
@@ -41,6 +42,7 @@ export default function Checkout() {
           dateStyle: 'medium', 
           timeStyle: 'short' 
         }),
+        status: data.order.status || "pending",
       };
 
       // Save to sessionStorage for the confirmation page

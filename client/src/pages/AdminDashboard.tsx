@@ -221,7 +221,7 @@ export default function AdminDashboard() {
                               <Button
                                 size="sm"
                                 variant="outline"
-                                onClick={() => updateOrderStatusMutation.mutate({ orderId: order.id, status: "completed" })}
+                                onClick={() => updateOrderStatusMutation.mutate({ orderId: order.id, status: "preparing" })}
                                 disabled={updateOrderStatusMutation.isPending}
                                 className="gap-2 bg-green-100 dark:bg-green-900 text-green-900 dark:text-green-100 border-green-300 dark:border-green-700"
                                 data-testid={`button-proceed-${order.id}`}
