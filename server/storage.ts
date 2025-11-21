@@ -9,6 +9,7 @@ export interface IStorage {
   getUserByFirebaseUid(firebaseUid: string): Promise<User | undefined>;
   upsertUser(user: InsertUser): Promise<User>;
   createOrder(order: InsertOrder): Promise<Order>;
+  getOrderById(orderId: string): Promise<Order | undefined>;
   getRecentOrders(limit?: number): Promise<Order[]>;
   getOrdersByUser(firebaseUid: string): Promise<Order[]>;
   updateOrderStatus(orderId: string, status: string): Promise<Order>;
@@ -77,6 +78,10 @@ export class MemStorage implements IStorage {
     };
     this.orders.set(id, order);
     return order;
+  }
+
+  async getOrderById(orderId: string): Promise<Order | undefined> {
+    return this.orders.get(orderId);
   }
 
   async getRecentOrders(limit: number = 10): Promise<Order[]> {

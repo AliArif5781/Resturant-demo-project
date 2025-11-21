@@ -163,6 +163,38 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get single order by ID
+  app.get("/api/orders/:orderId", async (req, res) => {
+    try {
+      const firebaseUid = req.headers["x-firebase-uid"] as string;
+      const { orderId } = req.params;
+      
+      if (!firebaseUid) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      // Verify user exists
+      const user = await storage.getUserByFirebaseUid(firebaseUid);
+      if (!user) {
+        return res.status(401).json({ message: "User not found" });
+      }
+
+      const order = await storage.getOrderById(orderId);
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+
+      // Users can only see their own orders, admins can see any order
+      if (user.role !== "admin" && order.firebaseUid !== firebaseUid) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      res.json({ order });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
   // Update order status (ADMIN ONLY)
   app.patch("/api/orders/:orderId/status", async (req, res) => {
     try {

@@ -55,6 +55,14 @@ export class PgStorage implements IStorage {
     return newOrder;
   }
 
+  async getOrderById(orderId: string): Promise<Order | undefined> {
+    const result = await db
+      .select()
+      .from(orders)
+      .where(eq(orders.id, orderId));
+    return result[0];
+  }
+
   async getRecentOrders(limit: number = 10): Promise<Order[]> {
     const result = await db
       .select()

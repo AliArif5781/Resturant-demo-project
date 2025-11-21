@@ -6,6 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { CheckCircle, Home, ShoppingBag, Clock, Package, Truck, CheckCheck, Download, Calendar, MapPin, Flame, Dumbbell, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useQuery } from "@tanstack/react-query";
+import type { Order } from "@shared/schema";
 
 interface OrderItem {
   id: number;
@@ -19,6 +21,7 @@ interface OrderItem {
 }
 
 interface OrderData {
+  orderId?: string;
   orderNumber: string;
   items: OrderItem[];
   subtotal: string;
@@ -27,12 +30,12 @@ interface OrderData {
   userEmail: string;
   userName: string;
   orderDate: string;
+  status?: string;
 }
 
 export default function OrderConfirmation() {
   const [, setLocation] = useLocation();
   const [orderData, setOrderData] = useState<OrderData | null>(null);
-  const [currentStep, setCurrentStep] = useState(0);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -47,7 +50,16 @@ export default function OrderConfirmation() {
     }
   }, [setLocation]);
 
-  // Removed auto-progression of order steps - order stays in pending state
+  // Fetch real-time order status from API
+  const { data: orderStatusData } = useQuery<{ order: Order }>({
+    queryKey: ["/api/orders", orderData?.orderId],
+    enabled: !!orderData?.orderId,
+    refetchInterval: 3000, // Poll every 3 seconds for status updates
+  });
+
+  // Use real-time status if available, otherwise use cached status
+  const currentStatus = orderStatusData?.order?.status || orderData?.status || "pending";
+  const isConfirmed = currentStatus === "preparing" || currentStatus === "completed";
 
   if (!orderData) {
     return null;
@@ -115,20 +127,35 @@ export default function OrderConfirmation() {
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ type: "spring", delay: 0.2, stiffness: 200 }}
-            className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-orange-100 to-amber-200 dark:from-orange-900/40 dark:to-amber-800/40 rounded-full mb-6 shadow-lg"
+            className={`inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br ${
+              isConfirmed
+                ? "from-green-100 to-emerald-200 dark:from-green-900/40 dark:to-emerald-800/40"
+                : "from-orange-100 to-amber-200 dark:from-orange-900/40 dark:to-amber-800/40"
+            } rounded-full mb-6 shadow-lg`}
           >
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-            >
-              <Loader2 className="h-16 w-16 text-orange-600 dark:text-orange-400" />
-            </motion.div>
+            {isConfirmed ? (
+              <CheckCircle className="h-16 w-16 text-green-600 dark:text-green-400" />
+            ) : (
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+              >
+                <Loader2 className="h-16 w-16 text-orange-600 dark:text-orange-400" />
+              </motion.div>
+            )}
           </motion.div>
-          <h1 className="text-5xl font-bold mb-3 bg-gradient-to-r from-orange-600 to-amber-600 dark:from-orange-400 dark:to-amber-400 bg-clip-text text-transparent" data-testid="text-order-success-title">
-            Your Order is Pending
+          <h1 className={`text-5xl font-bold mb-3 bg-gradient-to-r ${
+            isConfirmed
+              ? "from-green-600 to-emerald-600 dark:from-green-400 dark:to-emerald-400"
+              : "from-orange-600 to-amber-600 dark:from-orange-400 dark:to-amber-400"
+          } bg-clip-text text-transparent`} data-testid="text-order-success-title">
+            {isConfirmed ? "Order Confirmed Successfully!" : "Your Order is Pending"}
           </h1>
           <p className="text-xl text-muted-foreground mb-6 max-w-2xl mx-auto" data-testid="text-order-success-subtitle">
-            Thank you for your order, {orderData.userName}! Your order has been received and is currently being processed. We'll notify you once it's confirmed and ready for preparation.
+            {isConfirmed
+              ? `Great news, ${orderData.userName}! Your order has been confirmed and our kitchen is now preparing your delicious meal.`
+              : `Thank you for your order, ${orderData.userName}! Your order has been received and is currently being processed. We'll notify you once it's confirmed and ready for preparation.`
+            }
           </p>
           <div className="flex flex-wrap items-center justify-center gap-4">
             <motion.div
@@ -136,9 +163,22 @@ export default function OrderConfirmation() {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.4 }}
             >
-              <Badge variant="outline" className="text-lg px-6 py-3 bg-orange-50 dark:bg-orange-950 border-orange-200 dark:border-orange-800 text-orange-700 dark:text-orange-300">
-                <Clock className="h-4 w-4 mr-2" />
-                Status: Pending
+              <Badge variant="outline" className={`text-lg px-6 py-3 ${
+                isConfirmed
+                  ? "bg-green-50 dark:bg-green-950 border-green-200 dark:border-green-800 text-green-700 dark:text-green-300"
+                  : "bg-orange-50 dark:bg-orange-950 border-orange-200 dark:border-orange-800 text-orange-700 dark:text-orange-300"
+              }`}>
+                {isConfirmed ? (
+                  <>
+                    <Package className="h-4 w-4 mr-2" />
+                    Status: Preparing
+                  </>
+                ) : (
+                  <>
+                    <Clock className="h-4 w-4 mr-2" />
+                    Status: Pending
+                  </>
+                )}
               </Badge>
             </motion.div>
             <motion.div
@@ -164,16 +204,26 @@ export default function OrderConfirmation() {
           <Card data-testid="card-order-timeline">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Clock className="h-5 w-5 text-orange-600 dark:text-orange-400" />
-                Order Status - Awaiting Confirmation
+                {isConfirmed ? (
+                  <>
+                    <Package className="h-5 w-5 text-green-600 dark:text-green-400" />
+                    Order Status - Preparing Your Food
+                  </>
+                ) : (
+                  <>
+                    <Clock className="h-5 w-5 text-orange-600 dark:text-orange-400" />
+                    Order Status - Awaiting Confirmation
+                  </>
+                )}
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-2">
                 {orderSteps.map((step, index) => {
                   const Icon = step.icon;
-                  const isActive = index <= currentStep;
-                  const isCompleted = index < currentStep;
+                  // Only first step is active - pending if not confirmed, preparing if confirmed
+                  const isActive = index === 0;
+                  const isCompleted = false;
                   
                   return (
                     <motion.div
@@ -194,7 +244,9 @@ export default function OrderConfirmation() {
                             isCompleted
                               ? "bg-green-100 dark:bg-green-900/30 border-2 border-green-500"
                               : isActive
-                              ? "bg-primary/10 border-2 border-primary animate-pulse"
+                              ? isConfirmed
+                                ? "bg-green-100 dark:bg-green-900/30 border-2 border-green-500"
+                                : "bg-orange-100 dark:bg-orange-900/30 border-2 border-orange-500 animate-pulse"
                               : "bg-muted border-2 border-muted-foreground/20"
                           }`}
                         >
@@ -203,7 +255,9 @@ export default function OrderConfirmation() {
                               isCompleted
                                 ? "text-green-600 dark:text-green-400"
                                 : isActive
-                                ? "text-primary"
+                                ? isConfirmed
+                                  ? "text-green-600 dark:text-green-400"
+                                  : "text-orange-600 dark:text-orange-400"
                                 : "text-muted-foreground"
                             }`}
                           />
