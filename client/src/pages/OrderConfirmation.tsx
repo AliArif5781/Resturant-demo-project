@@ -363,62 +363,31 @@ export default function OrderConfirmation() {
           transition={{ delay: 0.6 }}
           className="max-w-5xl mx-auto mb-8"
         >
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card data-testid="card-order-summary">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Package className="h-5 w-5 text-primary" />
-                  Order Summary
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-3">
-                  <div className="flex justify-between items-center pb-2">
-                    <span className="text-muted-foreground">Subtotal</span>
-                    <span className="text-lg font-semibold">{orderData.subtotal}</span>
-                  </div>
-                  <div className="flex justify-between items-center pb-2">
-                    <span className="text-muted-foreground">Tax</span>
-                    <span className="text-lg font-semibold">{orderData.tax}</span>
-                  </div>
-                  <Separator />
-                  <div className="flex justify-between items-center pt-2">
-                    <span className="text-xl font-bold">Total</span>
-                    <span className="text-2xl font-bold text-primary">{orderData.total}</span>
-                  </div>
+          <Card data-testid="card-order-summary">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Package className="h-5 w-5 text-primary" />
+                Order Summary
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-3">
+                <div className="flex justify-between items-center pb-2">
+                  <span className="text-muted-foreground">Subtotal</span>
+                  <span className="text-lg font-semibold">{orderData.subtotal}</span>
                 </div>
-              </CardContent>
-            </Card>
-
-            <Card data-testid="card-delivery-info">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <MapPin className="h-5 w-5 text-primary" />
-                  Delivery Information
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-3">
-                  <div>
-                    <p className="text-sm text-muted-foreground mb-1">Customer</p>
-                    <p className="font-semibold">{orderData.userName}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground mb-1">Email</p>
-                    <p className="font-semibold">{orderData.userEmail}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground mb-1">Estimated Delivery</p>
-                    <p className="font-semibold text-green-600 dark:text-green-400">{estimatedDelivery}</p>
-                  </div>
-                  <div>
-                    <p className="text-sm text-muted-foreground mb-1">Order Date</p>
-                    <p className="font-semibold">{orderData.orderDate}</p>
-                  </div>
+                <div className="flex justify-between items-center pb-2">
+                  <span className="text-muted-foreground">Tax</span>
+                  <span className="text-lg font-semibold">{orderData.tax}</span>
                 </div>
-              </CardContent>
-            </Card>
-          </div>
+                <Separator />
+                <div className="flex justify-between items-center pt-2">
+                  <span className="text-xl font-bold">Total</span>
+                  <span className="text-2xl font-bold text-primary">{orderData.total}</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </motion.div>
 
         {/* Action Buttons */}
