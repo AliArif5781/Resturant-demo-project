@@ -36,6 +36,7 @@ interface OrderData {
 export default function OrderConfirmation() {
   const [, setLocation] = useLocation();
   const [orderData, setOrderData] = useState<OrderData | null>(null);
+  const [remainingSeconds, setRemainingSeconds] = useState<number | null>(null);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -61,6 +62,41 @@ export default function OrderConfirmation() {
   const currentStatus = orderStatusData?.order?.status || orderData?.status || "pending";
   const preparationTime = orderStatusData?.order?.preparationTime;
   const isConfirmed = currentStatus === "preparing" || currentStatus === "completed";
+
+  // Initialize countdown timer when preparation time is available
+  useEffect(() => {
+    if (preparationTime && isConfirmed && remainingSeconds === null) {
+      // Convert minutes to seconds
+      const timeInMinutes = typeof preparationTime === 'number' ? preparationTime : parseInt(preparationTime.toString(), 10);
+      setRemainingSeconds(timeInMinutes * 60);
+    }
+  }, [preparationTime, isConfirmed, remainingSeconds]);
+
+  // Countdown timer effect
+  useEffect(() => {
+    if (remainingSeconds === null || remainingSeconds <= 0) {
+      return;
+    }
+
+    const timer = setInterval(() => {
+      setRemainingSeconds((prev) => {
+        if (prev === null || prev <= 1) {
+          clearInterval(timer);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [remainingSeconds]);
+
+  // Format time as MM:SS
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
 
   if (!orderData) {
     return null;
@@ -192,7 +228,7 @@ export default function OrderConfirmation() {
                 )}
               </Badge>
             </motion.div>
-            {preparationTime && isConfirmed && (
+            {preparationTime && isConfirmed && remainingSeconds !== null && (
               <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
@@ -200,7 +236,7 @@ export default function OrderConfirmation() {
               >
                 <Badge variant="outline" className="text-lg px-6 py-3 bg-green-50 dark:bg-green-950 border-green-200 dark:border-green-800 text-green-700 dark:text-green-300">
                   <Clock className="h-4 w-4 mr-2" />
-                  Est. Time: {preparationTime}
+                  Est. Time: {remainingSeconds > 0 ? formatTime(remainingSeconds) : "Ready Soon!"}
                 </Badge>
               </motion.div>
             )}
@@ -309,8 +345,10 @@ export default function OrderConfirmation() {
                                 : "text-orange-600 dark:text-orange-400 font-medium"
                               : "text-muted-foreground"
                           }`}>
-                            {step.id === "preparing" && preparationTime && (isActive || isCurrent)
-                              ? preparationTime
+                            {step.id === "preparing" && remainingSeconds !== null && (isActive || isCurrent)
+                              ? remainingSeconds > 0 
+                                ? formatTime(remainingSeconds)
+                                : "Ready Soon!"
                               : isCurrent 
                                 ? "Processing" 
                                 : isCompleted 
