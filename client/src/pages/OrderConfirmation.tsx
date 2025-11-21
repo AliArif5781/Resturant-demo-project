@@ -71,9 +71,12 @@ export default function OrderConfirmation() {
   const markArrivedMutation = useMutation({
     mutationFn: async () => {
       if (!orderData?.orderId) throw new Error("No order ID");
-      await apiRequest("PATCH", `/api/orders/${orderData.orderId}/arrived`);
+      const response = await apiRequest("PATCH", `/api/orders/${orderData.orderId}/arrived`);
+      return await response.json();
     },
-    onSuccess: () => {
+    onSuccess: (data: { order: Order }) => {
+      // Update cache immediately with the response
+      queryClient.setQueryData(["/api/orders", orderData?.orderId], data);
       queryClient.invalidateQueries({ queryKey: ["/api/orders", orderData?.orderId] });
       toast({
         title: "Welcome!",
