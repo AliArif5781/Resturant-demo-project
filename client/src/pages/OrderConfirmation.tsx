@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { CheckCircle, Home, ShoppingBag, Clock, Package, Truck, CheckCheck, Download, Calendar, MapPin, Flame, Dumbbell } from "lucide-react";
+import { CheckCircle, Home, ShoppingBag, Clock, Package, Truck, CheckCheck, Download, Calendar, MapPin, Flame, Dumbbell, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 interface OrderItem {
@@ -47,12 +47,7 @@ export default function OrderConfirmation() {
     }
   }, [setLocation]);
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentStep((prev) => (prev < 3 ? prev + 1 : prev));
-    }, 1500);
-    return () => clearInterval(timer);
-  }, []);
+  // Removed auto-progression of order steps - order stays in pending state
 
   if (!orderData) {
     return null;
@@ -81,17 +76,11 @@ export default function OrderConfirmation() {
   };
 
   const orderSteps = [
-    { icon: CheckCircle, label: "Order Confirmed", time: "Just now" },
-    { icon: Package, label: "Preparing", time: "5-10 min" },
-    { icon: Truck, label: "Out for Delivery", time: "25-30 min" },
-    { icon: CheckCheck, label: "Delivered", time: "40-50 min" },
+    { icon: Clock, label: "Order Pending", time: "Processing" },
+    { icon: Package, label: "Preparing", time: "Pending" },
+    { icon: Truck, label: "Out for Delivery", time: "Pending" },
+    { icon: CheckCheck, label: "Delivered", time: "Pending" },
   ];
-
-  const estimatedDelivery = new Date(new Date().getTime() + 50 * 60000).toLocaleTimeString('en-US', { 
-    hour: 'numeric', 
-    minute: '2-digit',
-    hour12: true 
-  });
 
   return (
     <div className="min-h-screen bg-background">
@@ -126,15 +115,20 @@ export default function OrderConfirmation() {
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             transition={{ type: "spring", delay: 0.2, stiffness: 200 }}
-            className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-green-100 to-green-200 dark:from-green-900/40 dark:to-green-800/40 rounded-full mb-6 shadow-lg"
+            className="inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br from-orange-100 to-amber-200 dark:from-orange-900/40 dark:to-amber-800/40 rounded-full mb-6 shadow-lg"
           >
-            <CheckCircle className="h-16 w-16 text-green-600 dark:text-green-400" />
+            <motion.div
+              animate={{ rotate: 360 }}
+              transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+            >
+              <Loader2 className="h-16 w-16 text-orange-600 dark:text-orange-400" />
+            </motion.div>
           </motion.div>
-          <h1 className="text-5xl font-bold mb-3 bg-gradient-to-r from-green-600 to-emerald-600 dark:from-green-400 dark:to-emerald-400 bg-clip-text text-transparent" data-testid="text-order-success-title">
-            Order Placed Successfully!
+          <h1 className="text-5xl font-bold mb-3 bg-gradient-to-r from-orange-600 to-amber-600 dark:from-orange-400 dark:to-amber-400 bg-clip-text text-transparent" data-testid="text-order-success-title">
+            Your Order is Pending
           </h1>
           <p className="text-xl text-muted-foreground mb-6 max-w-2xl mx-auto" data-testid="text-order-success-subtitle">
-            Thank you for your order, {orderData.userName}! We've received it and our kitchen is getting ready to prepare your delicious meal.
+            Thank you for your order, {orderData.userName}! Your order has been received and is currently being processed. We'll notify you once it's confirmed and ready for preparation.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-4">
             <motion.div
@@ -142,25 +136,15 @@ export default function OrderConfirmation() {
               animate={{ opacity: 1 }}
               transition={{ delay: 0.4 }}
             >
-              <Badge variant="outline" className="text-lg px-6 py-3 bg-primary/5 border-primary/20" data-testid="badge-order-number">
-                <ShoppingBag className="h-4 w-4 mr-2" />
-                Order #{orderData.orderNumber}
+              <Badge variant="outline" className="text-lg px-6 py-3 bg-orange-50 dark:bg-orange-950 border-orange-200 dark:border-orange-800 text-orange-700 dark:text-orange-300">
+                <Clock className="h-4 w-4 mr-2" />
+                Status: Pending
               </Badge>
             </motion.div>
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
-            >
-              <Badge variant="outline" className="text-lg px-6 py-3 bg-green-50 dark:bg-green-950 border-green-200 dark:border-green-800 text-green-700 dark:text-green-300">
-                <Clock className="h-4 w-4 mr-2" />
-                Est. Delivery: {estimatedDelivery}
-              </Badge>
-            </motion.div>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.6 }}
             >
               <Badge variant="outline" className="text-lg px-6 py-3 bg-blue-50 dark:bg-blue-950 border-blue-200 dark:border-blue-800 text-blue-700 dark:text-blue-300">
                 <Calendar className="h-4 w-4 mr-2" />
@@ -180,8 +164,8 @@ export default function OrderConfirmation() {
           <Card data-testid="card-order-timeline">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Truck className="h-5 w-5 text-primary" />
-                Order Status Timeline
+                <Clock className="h-5 w-5 text-orange-600 dark:text-orange-400" />
+                Order Status - Awaiting Confirmation
               </CardTitle>
             </CardHeader>
             <CardContent>
