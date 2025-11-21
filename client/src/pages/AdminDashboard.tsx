@@ -8,7 +8,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Package, Home, Check, X, Clock } from "lucide-react";
+import { Package, Home, Check, X, Clock, MapPin } from "lucide-react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import type { Order } from "@shared/schema";
@@ -229,25 +229,37 @@ export default function AdminDashboard() {
                                 ))}
                               </div>
                             </div>
-                            <div className="text-right">
+                            <div className="text-right space-y-2">
                               <div className="text-lg font-bold" data-testid={`text-order-total-${order.id}`}>
                                 ${order.total}
                               </div>
-                              <Badge 
-                                variant={
-                                  order.status === "completed" ? "default" : 
-                                  order.status === "cancelled" ? "destructive" : 
-                                  "secondary"
-                                }
-                                className={
-                                  order.status === "preparing" 
-                                    ? "bg-green-100 dark:bg-green-900 text-green-900 dark:text-green-100 border-green-300 dark:border-green-700" 
-                                    : ""
-                                }
-                                data-testid={`badge-order-status-${order.id}`}
-                              >
-                                {order.status}
-                              </Badge>
+                              <div className="flex flex-col items-end gap-2">
+                                <Badge 
+                                  variant={
+                                    order.status === "completed" ? "default" : 
+                                    order.status === "cancelled" ? "destructive" : 
+                                    "secondary"
+                                  }
+                                  className={
+                                    order.status === "preparing" 
+                                      ? "bg-green-100 dark:bg-green-900 text-green-900 dark:text-green-100 border-green-300 dark:border-green-700" 
+                                      : ""
+                                  }
+                                  data-testid={`badge-order-status-${order.id}`}
+                                >
+                                  {order.status}
+                                </Badge>
+                                {order.guestArrived === "true" && (
+                                  <Badge 
+                                    variant="outline" 
+                                    className="bg-blue-50 dark:bg-blue-950 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800"
+                                    data-testid={`badge-guest-arrived-${order.id}`}
+                                  >
+                                    <MapPin className="h-3 w-3 mr-1" />
+                                    Guest Arrived
+                                  </Badge>
+                                )}
+                              </div>
                             </div>
                           </div>
                           
