@@ -1,6 +1,5 @@
 import { Sparkles, Heart, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import familyFeastImage from "@assets/generated_images/Family_feast_meal_spread_ba86b29a.png";
 
 interface HeroProps {
@@ -8,11 +7,6 @@ interface HeroProps {
   onSurprise?: () => void;
   onViewFavorites?: () => void;
   onOrderLater?: () => void;
-  activeOrder?: {
-    orderNumber: string;
-    status: string;
-    timeLeft: string;
-  };
 }
 
 export default function Hero({
@@ -20,7 +14,6 @@ export default function Hero({
   onSurprise,
   onViewFavorites,
   onOrderLater,
-  activeOrder,
 }: HeroProps) {
   return (
     <section className="relative overflow-hidden text-white">
@@ -30,14 +23,6 @@ export default function Hero({
       </div>
 
       <div className="container mx-auto px-4 py-12 md:py-20 relative z-10">
-        {activeOrder && (
-          <div className="mb-6 animate-in fade-in slide-in-from-top-4 duration-500">
-            <Badge className="bg-primary/20 text-primary-foreground border border-primary/50 px-4 py-2" data-testid="badge-active-order">
-              <span className="inline-block w-2 h-2 bg-primary rounded-full mr-2 animate-pulse" />
-              Order #{activeOrder.orderNumber} · {activeOrder.status} · ~{activeOrder.timeLeft} left
-            </Badge>
-          </div>
-        )}
 
         <div className="grid md:grid-cols-2 gap-12 items-center">
           <div className="space-y-6 animate-in fade-in slide-in-from-left-8 duration-700">
@@ -95,25 +80,12 @@ export default function Hero({
           </div>
 
           <div className="relative animate-in fade-in slide-in-from-right-8 duration-700 delay-150 hidden md:block">
-            <div className="relative">
-              <img
-                src={familyFeastImage}
-                alt="Delicious food spread"
-                className="rounded-2xl shadow-2xl"
-                data-testid="img-hero-food"
-              />
-              <div className="absolute -bottom-4 -left-4 bg-white text-foreground p-4 rounded-xl shadow-xl animate-in zoom-in duration-500 delay-300">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
-                    🔥
-                  </div>
-                  <div>
-                    <p className="font-bold text-sm">Dish of the Day</p>
-                    <p className="text-xs text-muted-foreground">Chicken Karahi</p>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <img
+              src={familyFeastImage}
+              alt="Delicious food spread"
+              className="rounded-2xl shadow-2xl"
+              data-testid="img-hero-food"
+            />
           </div>
         </div>
       </div>
