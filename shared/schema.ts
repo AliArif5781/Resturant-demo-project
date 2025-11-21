@@ -30,6 +30,7 @@ export const orders = pgTable("orders", {
   total: decimal("total", { precision: 10, scale: 2 }).notNull(),
   status: text("status").notNull().default("pending"),
   preparationTime: text("preparation_time"),
+  guestArrived: text("guest_arrived").default("false"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
