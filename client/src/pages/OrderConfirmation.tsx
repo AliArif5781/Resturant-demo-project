@@ -6,7 +6,9 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { CheckCircle, Home, ShoppingBag, Clock, Package, Truck, CheckCheck, Download, Calendar, MapPin, Flame, Dumbbell, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import { apiRequest, queryClient } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 import type { Order } from "@shared/schema";
 
 interface OrderItem {
@@ -37,6 +39,7 @@ export default function OrderConfirmation() {
   const [, setLocation] = useLocation();
   const [orderData, setOrderData] = useState<OrderData | null>(null);
   const [remainingSeconds, setRemainingSeconds] = useState<number | null>(null);
+  const { toast } = useToast();
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -61,7 +64,30 @@ export default function OrderConfirmation() {
   // Use real-time status if available, otherwise use cached status
   const currentStatus = orderStatusData?.order?.status || orderData?.status || "pending";
   const preparationTime = orderStatusData?.order?.preparationTime;
+  const guestArrived = orderStatusData?.order?.guestArrived === "true";
   const isConfirmed = currentStatus === "preparing" || currentStatus === "completed";
+
+  // Mutation to mark guest as arrived
+  const markArrivedMutation = useMutation({
+    mutationFn: async () => {
+      if (!orderData?.orderId) throw new Error("No order ID");
+      await apiRequest("PATCH", `/api/orders/${orderData.orderId}/arrived`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/orders", orderData?.orderId] });
+      toast({
+        title: "Welcome!",
+        description: "You've been marked as arrived. Our team will bring your order shortly!",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to mark as arrived. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
 
   // Initialize countdown timer when preparation time is available
   useEffect(() => {
@@ -522,8 +548,27 @@ export default function OrderConfirmation() {
           <Card>
             <CardContent className="p-6">
               <div className="flex flex-wrap gap-4 justify-center items-center">
+                {isConfirmed && !guestArrived && (
+                  <Button 
+                    size="lg" 
+                    variant="default" 
+                    className="gap-2"
+                    onClick={() => markArrivedMutation.mutate()}
+                    disabled={markArrivedMutation.isPending}
+                    data-testid="button-mark-arrived"
+                  >
+                    <MapPin className="h-5 w-5" />
+                    {markArrivedMutation.isPending ? "Marking..." : "I am Arrived"}
+                  </Button>
+                )}
+                {guestArrived && (
+                  <Badge variant="outline" className="text-lg px-6 py-3 bg-green-50 dark:bg-green-950 border-green-200 dark:border-green-800 text-green-700 dark:text-green-300">
+                    <CheckCircle className="h-5 w-5 mr-2" />
+                    You've Arrived - Order Will Be Delivered Soon
+                  </Badge>
+                )}
                 <Link href="/">
-                  <Button size="lg" variant="default" className="gap-2" data-testid="button-continue-shopping">
+                  <Button size="lg" variant="outline" className="gap-2" data-testid="button-continue-shopping">
                     <Home className="h-5 w-5" />
                     Continue Shopping
                   </Button>
