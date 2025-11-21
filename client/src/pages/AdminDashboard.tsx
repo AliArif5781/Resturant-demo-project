@@ -4,8 +4,11 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Package, Home, Check, X } from "lucide-react";
+import { Package, Home, Check, X, Clock } from "lucide-react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import type { Order } from "@shared/schema";
@@ -16,6 +19,9 @@ export default function AdminDashboard() {
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [showPrepTimeDialog, setShowPrepTimeDialog] = useState(false);
+  const [selectedOrderId, setSelectedOrderId] = useState<string>("");
+  const [preparationTime, setPreparationTime] = useState("");
 
   const { data: ordersData, isLoading: ordersLoading } = useQuery<{ orders: Order[] }>({
     queryKey: ["/api/orders"],
@@ -25,12 +31,15 @@ export default function AdminDashboard() {
   const orders = ordersData?.orders || [];
 
   const updateOrderStatusMutation = useMutation({
-    mutationFn: async ({ orderId, status }: { orderId: string; status: string }) => {
-      const response = await apiRequest("PATCH", `/api/orders/${orderId}/status`, { status });
+    mutationFn: async ({ orderId, status, preparationTime }: { orderId: string; status: string; preparationTime?: string }) => {
+      const response = await apiRequest("PATCH", `/api/orders/${orderId}/status`, { status, preparationTime });
       return await response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
+      setShowPrepTimeDialog(false);
+      setPreparationTime("");
+      setSelectedOrderId("");
       toast({
         title: "Success",
         description: "Order status updated successfully",
@@ -44,6 +53,27 @@ export default function AdminDashboard() {
       });
     },
   });
+
+  const handleProceedClick = (orderId: string) => {
+    setSelectedOrderId(orderId);
+    setShowPrepTimeDialog(true);
+  };
+
+  const handleConfirmProceed = () => {
+    if (!preparationTime.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter preparation time",
+        variant: "destructive",
+      });
+      return;
+    }
+    updateOrderStatusMutation.mutate({ 
+      orderId: selectedOrderId, 
+      status: "preparing",
+      preparationTime: preparationTime.trim()
+    });
+  };
 
   useEffect(() => {
     const checkAdminAccess = async () => {
@@ -209,6 +239,11 @@ export default function AdminDashboard() {
                                   order.status === "cancelled" ? "destructive" : 
                                   "secondary"
                                 }
+                                className={
+                                  order.status === "preparing" 
+                                    ? "bg-green-100 dark:bg-green-900 text-green-900 dark:text-green-100 border-green-300 dark:border-green-700" 
+                                    : ""
+                                }
                                 data-testid={`badge-order-status-${order.id}`}
                               >
                                 {order.status}
@@ -221,7 +256,7 @@ export default function AdminDashboard() {
                               <Button
                                 size="sm"
                                 variant="outline"
-                                onClick={() => updateOrderStatusMutation.mutate({ orderId: order.id, status: "preparing" })}
+                                onClick={() => handleProceedClick(order.id)}
                                 disabled={updateOrderStatusMutation.isPending}
                                 className="gap-2 bg-green-100 dark:bg-green-900 text-green-900 dark:text-green-100 border-green-300 dark:border-green-700"
                                 data-testid={`button-proceed-${order.id}`}
@@ -252,6 +287,56 @@ export default function AdminDashboard() {
           </CardContent>
         </Card>
       </main>
+
+      <Dialog open={showPrepTimeDialog} onOpenChange={setShowPrepTimeDialog}>
+        <DialogContent data-testid="dialog-preparation-time">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Clock className="h-5 w-5 text-primary" />
+              Set Preparation Time
+            </DialogTitle>
+            <DialogDescription>
+              Enter the estimated time needed to complete this order.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="prep-time">Preparation Time (e.g., "15 minutes", "30 mins", "1 hour")</Label>
+              <Input
+                id="prep-time"
+                placeholder="e.g., 20 minutes"
+                value={preparationTime}
+                onChange={(e) => setPreparationTime(e.target.value)}
+                data-testid="input-preparation-time"
+                autoFocus
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowPrepTimeDialog(false);
+                setPreparationTime("");
+                setSelectedOrderId("");
+              }}
+              disabled={updateOrderStatusMutation.isPending}
+              data-testid="button-cancel-dialog"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleConfirmProceed}
+              disabled={updateOrderStatusMutation.isPending || !preparationTime.trim()}
+              className="gap-2"
+              data-testid="button-confirm-proceed"
+            >
+              <Check className="h-4 w-4" />
+              {updateOrderStatusMutation.isPending ? "Processing..." : "Confirm & Proceed"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

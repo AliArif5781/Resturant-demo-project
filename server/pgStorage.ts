@@ -81,10 +81,15 @@ export class PgStorage implements IStorage {
     return result;
   }
 
-  async updateOrderStatus(orderId: string, status: string): Promise<Order> {
+  async updateOrderStatus(orderId: string, status: string, preparationTime?: string): Promise<Order> {
+    const updateData: { status: string; preparationTime?: string } = { status };
+    if (preparationTime !== undefined) {
+      updateData.preparationTime = preparationTime;
+    }
+    
     const [updatedOrder] = await db
       .update(orders)
-      .set({ status })
+      .set(updateData)
       .where(eq(orders.id, orderId))
       .returning();
     

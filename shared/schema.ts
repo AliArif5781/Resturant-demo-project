@@ -29,6 +29,7 @@ export const orders = pgTable("orders", {
   tax: decimal("tax", { precision: 10, scale: 2 }).notNull(),
   total: decimal("total", { precision: 10, scale: 2 }).notNull(),
   status: text("status").notNull().default("pending"),
+  preparationTime: text("preparation_time"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 

@@ -12,7 +12,7 @@ export interface IStorage {
   getOrderById(orderId: string): Promise<Order | undefined>;
   getRecentOrders(limit?: number): Promise<Order[]>;
   getOrdersByUser(firebaseUid: string): Promise<Order[]>;
-  updateOrderStatus(orderId: string, status: string): Promise<Order>;
+  updateOrderStatus(orderId: string, status: string, preparationTime?: string): Promise<Order>;
 }
 
 export class MemStorage implements IStorage {
@@ -74,6 +74,7 @@ export class MemStorage implements IStorage {
       tax: insertOrder.tax,
       total: insertOrder.total,
       status: insertOrder.status ?? "pending",
+      preparationTime: insertOrder.preparationTime ?? null,
       createdAt: new Date(),
     };
     this.orders.set(id, order);
@@ -97,12 +98,12 @@ export class MemStorage implements IStorage {
       .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
   }
 
-  async updateOrderStatus(orderId: string, status: string): Promise<Order> {
+  async updateOrderStatus(orderId: string, status: string, preparationTime?: string): Promise<Order> {
     const order = this.orders.get(orderId);
     if (!order) {
       throw new Error("Order not found");
     }
-    const updatedOrder = { ...order, status };
+    const updatedOrder = { ...order, status, preparationTime: preparationTime ?? order.preparationTime };
     this.orders.set(orderId, updatedOrder);
     return updatedOrder;
   }

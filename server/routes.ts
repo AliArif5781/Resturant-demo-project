@@ -200,7 +200,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const firebaseUid = req.headers["x-firebase-uid"] as string;
       const { orderId } = req.params;
-      const { status } = req.body;
+      const { status, preparationTime } = req.body;
       
       if (!firebaseUid) {
         return res.status(401).json({ message: "Authentication required" });
@@ -220,7 +220,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Status is required" });
       }
 
-      const updatedOrder = await storage.updateOrderStatus(orderId, status);
+      // Require preparation time when updating to "preparing" status
+      const trimmedPrepTime = preparationTime?.trim();
+      if (status === "preparing" && !trimmedPrepTime) {
+        return res.status(400).json({ message: "Preparation time is required when updating to preparing status" });
+      }
+
+      const updatedOrder = await storage.updateOrderStatus(orderId, status, trimmedPrepTime);
       res.json({ order: updatedOrder });
     } catch (error: any) {
       res.status(400).json({ message: error.message });
