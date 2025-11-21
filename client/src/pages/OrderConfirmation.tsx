@@ -59,6 +59,7 @@ export default function OrderConfirmation() {
 
   // Use real-time status if available, otherwise use cached status
   const currentStatus = orderStatusData?.order?.status || orderData?.status || "pending";
+  const preparationTime = orderStatusData?.order?.preparationTime;
   const isConfirmed = currentStatus === "preparing" || currentStatus === "completed";
 
   if (!orderData) {
@@ -191,6 +192,18 @@ export default function OrderConfirmation() {
                 )}
               </Badge>
             </motion.div>
+            {preparationTime && isConfirmed && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.45 }}
+              >
+                <Badge variant="outline" className="text-lg px-6 py-3 bg-green-50 dark:bg-green-950 border-green-200 dark:border-green-800 text-green-700 dark:text-green-300">
+                  <Clock className="h-4 w-4 mr-2" />
+                  Est. Time: {preparationTime}
+                </Badge>
+              </motion.div>
+            )}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -296,7 +309,13 @@ export default function OrderConfirmation() {
                                 : "text-orange-600 dark:text-orange-400 font-medium"
                               : "text-muted-foreground"
                           }`}>
-                            {isCurrent ? "Processing" : isCompleted ? "Completed" : "Pending"}
+                            {step.id === "preparing" && preparationTime && (isActive || isCurrent)
+                              ? preparationTime
+                              : isCurrent 
+                                ? "Processing" 
+                                : isCompleted 
+                                  ? "Completed" 
+                                  : "Pending"}
                           </p>
                         </div>
                       </div>
