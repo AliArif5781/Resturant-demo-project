@@ -346,12 +346,13 @@ export default function AdminDashboard() {
                                 <span>Estimated Time: {order.preparationTime}</span>
                               </div>
                               <Button
+                                size="sm"
                                 onClick={() => handleCompleteOrder(order.id)}
                                 disabled={completingOrderId === order.id}
-                                className="gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white border-0 shadow-md hover:shadow-lg transition-all duration-200 font-semibold"
+                                className="gap-2 bg-green-600 dark:bg-green-700 text-white border-green-700 dark:border-green-600"
                                 data-testid={`button-completed-${order.id}`}
                               >
-                                <Sparkles className="h-5 w-5" />
+                                <Check className="h-4 w-4" />
                                 {completingOrderId === order.id ? "Completing..." : "Mark as Completed"}
                               </Button>
                             </div>
