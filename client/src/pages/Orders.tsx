@@ -4,7 +4,7 @@ import { Link, useLocation } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Clock, ChefHat, Package, CheckCircle, ArrowLeft } from "lucide-react";
+import { Clock, ChefHat, Package, CheckCircle, ArrowLeft, XCircle } from "lucide-react";
 import type { Order } from "@shared/schema";
 
 export default function Orders() {
@@ -46,6 +46,8 @@ export default function Orders() {
         return <Package className="h-4 w-4" />;
       case "completed":
         return <CheckCircle className="h-4 w-4" />;
+      case "rejected":
+        return <XCircle className="h-4 w-4" />;
       default:
         return <Clock className="h-4 w-4" />;
     }
@@ -61,6 +63,8 @@ export default function Orders() {
         return "bg-blue-100 dark:bg-blue-950/50 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-800";
       case "completed":
         return "bg-emerald-100 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800";
+      case "rejected":
+        return "bg-red-100 dark:bg-red-950/50 text-red-700 dark:text-red-300 border-red-200 dark:border-red-800";
       default:
         return "bg-gray-100 dark:bg-gray-950/50 text-gray-700 dark:text-gray-300 border-gray-200 dark:border-gray-800";
     }
@@ -140,6 +144,11 @@ export default function Orders() {
                           {order.preparationTime && (
                             <div className="text-sm text-muted-foreground mt-1">
                               Preparation time: {order.preparationTime} mins
+                            </div>
+                          )}
+                          {order.status === "rejected" && order.rejectionReason && (
+                            <div className="text-sm text-red-600 dark:text-red-400 mt-1">
+                              Rejected: {order.rejectionReason}
                             </div>
                           )}
                         </div>
