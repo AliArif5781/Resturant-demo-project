@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { CheckCircle, Home, ShoppingBag, Clock, Package, CheckCheck, Calendar, MapPin, Flame, Dumbbell, Loader2 } from "lucide-react";
+import { CheckCircle, Home, ShoppingBag, Clock, Package, CheckCheck, Calendar, MapPin, Flame, Dumbbell, Loader2, XCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -64,8 +64,10 @@ export default function OrderConfirmation() {
   // Use real-time status if available, otherwise use cached status
   const currentStatus = orderStatusData?.order?.status || orderData?.status || "pending";
   const preparationTime = orderStatusData?.order?.preparationTime;
+  const rejectionReason = orderStatusData?.order?.rejectionReason;
   const guestArrived = orderStatusData?.order?.guestArrived === true;
   const isConfirmed = currentStatus === "preparing" || currentStatus === "completed";
+  const isRejected = currentStatus === "rejected";
 
   // Mutation to mark guest as arrived
   const markArrivedMutation = useMutation({
@@ -190,47 +192,98 @@ export default function OrderConfirmation() {
       </header>
 
       <div className="container mx-auto px-4 py-8">
-        {/* Success Message */}
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ type: "spring", stiffness: 100 }}
-          className="text-center mb-8"
-        >
+        {/* Rejection Notice */}
+        {isRejected && (
           <motion.div
-            initial={{ scale: 0 }}
-            animate={{ scale: 1 }}
-            transition={{ type: "spring", delay: 0.2, stiffness: 200 }}
-            className={`inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br ${
-              isConfirmed
-                ? "from-green-100 to-emerald-200 dark:from-green-900/40 dark:to-emerald-800/40"
-                : "from-orange-100 to-amber-200 dark:from-orange-900/40 dark:to-amber-800/40"
-            } rounded-full mb-6 shadow-lg`}
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ type: "spring", stiffness: 100 }}
+            className="max-w-3xl mx-auto mb-8"
           >
-            {isConfirmed ? (
-              <CheckCircle className="h-16 w-16 text-green-600 dark:text-green-400" />
-            ) : (
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-              >
-                <Loader2 className="h-16 w-16 text-orange-600 dark:text-orange-400" />
-              </motion.div>
-            )}
+            <Card className="border-2 border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-950/30">
+              <CardContent className="p-6">
+                <div className="flex flex-col items-center text-center gap-4">
+                  <div className="inline-flex items-center justify-center w-16 h-16 bg-red-100 dark:bg-red-900/40 rounded-full">
+                    <XCircle className="h-10 w-10 text-red-600 dark:text-red-400" />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-bold text-red-900 dark:text-red-100 mb-2" data-testid="text-order-rejected-title">
+                      Order Rejected
+                    </h2>
+                    <p className="text-red-700 dark:text-red-300 mb-4" data-testid="text-rejection-message">
+                      We're sorry, but we had to reject your order for the following reason:
+                    </p>
+                    <div className="bg-white dark:bg-red-950/50 border border-red-200 dark:border-red-800 rounded-md p-4">
+                      <p className="text-lg font-medium text-red-900 dark:text-red-100" data-testid="text-rejection-reason">
+                        {rejectionReason || "No reason provided"}
+                      </p>
+                    </div>
+                    <p className="text-sm text-red-600 dark:text-red-400 mt-4">
+                      If you have any questions, please contact our support team.
+                    </p>
+                  </div>
+                  <div className="flex gap-3 mt-2">
+                    <Link href="/">
+                      <Button variant="default" className="gap-2" data-testid="button-return-home">
+                        <Home className="h-4 w-4" />
+                        Return to Menu
+                      </Button>
+                    </Link>
+                    <Link href="/orders">
+                      <Button variant="outline" className="gap-2" data-testid="button-view-orders">
+                        <ShoppingBag className="h-4 w-4" />
+                        View My Orders
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </motion.div>
-          <h1 className={`text-5xl font-bold mb-3 bg-gradient-to-r ${
-            isConfirmed
-              ? "from-green-600 to-emerald-600 dark:from-green-400 dark:to-emerald-400"
-              : "from-orange-600 to-amber-600 dark:from-orange-400 dark:to-amber-400"
-          } bg-clip-text text-transparent`} data-testid="text-order-success-title">
-            {isConfirmed ? "Order Confirmed Successfully!" : "Your Order is Pending"}
-          </h1>
-          <p className="text-xl text-muted-foreground mb-6 max-w-2xl mx-auto" data-testid="text-order-success-subtitle">
-            {isConfirmed
-              ? `Great news, ${orderData.userName}! Your order has been confirmed and our kitchen is now preparing your delicious meal.`
-              : `Thank you for your order, ${orderData.userName}! Your order has been received and is currently being processed. We'll notify you once it's confirmed and ready for preparation.`
-            }
-          </p>
+        )}
+
+        {/* Success Message */}
+        {!isRejected && (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ type: "spring", stiffness: 100 }}
+            className="text-center mb-8"
+          >
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ type: "spring", delay: 0.2, stiffness: 200 }}
+              className={`inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br ${
+                isConfirmed
+                  ? "from-green-100 to-emerald-200 dark:from-green-900/40 dark:to-emerald-800/40"
+                  : "from-orange-100 to-amber-200 dark:from-orange-900/40 dark:to-amber-800/40"
+              } rounded-full mb-6 shadow-lg`}
+            >
+              {isConfirmed ? (
+                <CheckCircle className="h-16 w-16 text-green-600 dark:text-green-400" />
+              ) : (
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                >
+                  <Loader2 className="h-16 w-16 text-orange-600 dark:text-orange-400" />
+                </motion.div>
+              )}
+            </motion.div>
+            <h1 className={`text-5xl font-bold mb-3 bg-gradient-to-r ${
+              isConfirmed
+                ? "from-green-600 to-emerald-600 dark:from-green-400 dark:to-emerald-400"
+                : "from-orange-600 to-amber-600 dark:from-orange-400 dark:to-amber-400"
+            } bg-clip-text text-transparent`} data-testid="text-order-success-title">
+              {isConfirmed ? "Order Confirmed Successfully!" : "Your Order is Pending"}
+            </h1>
+            <p className="text-xl text-muted-foreground mb-6 max-w-2xl mx-auto" data-testid="text-order-success-subtitle">
+              {isConfirmed
+                ? `Great news, ${orderData.userName}! Your order has been confirmed and our kitchen is now preparing your delicious meal.`
+                : `Thank you for your order, ${orderData.userName}! Your order has been received and is currently being processed. We'll notify you once it's confirmed and ready for preparation.`
+              }
+            </p>
           <div className="flex flex-wrap items-center justify-center gap-4">
             <motion.div
               initial={{ opacity: 0 }}
@@ -578,6 +631,7 @@ export default function OrderConfirmation() {
             </CardContent>
           </Card>
         </motion.div>
+        )}
       </div>
     </div>
   );
