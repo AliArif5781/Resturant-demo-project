@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { CheckCircle, Home, ShoppingBag, Clock, Package, Truck, CheckCheck, Download, Calendar, MapPin, Flame, Dumbbell, Loader2 } from "lucide-react";
+import { CheckCircle, Home, ShoppingBag, Clock, Package, CheckCheck, Download, Calendar, MapPin, Flame, Dumbbell, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -156,16 +156,14 @@ export default function OrderConfirmation() {
   const orderSteps = [
     { id: "pending", icon: Clock, label: "Order Pending", time: "Processing" },
     { id: "preparing", icon: Package, label: "Preparing", time: "Pending" },
-    { id: "ready", icon: Truck, label: "Out for Delivery", time: "Pending" },
-    { id: "completed", icon: CheckCheck, label: "Delivered", time: "Pending" },
+    { id: "completed", icon: CheckCheck, label: "Completed", time: "Pending" },
   ];
   
   // Map status to step index
   const statusToStepIndex: Record<string, number> = {
     pending: 0,
     preparing: 1,
-    ready: 2,
-    completed: 3,
+    completed: 2,
   };
   
   const currentStepIndex = statusToStepIndex[currentStatus] ?? 0;
