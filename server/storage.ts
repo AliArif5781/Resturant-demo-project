@@ -12,7 +12,7 @@ export interface IStorage {
   getOrderById(orderId: string): Promise<Order | undefined>;
   getRecentOrders(limit?: number): Promise<Order[]>;
   getOrdersByUser(firebaseUid: string): Promise<Order[]>;
-  updateOrderStatus(orderId: string, status: string, preparationTime?: string): Promise<Order>;
+  updateOrderStatus(orderId: string, status: string, preparationTime?: string, rejectionReason?: string): Promise<Order>;
   updateGuestArrived(orderId: string, arrived: boolean): Promise<Order>;
 }
 
@@ -76,6 +76,7 @@ export class MemStorage implements IStorage {
       total: insertOrder.total,
       status: insertOrder.status ?? "pending",
       preparationTime: insertOrder.preparationTime ?? null,
+      rejectionReason: insertOrder.rejectionReason ?? null,
       guestArrived: insertOrder.guestArrived ?? false,
       createdAt: new Date(),
     };
@@ -100,12 +101,17 @@ export class MemStorage implements IStorage {
       .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
   }
 
-  async updateOrderStatus(orderId: string, status: string, preparationTime?: string): Promise<Order> {
+  async updateOrderStatus(orderId: string, status: string, preparationTime?: string, rejectionReason?: string): Promise<Order> {
     const order = this.orders.get(orderId);
     if (!order) {
       throw new Error("Order not found");
     }
-    const updatedOrder = { ...order, status, preparationTime: preparationTime ?? order.preparationTime };
+    const updatedOrder = { 
+      ...order, 
+      status, 
+      preparationTime: preparationTime ?? order.preparationTime,
+      rejectionReason: rejectionReason ?? order.rejectionReason
+    };
     this.orders.set(orderId, updatedOrder);
     return updatedOrder;
   }
