@@ -242,8 +242,8 @@ export default function OrderConfirmation() {
           </motion.div>
         )}
 
-        {/* Success Message */}
-        {!isRejected && (
+        {/* Success Message - Only show if not rejected */}
+        {!isRejected && (<>
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -331,7 +331,7 @@ export default function OrderConfirmation() {
               </Badge>
             </motion.div>
           </div>
-        </motion.div>
+          </motion.div>
 
         {/* Order Timeline */}
         <motion.div
@@ -631,7 +631,7 @@ export default function OrderConfirmation() {
             </CardContent>
           </Card>
         </motion.div>
-        )}
+        </>)}
       </div>
     </div>
   );

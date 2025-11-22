@@ -109,8 +109,10 @@ export class MemStorage implements IStorage {
     const updatedOrder = { 
       ...order, 
       status, 
-      preparationTime: preparationTime ?? order.preparationTime,
-      rejectionReason: rejectionReason ?? order.rejectionReason
+      // Only keep preparationTime if explicitly provided, otherwise clear it
+      preparationTime: preparationTime !== undefined ? preparationTime : null,
+      // Only keep rejectionReason if explicitly provided, otherwise clear it
+      rejectionReason: rejectionReason !== undefined ? rejectionReason : null
     };
     this.orders.set(orderId, updatedOrder);
     return updatedOrder;

@@ -232,7 +232,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "Rejection reason is required when rejecting an order" });
       }
 
-      const updatedOrder = await storage.updateOrderStatus(orderId, status, trimmedPrepTime, trimmedRejectionReason);
+      // Clear stale fields based on status transitions
+      const finalPrepTime = status === "preparing" ? trimmedPrepTime : undefined;
+      const finalRejectionReason = status === "rejected" ? trimmedRejectionReason : undefined;
+
+      const updatedOrder = await storage.updateOrderStatus(orderId, status, finalPrepTime, finalRejectionReason);
       res.json({ order: updatedOrder });
     } catch (error: any) {
       res.status(400).json({ message: error.message });

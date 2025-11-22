@@ -12,7 +12,14 @@ export default function Orders() {
   const [, setLocation] = useLocation();
 
   const { data: ordersData, isLoading } = useQuery<{ orders: Order[] }>({
-    queryKey: ["/api/orders"],
+    queryKey: ["/api/orders/user", currentUser?.uid],
+    queryFn: currentUser 
+      ? () => fetch(`/api/orders/user/${currentUser.uid}`, {
+          headers: {
+            "x-firebase-uid": currentUser.uid,
+          },
+        }).then(res => res.json())
+      : undefined,
     enabled: !!currentUser,
   });
 
