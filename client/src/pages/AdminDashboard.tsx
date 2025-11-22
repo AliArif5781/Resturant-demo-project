@@ -8,10 +8,11 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Package, Home, Check, X, Clock, MapPin } from "lucide-react";
+import { Package, Home, Check, X, Clock, MapPin, Sparkles } from "lucide-react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import type { Order } from "@shared/schema";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function AdminDashboard() {
   const [, setLocation] = useLocation();
@@ -22,6 +23,8 @@ export default function AdminDashboard() {
   const [showPrepTimeDialog, setShowPrepTimeDialog] = useState(false);
   const [selectedOrderId, setSelectedOrderId] = useState<string>("");
   const [preparationTime, setPreparationTime] = useState("");
+  const [showCompletionAnimation, setShowCompletionAnimation] = useState(false);
+  const [completedOrderId, setCompletedOrderId] = useState<string>("");
 
   const { data: ordersData, isLoading: ordersLoading } = useQuery<{ orders: Order[] }>({
     queryKey: ["/api/orders"],
@@ -35,15 +38,25 @@ export default function AdminDashboard() {
       const response = await apiRequest("PATCH", `/api/orders/${orderId}/status`, { status, preparationTime });
       return await response.json();
     },
-    onSuccess: () => {
+    onSuccess: (data, variables) => {
       queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
       setShowPrepTimeDialog(false);
       setPreparationTime("");
       setSelectedOrderId("");
-      toast({
-        title: "Success",
-        description: "Order status updated successfully",
-      });
+      
+      if (variables.status === "completed") {
+        setCompletedOrderId(variables.orderId);
+        setShowCompletionAnimation(true);
+        setTimeout(() => {
+          setShowCompletionAnimation(false);
+          setCompletedOrderId("");
+        }, 3000);
+      } else {
+        toast({
+          title: "Success",
+          description: "Order status updated successfully",
+        });
+      }
     },
     onError: (error: any) => {
       toast({
@@ -72,6 +85,13 @@ export default function AdminDashboard() {
       orderId: selectedOrderId, 
       status: "preparing",
       preparationTime: preparationTime.trim()
+    });
+  };
+
+  const handleCompleteOrder = (orderId: string) => {
+    updateOrderStatusMutation.mutate({ 
+      orderId, 
+      status: "completed"
     });
   };
 
@@ -289,6 +309,25 @@ export default function AdminDashboard() {
                               </Button>
                             </div>
                           )}
+
+                          {order.status === "preparing" && order.preparationTime && (
+                            <div className="flex flex-col gap-3">
+                              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                <Clock className="h-4 w-4" />
+                                <span>Preparation Time: {order.preparationTime}</span>
+                              </div>
+                              <Button
+                                size="sm"
+                                onClick={() => handleCompleteOrder(order.id)}
+                                disabled={updateOrderStatusMutation.isPending}
+                                className="gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white border-0"
+                                data-testid={`button-completed-${order.id}`}
+                              >
+                                <Sparkles className="h-4 w-4" />
+                                Mark as Completed
+                              </Button>
+                            </div>
+                          )}
                         </div>
                       </CardContent>
                     </Card>
@@ -349,6 +388,101 @@ export default function AdminDashboard() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <AnimatePresence>
+        {showCompletionAnimation && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+            data-testid="animation-completion"
+          >
+            <motion.div
+              initial={{ scale: 0.5, opacity: 0, y: 50 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.8, opacity: 0, y: -50 }}
+              transition={{
+                type: "spring",
+                stiffness: 260,
+                damping: 20,
+              }}
+              className="relative"
+            >
+              <Card className="w-[90vw] max-w-md mx-4 overflow-hidden border-2 border-green-500/50 shadow-2xl">
+                <CardContent className="p-8 text-center relative">
+                  <motion.div
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1, rotate: 360 }}
+                    transition={{
+                      delay: 0.2,
+                      type: "spring",
+                      stiffness: 200,
+                      damping: 15,
+                    }}
+                    className="mx-auto mb-6 w-20 h-20 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center"
+                  >
+                    <Check className="w-10 h-10 text-white" strokeWidth={3} />
+                  </motion.div>
+
+                  <motion.div
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.4 }}
+                  >
+                    <h2 className="text-3xl font-bold mb-3 bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent">
+                      Order Prepared!
+                    </h2>
+                    <p className="text-lg text-muted-foreground mb-2">
+                      Your order is ready
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      The customer has been notified
+                    </p>
+                  </motion.div>
+
+                  <motion.div
+                    className="absolute inset-0 pointer-events-none"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                  >
+                    {[...Array(12)].map((_, i) => (
+                      <motion.div
+                        key={i}
+                        className="absolute w-2 h-2 bg-gradient-to-r from-green-400 to-emerald-400 rounded-full"
+                        initial={{
+                          x: "50%",
+                          y: "50%",
+                          scale: 0,
+                        }}
+                        animate={{
+                          x: `${50 + 40 * Math.cos((i * 2 * Math.PI) / 12)}%`,
+                          y: `${50 + 40 * Math.sin((i * 2 * Math.PI) / 12)}%`,
+                          scale: [0, 1, 0],
+                          opacity: [0, 1, 0],
+                        }}
+                        transition={{
+                          duration: 1.5,
+                          delay: 0.3 + i * 0.05,
+                          repeat: Infinity,
+                          repeatDelay: 1,
+                        }}
+                      />
+                    ))}
+                  </motion.div>
+
+                  <motion.div
+                    className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-green-400 via-emerald-500 to-green-400"
+                    initial={{ scaleX: 0 }}
+                    animate={{ scaleX: 1 }}
+                    transition={{ duration: 3 }}
+                  />
+                </CardContent>
+              </Card>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
