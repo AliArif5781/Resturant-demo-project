@@ -16,7 +16,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-orange-900">
-      <Header mode="dine-in" tableNumber="T12" />
+      <Header />
 
       <Hero
         onStartOrdering={() => console.log("Start ordering")}
@@ -52,7 +52,7 @@ export default function Home() {
             { name: "Garlic Naan", quantity: 2, price: "$7.98" },
           ],
           total: "$32.97",
-          status: "cooking",
+          status: "preparing",
         }}
         onArrived={() => console.log("Customer arrived")}
       />

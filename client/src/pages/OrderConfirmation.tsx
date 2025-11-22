@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { CheckCircle, Home, ShoppingBag, Clock, Package, CheckCheck, Download, Calendar, MapPin, Flame, Dumbbell, Loader2 } from "lucide-react";
+import { CheckCircle, Home, ShoppingBag, Clock, Package, CheckCheck, Calendar, MapPin, Flame, Dumbbell, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -574,16 +574,6 @@ export default function OrderConfirmation() {
                     Continue Shopping
                   </Button>
                 </Link>
-                <Button 
-                  size="lg" 
-                  variant="outline" 
-                  className="gap-2"
-                  onClick={() => window.print()}
-                  data-testid="button-download-receipt"
-                >
-                  <Download className="h-5 w-5" />
-                  Download Receipt
-                </Button>
               </div>
             </CardContent>
           </Card>

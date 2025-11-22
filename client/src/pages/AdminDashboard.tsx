@@ -25,6 +25,7 @@ export default function AdminDashboard() {
   const [preparationTime, setPreparationTime] = useState("");
   const [showCompletionAnimation, setShowCompletionAnimation] = useState(false);
   const [completedOrderId, setCompletedOrderId] = useState<string>("");
+  const [completingOrderId, setCompletingOrderId] = useState<string | null>(null);
 
   const { data: ordersData, isLoading: ordersLoading } = useQuery<{ orders: Order[] }>({
     queryKey: ["/api/orders"],
@@ -43,6 +44,7 @@ export default function AdminDashboard() {
       setShowPrepTimeDialog(false);
       setPreparationTime("");
       setSelectedOrderId("");
+      setCompletingOrderId(null);
       
       if (variables.status === "completed") {
         setCompletedOrderId(variables.orderId);
@@ -59,6 +61,7 @@ export default function AdminDashboard() {
       }
     },
     onError: (error: any) => {
+      setCompletingOrderId(null);
       toast({
         title: "Error",
         description: error.message || "Failed to update order status",
@@ -89,6 +92,7 @@ export default function AdminDashboard() {
   };
 
   const handleCompleteOrder = (orderId: string) => {
+    setCompletingOrderId(orderId);
     updateOrderStatusMutation.mutate({ 
       orderId, 
       status: "completed"
@@ -311,20 +315,19 @@ export default function AdminDashboard() {
                           )}
 
                           {order.status === "preparing" && order.preparationTime && (
-                            <div className="flex flex-col gap-3">
-                              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                            <div className="flex flex-col gap-3 p-4 bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-950/30 dark:to-emerald-950/30 rounded-md border border-green-200 dark:border-green-800">
+                              <div className="flex items-center gap-2 text-sm font-medium text-green-800 dark:text-green-300">
                                 <Clock className="h-4 w-4" />
-                                <span>Preparation Time: {order.preparationTime}</span>
+                                <span>Estimated Time: {order.preparationTime}</span>
                               </div>
                               <Button
-                                size="sm"
                                 onClick={() => handleCompleteOrder(order.id)}
-                                disabled={updateOrderStatusMutation.isPending}
-                                className="gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white border-0"
+                                disabled={completingOrderId === order.id}
+                                className="gap-2 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white border-0 shadow-md hover:shadow-lg transition-all duration-200 font-semibold"
                                 data-testid={`button-completed-${order.id}`}
                               >
-                                <Sparkles className="h-4 w-4" />
-                                Mark as Completed
+                                <Sparkles className="h-5 w-5" />
+                                {completingOrderId === order.id ? "Completing..." : "Mark as Completed"}
                               </Button>
                             </div>
                           )}

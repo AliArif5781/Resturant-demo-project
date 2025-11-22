@@ -220,12 +220,6 @@ export default function Cart() {
                     </Button>
                   </Link>
                 </div>
-
-                <div className="pt-4 border-t">
-                  <Badge variant="secondary" className="w-full justify-center py-2" data-testid="badge-table-info">
-                    Dine-in · Table T12
-                  </Badge>
-                </div>
               </CardContent>
             </Card>
           </div>

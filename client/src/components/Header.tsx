@@ -21,9 +21,9 @@ interface HeaderProps {
 }
 
 export default function Header({
-  mode = "dine-in",
-  tableNumber = "T12",
-}: HeaderProps) {
+  mode,
+  tableNumber,
+}: HeaderProps = {}) {
   const { totalItems } = useCart();
   const { currentUser, signout } = useAuth();
   const [, setLocation] = useLocation();
