@@ -21,8 +21,10 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
   const [showPrepTimeDialog, setShowPrepTimeDialog] = useState(false);
+  const [showRejectDialog, setShowRejectDialog] = useState(false);
   const [selectedOrderId, setSelectedOrderId] = useState<string>("");
   const [preparationTime, setPreparationTime] = useState("");
+  const [rejectionReason, setRejectionReason] = useState("");
   const [showCompletionAnimation, setShowCompletionAnimation] = useState(false);
   const [completedOrderId, setCompletedOrderId] = useState<string>("");
   const [completingOrderId, setCompletingOrderId] = useState<string | null>(null);
@@ -35,14 +37,16 @@ export default function AdminDashboard() {
   const orders = ordersData?.orders || [];
 
   const updateOrderStatusMutation = useMutation({
-    mutationFn: async ({ orderId, status, preparationTime }: { orderId: string; status: string; preparationTime?: string }) => {
-      const response = await apiRequest("PATCH", `/api/orders/${orderId}/status`, { status, preparationTime });
+    mutationFn: async ({ orderId, status, preparationTime, rejectionReason }: { orderId: string; status: string; preparationTime?: string; rejectionReason?: string }) => {
+      const response = await apiRequest("PATCH", `/api/orders/${orderId}/status`, { status, preparationTime, rejectionReason });
       return await response.json();
     },
     onSuccess: (data, variables) => {
       queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
       setShowPrepTimeDialog(false);
+      setShowRejectDialog(false);
       setPreparationTime("");
+      setRejectionReason("");
       setSelectedOrderId("");
       setCompletingOrderId(null);
       
@@ -56,7 +60,7 @@ export default function AdminDashboard() {
       } else {
         toast({
           title: "Success",
-          description: "Order status updated successfully",
+          description: variables.status === "rejected" ? "Order rejected successfully" : "Order status updated successfully",
         });
       }
     },
@@ -75,6 +79,11 @@ export default function AdminDashboard() {
     setShowPrepTimeDialog(true);
   };
 
+  const handleRejectClick = (orderId: string) => {
+    setSelectedOrderId(orderId);
+    setShowRejectDialog(true);
+  };
+
   const handleConfirmProceed = () => {
     if (!preparationTime.trim()) {
       toast({
@@ -88,6 +97,22 @@ export default function AdminDashboard() {
       orderId: selectedOrderId, 
       status: "preparing",
       preparationTime: preparationTime.trim()
+    });
+  };
+
+  const handleConfirmReject = () => {
+    if (!rejectionReason.trim()) {
+      toast({
+        title: "Error",
+        description: "Please provide a reason for rejection",
+        variant: "destructive",
+      });
+      return;
+    }
+    updateOrderStatusMutation.mutate({ 
+      orderId: selectedOrderId, 
+      status: "rejected",
+      rejectionReason: rejectionReason.trim()
     });
   };
 
@@ -261,7 +286,7 @@ export default function AdminDashboard() {
                                 <Badge 
                                   variant={
                                     order.status === "completed" ? "default" : 
-                                    order.status === "cancelled" ? "destructive" : 
+                                    order.status === "rejected" || order.status === "cancelled" ? "destructive" : 
                                     "secondary"
                                   }
                                   className={
@@ -303,13 +328,13 @@ export default function AdminDashboard() {
                               <Button
                                 size="sm"
                                 variant="outline"
-                                onClick={() => updateOrderStatusMutation.mutate({ orderId: order.id, status: "cancelled" })}
+                                onClick={() => handleRejectClick(order.id)}
                                 disabled={updateOrderStatusMutation.isPending}
                                 className="gap-2 bg-red-100 dark:bg-red-900 text-red-900 dark:text-red-100 border-red-300 dark:border-red-700"
-                                data-testid={`button-cancel-${order.id}`}
+                                data-testid={`button-reject-${order.id}`}
                               >
                                 <X className="h-4 w-4" />
-                                Cancel
+                                Reject
                               </Button>
                             </div>
                           )}
@@ -387,6 +412,57 @@ export default function AdminDashboard() {
             >
               <Check className="h-4 w-4" />
               {updateOrderStatusMutation.isPending ? "Processing..." : "Confirm & Proceed"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showRejectDialog} onOpenChange={setShowRejectDialog}>
+        <DialogContent data-testid="dialog-rejection-reason">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <X className="h-5 w-5 text-destructive" />
+              Reject Order
+            </DialogTitle>
+            <DialogDescription>
+              Please provide a reason for rejecting this order. The customer will see this message.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="rejection-reason">Rejection Reason</Label>
+              <Input
+                id="rejection-reason"
+                placeholder="e.g., Out of stock, Kitchen closed, etc."
+                value={rejectionReason}
+                onChange={(e) => setRejectionReason(e.target.value)}
+                data-testid="input-rejection-reason"
+                autoFocus
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowRejectDialog(false);
+                setRejectionReason("");
+                setSelectedOrderId("");
+              }}
+              disabled={updateOrderStatusMutation.isPending}
+              data-testid="button-cancel-reject-dialog"
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleConfirmReject}
+              disabled={updateOrderStatusMutation.isPending || !rejectionReason.trim()}
+              className="gap-2"
+              data-testid="button-confirm-reject"
+            >
+              <X className="h-4 w-4" />
+              {updateOrderStatusMutation.isPending ? "Rejecting..." : "Confirm Rejection"}
             </Button>
           </DialogFooter>
         </DialogContent>
