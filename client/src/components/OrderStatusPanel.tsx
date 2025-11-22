@@ -47,14 +47,14 @@ export default function OrderStatusPanel({
                 const Icon = step.icon;
                 const isActive = idx <= currentStepIndex;
                 const isCurrent = idx === currentStepIndex;
-                const isPreparing = step.id === "preparing" && isActive;
+                const isGreenStep = (step.id === "preparing" || step.id === "completed") && isActive;
 
                 return (
                   <div key={step.id} className="flex-1 flex flex-col items-center relative">
                     <div
                       className={`w-12 h-12 rounded-full flex items-center justify-center border-2 transition-all ${
                         isActive
-                          ? isPreparing
+                          ? isGreenStep
                             ? "bg-green-600 dark:bg-green-500 border-green-600 dark:border-green-500 text-white"
                             : "bg-primary border-primary text-primary-foreground"
                           : "bg-background border-muted text-muted-foreground"
@@ -63,14 +63,23 @@ export default function OrderStatusPanel({
                     >
                       <Icon className="h-5 w-5" />
                     </div>
-                    <p className={`text-xs mt-2 text-center ${isActive ? isPreparing ? "font-medium text-green-600 dark:text-green-400" : "font-medium" : "text-muted-foreground"}`}>
+                    <p className={`text-xs mt-2 text-center ${isActive ? isGreenStep ? "font-medium text-green-600 dark:text-green-400" : "font-medium" : "text-muted-foreground"}`}>
                       {step.label}
+                    </p>
+                    <p className={`text-xs text-center ${
+                      isCurrent && isGreenStep
+                        ? "text-green-600 dark:text-green-400 font-medium"
+                        : isCurrent
+                        ? "text-primary font-medium"
+                        : "text-muted-foreground"
+                    }`}>
+                      {isCurrent ? "Processing" : ""}
                     </p>
                     {idx < statusSteps.length - 1 && (
                       <div
                         className={`absolute top-6 left-[calc(50%+24px)] right-[calc(-50%+24px)] h-0.5 transition-all ${
                           idx < currentStepIndex 
-                            ? statusSteps[idx + 1].id === "preparing"
+                            ? (statusSteps[idx + 1].id === "preparing" || statusSteps[idx + 1].id === "completed")
                               ? "bg-green-600 dark:bg-green-500"
                               : "bg-primary"
                             : "bg-muted"
