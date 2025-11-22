@@ -4,12 +4,61 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { CheckCircle, Home, ShoppingBag, Clock, Package, CheckCheck, Calendar, MapPin, Flame, Dumbbell, Loader2, XCircle } from "lucide-react";
+import { CheckCircle, Home, ShoppingBag, Clock, Package, CheckCheck, Calendar, MapPin, Flame, Dumbbell, Loader2, XCircle, Sparkles } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import type { Order } from "@shared/schema";
+
+// Confetti/Party Animation Component
+function CelebrationConfetti() {
+  const confettiColors = [
+    "bg-yellow-400",
+    "bg-green-400",
+    "bg-blue-400",
+    "bg-red-400",
+    "bg-purple-400",
+    "bg-pink-400",
+  ];
+
+  const confettiPieces = Array.from({ length: 50 }, (_, i) => ({
+    id: i,
+    color: confettiColors[Math.floor(Math.random() * confettiColors.length)],
+    delay: Math.random() * 0.5,
+    x: Math.random() * 100,
+    rotation: Math.random() * 360,
+    scale: 0.5 + Math.random() * 0.5,
+  }));
+
+  return (
+    <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden">
+      {confettiPieces.map((piece) => (
+        <motion.div
+          key={piece.id}
+          className={`absolute w-3 h-3 ${piece.color} rounded-sm`}
+          initial={{
+            top: "-10%",
+            left: `${piece.x}%`,
+            opacity: 1,
+            rotate: 0,
+            scale: piece.scale,
+          }}
+          animate={{
+            top: "110%",
+            opacity: [1, 1, 0],
+            rotate: piece.rotation * 4,
+          }}
+          transition={{
+            duration: 3 + Math.random() * 2,
+            delay: piece.delay,
+            ease: "easeIn",
+          }}
+        />
+      ))}
+    </div>
+  );
+}
 
 interface OrderItem {
   id: number;
@@ -39,6 +88,8 @@ export default function OrderConfirmation() {
   const [, setLocation] = useLocation();
   const [orderData, setOrderData] = useState<OrderData | null>(null);
   const [remainingSeconds, setRemainingSeconds] = useState<number | null>(null);
+  const [showCelebration, setShowCelebration] = useState(false);
+  const [celebratedOrderIds, setCelebratedOrderIds] = useState<Set<string>>(new Set());
   const { toast } = useToast();
 
   useEffect(() => {
@@ -102,6 +153,22 @@ export default function OrderConfirmation() {
       setRemainingSeconds(timeInMinutes * 60);
     }
   }, [preparationTime, isConfirmed, remainingSeconds]);
+
+  // Trigger celebration when order is completed (only once per order)
+  useEffect(() => {
+    if (currentStatus === "completed" && orderData?.orderId && !celebratedOrderIds.has(orderData.orderId)) {
+      setShowCelebration(true);
+      setCelebratedOrderIds(prev => new Set(prev).add(orderData.orderId!));
+      toast({
+        title: "Order Completed!",
+        description: "Your delicious meal is ready! Enjoy!",
+      });
+      // Hide celebration after 5 seconds
+      setTimeout(() => {
+        setShowCelebration(false);
+      }, 5000);
+    }
+  }, [currentStatus, orderData?.orderId, celebratedOrderIds, toast]);
 
   // Countdown timer effect
   useEffect(() => {
@@ -172,6 +239,9 @@ export default function OrderConfirmation() {
 
   return (
     <div className="min-h-screen bg-background">
+      {/* Party Celebration Effect */}
+      {showCelebration && <CelebrationConfetti />}
+      
       {/* Header */}
       <header className="border-b sticky top-0 bg-background z-50" data-testid="header-order-confirmation">
         <div className="container mx-auto px-4 py-3">
@@ -272,14 +342,18 @@ export default function OrderConfirmation() {
               )}
             </motion.div>
             <h1 className={`text-5xl font-bold mb-3 bg-gradient-to-r ${
-              isConfirmed
+              currentStatus === "completed"
+                ? "from-green-500 to-emerald-500 dark:from-green-400 dark:to-emerald-300"
+                : isConfirmed
                 ? "from-green-600 to-emerald-600 dark:from-green-400 dark:to-emerald-400"
                 : "from-orange-600 to-amber-600 dark:from-orange-400 dark:to-amber-400"
             } bg-clip-text text-transparent`} data-testid="text-order-success-title">
-              {isConfirmed ? "Order Confirmed Successfully!" : "Your Order is Pending"}
+              {currentStatus === "completed" ? "Order Completed!" : isConfirmed ? "Order Confirmed Successfully!" : "Your Order is Pending"}
             </h1>
             <p className="text-xl text-muted-foreground mb-6 max-w-2xl mx-auto" data-testid="text-order-success-subtitle">
-              {isConfirmed
+              {currentStatus === "completed"
+                ? `Congratulations, ${orderData.userName}! Your order is ready! Thank you for choosing us. Enjoy your delicious meal!`
+                : isConfirmed
                 ? `Great news, ${orderData.userName}! Your order has been confirmed and our kitchen is now preparing your delicious meal.`
                 : `Thank you for your order, ${orderData.userName}! Your order has been received and is currently being processed. We'll notify you once it's confirmed and ready for preparation.`
               }
@@ -291,11 +365,18 @@ export default function OrderConfirmation() {
               transition={{ delay: 0.4 }}
             >
               <Badge variant="outline" className={`text-lg px-6 py-3 ${
-                isConfirmed
+                currentStatus === "completed"
+                  ? "bg-green-100 dark:bg-green-900/50 border-green-300 dark:border-green-700 text-green-800 dark:text-green-200"
+                  : isConfirmed
                   ? "bg-green-50 dark:bg-green-950 border-green-200 dark:border-green-800 text-green-700 dark:text-green-300"
                   : "bg-orange-50 dark:bg-orange-950 border-orange-200 dark:border-orange-800 text-orange-700 dark:text-orange-300"
               }`}>
-                {isConfirmed ? (
+                {currentStatus === "completed" ? (
+                  <>
+                    <Sparkles className="h-4 w-4 mr-2" />
+                    Status: Completed
+                  </>
+                ) : isConfirmed ? (
                   <>
                     <Package className="h-4 w-4 mr-2" />
                     Status: Preparing
