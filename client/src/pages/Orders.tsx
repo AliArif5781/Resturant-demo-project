@@ -77,6 +77,22 @@ export default function Orders() {
     }
   };
 
+  const getOrderName = (order: Order) => {
+    const items = Array.isArray(order.items) ? order.items : [];
+    if (items.length === 0) return "Empty Order";
+    
+    if (items.length === 1) {
+      return items[0].name;
+    }
+    
+    if (items.length === 2) {
+      return `${items[0].name} & ${items[1].name}`;
+    }
+    
+    const remaining = items.length - 1;
+    return `${items[0].name} & ${remaining} more`;
+  };
+
   if (!currentUser) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 flex items-center justify-center p-4">
@@ -132,9 +148,9 @@ export default function Orders() {
                     <CardContent className="p-4">
                       <div className="flex items-center justify-between gap-4">
                         <div className="flex-1">
-                          <div className="flex items-center gap-3 mb-2">
+                          <div className="flex items-center gap-3 mb-2 flex-wrap">
                             <span className="font-semibold text-lg">
-                              #{order.id.slice(0, 8).toUpperCase()}
+                              {getOrderName(order)}
                             </span>
                             <Badge 
                               variant="outline" 
