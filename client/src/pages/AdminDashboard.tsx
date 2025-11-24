@@ -8,7 +8,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Package, Home, Check, X, Clock, MapPin, Sparkles } from "lucide-react";
+import { Package, Home, Check, X, Clock, MapPin, Sparkles, Eye } from "lucide-react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import type { Order } from "@shared/schema";
@@ -22,7 +22,9 @@ export default function AdminDashboard() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [showPrepTimeDialog, setShowPrepTimeDialog] = useState(false);
   const [showRejectDialog, setShowRejectDialog] = useState(false);
+  const [showDetailsDialog, setShowDetailsDialog] = useState(false);
   const [selectedOrderId, setSelectedOrderId] = useState<string>("");
+  const [selectedOrderForDetails, setSelectedOrderForDetails] = useState<Order | null>(null);
   const [preparationTime, setPreparationTime] = useState("");
   const [rejectionReason, setRejectionReason] = useState("");
   const [showCompletionAnimation, setShowCompletionAnimation] = useState(false);
@@ -123,6 +125,11 @@ export default function AdminDashboard() {
       orderId, 
       status: "completed"
     });
+  };
+
+  const handleViewDetails = (order: Order) => {
+    setSelectedOrderForDetails(order);
+    setShowDetailsDialog(true);
   };
 
   useEffect(() => {
@@ -278,6 +285,16 @@ export default function AdminDashboard() {
                                   </span>
                                 ))}
                               </div>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => handleViewDetails(order)}
+                                className="gap-2 mt-2"
+                                data-testid={`button-view-details-${order.id}`}
+                              >
+                                <Eye className="h-4 w-4" />
+                                View Details
+                              </Button>
                             </div>
                             <div className="text-right space-y-2">
                               <div className="text-lg font-bold" data-testid={`text-order-total-${order.id}`}>
@@ -465,6 +482,113 @@ export default function AdminDashboard() {
             >
               <X className="h-4 w-4" />
               {updateOrderStatusMutation.isPending ? "Rejecting..." : "Confirm Rejection"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showDetailsDialog} onOpenChange={setShowDetailsDialog}>
+        <DialogContent className="max-w-3xl max-h-[80vh] overflow-y-auto" data-testid="dialog-order-details">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Eye className="h-5 w-5 text-primary" />
+              Order Details
+            </DialogTitle>
+            <DialogDescription>
+              {selectedOrderForDetails && (
+                <div className="space-y-1">
+                  <p>Customer: {selectedOrderForDetails.userName || selectedOrderForDetails.userEmail}</p>
+                  <p>Order ID: {selectedOrderForDetails.id.substring(0, 8).toUpperCase()}</p>
+                  <p>Date: {new Date(selectedOrderForDetails.createdAt).toLocaleDateString()} {new Date(selectedOrderForDetails.createdAt).toLocaleTimeString()}</p>
+                </div>
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            {selectedOrderForDetails && Array.isArray(selectedOrderForDetails.items) && selectedOrderForDetails.items.map((item: any, index: number) => (
+              <Card key={index} className="overflow-hidden" data-testid={`detail-item-${index}`}>
+                <CardContent className="p-4">
+                  <div className="flex gap-4">
+                    <div className="relative w-24 h-24 rounded-md overflow-hidden flex-shrink-0">
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        className="w-full h-full object-cover"
+                        data-testid={`img-detail-item-${index}`}
+                      />
+                    </div>
+                    <div className="flex-1 space-y-2">
+                      <div className="flex items-start justify-between gap-2">
+                        <h3 className="font-semibold text-lg" data-testid={`text-detail-item-name-${index}`}>
+                          {item.name}
+                        </h3>
+                        <Badge variant="outline" className="flex-shrink-0">
+                          Qty: {item.quantity}
+                        </Badge>
+                      </div>
+                      {item.description && (
+                        <p className="text-sm text-muted-foreground" data-testid={`text-detail-item-description-${index}`}>
+                          {item.description}
+                        </p>
+                      )}
+                      <div className="flex gap-2 flex-wrap">
+                        {item.calories && (
+                          <Badge variant="outline" className="bg-orange-50 dark:bg-orange-950 text-orange-700 dark:text-orange-300 border-orange-200 dark:border-orange-800" data-testid={`badge-detail-calories-${index}`}>
+                            🔥 {item.calories} cal
+                          </Badge>
+                        )}
+                        {item.protein && (
+                          <Badge variant="outline" className="bg-green-50 dark:bg-green-950 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800" data-testid={`badge-detail-protein-${index}`}>
+                            💪 {item.protein}g protein
+                          </Badge>
+                        )}
+                      </div>
+                      <div className="flex items-center justify-between pt-2">
+                        <span className="text-sm text-muted-foreground">Price per item</span>
+                        <span className="font-bold text-primary">{item.price}</span>
+                      </div>
+                      <div className="flex items-center justify-between border-t pt-2">
+                        <span className="font-medium">Subtotal</span>
+                        <span className="font-bold text-lg text-primary">
+                          ${(parseFloat(item.price.replace("$", "")) * item.quantity).toFixed(2)}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+            {selectedOrderForDetails && (
+              <Card className="bg-muted/50">
+                <CardContent className="p-4">
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-muted-foreground">Subtotal</span>
+                      <span className="font-semibold">${selectedOrderForDetails.subtotal}</span>
+                    </div>
+                    <div className="flex justify-between items-center text-sm">
+                      <span className="text-muted-foreground">Tax</span>
+                      <span className="font-semibold">${selectedOrderForDetails.tax}</span>
+                    </div>
+                    <div className="flex justify-between items-center text-lg border-t pt-2">
+                      <span className="font-bold">Total</span>
+                      <span className="font-bold text-primary text-xl">${selectedOrderForDetails.total}</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setShowDetailsDialog(false);
+                setSelectedOrderForDetails(null);
+              }}
+              data-testid="button-close-details"
+            >
+              Close
             </Button>
           </DialogFooter>
         </DialogContent>
