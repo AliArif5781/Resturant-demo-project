@@ -32,6 +32,7 @@ export default function AdminDashboard() {
   const { data: ordersData, isLoading: ordersLoading } = useQuery<{ orders: Order[] }>({
     queryKey: ["/api/orders"],
     enabled: isAdmin,
+    refetchInterval: 3000,
   });
 
   const orders = ordersData?.orders || [];
