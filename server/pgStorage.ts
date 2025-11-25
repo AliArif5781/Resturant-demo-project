@@ -90,9 +90,11 @@ export class PgStorage implements IStorage {
       rejectionReason: rejectionReason !== undefined ? rejectionReason : null
     };
     
-    // Only include cancelledBy in update if explicitly provided
+    // Handle cancelledBy: set it if provided, or clear it when moving away from cancelled status
     if (cancelledBy !== undefined) {
       updateData.cancelledBy = cancelledBy;
+    } else if (status !== "cancelled") {
+      updateData.cancelledBy = null;
     }
     
     const [updatedOrder] = await db

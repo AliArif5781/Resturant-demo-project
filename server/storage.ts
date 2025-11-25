@@ -114,8 +114,8 @@ export class MemStorage implements IStorage {
       preparationTime: preparationTime !== undefined ? preparationTime : null,
       // Only keep rejectionReason if explicitly provided, otherwise clear it
       rejectionReason: rejectionReason !== undefined ? rejectionReason : null,
-      // Only keep cancelledBy if explicitly provided, otherwise keep existing value
-      cancelledBy: cancelledBy !== undefined ? cancelledBy : order.cancelledBy
+      // Clear cancelledBy when moving away from cancelled status, or set it if explicitly provided
+      cancelledBy: cancelledBy !== undefined ? cancelledBy : (status === "cancelled" ? order.cancelledBy : null)
     };
     this.orders.set(orderId, updatedOrder);
     return updatedOrder;
