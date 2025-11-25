@@ -7,10 +7,9 @@ import { useToast } from "@/hooks/use-toast";
 
 interface DishOfTheDayProps {
   onAddToOrder?: () => void;
-  onSeeSimilar?: () => void;
 }
 
-export default function DishOfTheDay({ onAddToOrder, onSeeSimilar }: DishOfTheDayProps) {
+export default function DishOfTheDay({ onAddToOrder }: DishOfTheDayProps) {
   const { addToCart } = useCart();
   const { toast } = useToast();
 
@@ -63,9 +62,6 @@ export default function DishOfTheDay({ onAddToOrder, onSeeSimilar }: DishOfTheDa
             <div className="flex gap-3">
               <Button onClick={handleAddToOrder} className="flex-1" data-testid="button-add-to-order">
                 Add to Order
-              </Button>
-              <Button variant="outline" onClick={onSeeSimilar} data-testid="button-see-similar">
-                See similar
               </Button>
             </div>
           </div>
