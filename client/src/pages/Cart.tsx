@@ -92,25 +92,27 @@ export default function Cart() {
 
             <div className="space-y-4">
               {items.map((item) => (
-                <Card key={item.id} className="overflow-hidden border-0 relative" data-testid={`card-cart-item-${item.id}`}>
+                <Card key={item.id} className="overflow-hidden border-0" data-testid={`card-cart-item-${item.id}`}>
                   <CardContent className="p-0">
-                    <div className="flex gap-4">
-                      <div className="relative w-32 h-32 flex-shrink-0">
-                        <img
-                          src={item.image}
-                          alt={item.name}
-                          className="w-full h-full object-cover"
-                          data-testid={`img-cart-item-${item.id}`}
-                        />
+                    <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-start">
+                      <div className="relative w-full sm:w-48 flex-shrink-0 rounded-lg overflow-hidden bg-muted/40">
+                        <div className="aspect-[4/3]">
+                          <img
+                            src={item.image}
+                            alt={item.name}
+                            className="w-full h-full object-cover"
+                            data-testid={`img-cart-item-${item.id}`}
+                          />
+                        </div>
                       </div>
                       
-                      <div className="flex-1 p-4 flex flex-col justify-between">
-                        <div>
-                          <h3 className="font-bold text-lg mb-1" data-testid={`text-cart-item-name-${item.id}`}>
+                      <div className="flex-1 p-4 sm:py-4 sm:pr-4 sm:pl-0 flex flex-col gap-4">
+                        <div className="space-y-2">
+                          <h3 className="font-bold text-lg" data-testid={`text-cart-item-name-${item.id}`}>
                             {item.name}
                           </h3>
                           {item.calories && item.protein && (
-                            <div className="flex gap-2 mb-2 flex-wrap">
+                            <div className="flex gap-2 flex-wrap">
                               <Badge variant="outline" className="bg-orange-50 dark:bg-orange-950 text-orange-700 dark:text-orange-300 border-orange-200 dark:border-orange-800" data-testid={`text-cart-item-calories-${item.id}`}>
                                 🔥 {item.calories} cal
                               </Badge>
@@ -124,7 +126,7 @@ export default function Cart() {
                           </p>
                         </div>
 
-                        <div className="flex items-center justify-between">
+                        <div className="flex items-center justify-between gap-4 flex-wrap">
                           <div className="flex items-center gap-2">
                             <Button
                               size="icon"
