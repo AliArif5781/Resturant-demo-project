@@ -9,6 +9,7 @@ import PopularNow from "@/components/PopularNow";
 import StickyCart from "@/components/StickyCart";
 import OrderStatusPanel from "@/components/OrderStatusPanel";
 import Footer from "@/components/Footer";
+import ActiveOrderBar from "@/components/ActiveOrderBar";
 
 export default function Home() {
   const [orderPanelOpen, setOrderPanelOpen] = useState(false);
@@ -56,6 +57,8 @@ export default function Home() {
         }}
         onArrived={() => console.log("Customer arrived")}
       />
+
+      <ActiveOrderBar />
     </div>
   );
 }
