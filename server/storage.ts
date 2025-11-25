@@ -12,7 +12,7 @@ export interface IStorage {
   getOrderById(orderId: string): Promise<Order | undefined>;
   getRecentOrders(limit?: number): Promise<Order[]>;
   getOrdersByUser(firebaseUid: string): Promise<Order[]>;
-  updateOrderStatus(orderId: string, status: string, preparationTime?: string, rejectionReason?: string): Promise<Order>;
+  updateOrderStatus(orderId: string, status: string, preparationTime?: string, rejectionReason?: string, cancelledBy?: string): Promise<Order>;
   updateGuestArrived(orderId: string, arrived: boolean): Promise<Order>;
 }
 
@@ -77,6 +77,7 @@ export class MemStorage implements IStorage {
       status: insertOrder.status ?? "pending",
       preparationTime: insertOrder.preparationTime ?? null,
       rejectionReason: insertOrder.rejectionReason ?? null,
+      cancelledBy: insertOrder.cancelledBy ?? null,
       guestArrived: insertOrder.guestArrived ?? false,
       createdAt: new Date(),
     };
@@ -101,7 +102,7 @@ export class MemStorage implements IStorage {
       .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
   }
 
-  async updateOrderStatus(orderId: string, status: string, preparationTime?: string, rejectionReason?: string): Promise<Order> {
+  async updateOrderStatus(orderId: string, status: string, preparationTime?: string, rejectionReason?: string, cancelledBy?: string): Promise<Order> {
     const order = this.orders.get(orderId);
     if (!order) {
       throw new Error("Order not found");
@@ -112,7 +113,9 @@ export class MemStorage implements IStorage {
       // Only keep preparationTime if explicitly provided, otherwise clear it
       preparationTime: preparationTime !== undefined ? preparationTime : null,
       // Only keep rejectionReason if explicitly provided, otherwise clear it
-      rejectionReason: rejectionReason !== undefined ? rejectionReason : null
+      rejectionReason: rejectionReason !== undefined ? rejectionReason : null,
+      // Only keep cancelledBy if explicitly provided, otherwise keep existing value
+      cancelledBy: cancelledBy !== undefined ? cancelledBy : order.cancelledBy
     };
     this.orders.set(orderId, updatedOrder);
     return updatedOrder;
