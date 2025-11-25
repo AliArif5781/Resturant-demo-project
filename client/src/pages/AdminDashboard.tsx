@@ -195,7 +195,7 @@ export default function AdminDashboard() {
               Karahi Point Admin
             </h1>
             <div className="flex items-center gap-2 flex-wrap">
-              <p className="text-sm text-slate-300 hidden md:block">
+              <p className="text-sm text-white font-medium hidden md:block">
                 {currentUser?.displayName || currentUser?.email}
               </p>
               <Button 
@@ -203,6 +203,7 @@ export default function AdminDashboard() {
                 size="sm"
                 onClick={() => setLocation("/")} 
                 data-testid="button-home"
+                className="border-slate-400 text-white hover:bg-slate-700"
               >
                 <Home className="h-4 w-4 sm:mr-2" />
                 <span className="hidden sm:inline">Home</span>
@@ -212,6 +213,7 @@ export default function AdminDashboard() {
                 size="sm"
                 onClick={handleSignOut} 
                 data-testid="button-signout"
+                className="border-slate-400 text-white hover:bg-slate-700"
               >
                 Sign Out
               </Button>
