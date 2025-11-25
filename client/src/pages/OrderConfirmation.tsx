@@ -266,7 +266,7 @@ export default function OrderConfirmation() {
   const currentStepIndex = statusToStepIndex[currentStatus] ?? 0;
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-orange-900">
       {/* Party Celebration Effect */}
       {showCelebration && <CelebrationConfetti />}
       

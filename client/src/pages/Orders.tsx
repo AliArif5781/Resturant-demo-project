@@ -95,7 +95,7 @@ export default function Orders() {
 
   if (!currentUser) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-orange-900 flex items-center justify-center p-4">
         <Card className="w-full max-w-md">
           <CardContent className="pt-6 text-center">
             <p className="text-muted-foreground mb-4">Please sign in to view your orders</p>
@@ -109,7 +109,7 @@ export default function Orders() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900 p-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-orange-900 p-4">
       <div className="container mx-auto max-w-4xl">
         <div className="mb-6">
           <Link href="/">
