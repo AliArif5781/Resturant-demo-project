@@ -48,6 +48,27 @@ export default function ActiveOrderBar() {
         order.status === "ready"
     );
 
+  // Get display text for items - show first item name + count of additional items
+  const getItemsDisplayText = (order: Order) => {
+    if (!Array.isArray(order.items) || order.items.length === 0) {
+      return "Order items";
+    }
+
+    // Sort items by quantity (descending) to show the most ordered item first
+    const sortedItems = [...order.items].sort((a, b) => (b.quantity || 0) - (a.quantity || 0));
+    const firstName = sortedItems[0]?.name || "Item";
+    
+    // Truncate long names
+    const truncatedName = firstName.length > 20 ? firstName.substring(0, 20) + "..." : firstName;
+    
+    if (order.items.length === 1) {
+      return truncatedName;
+    }
+    
+    const additionalCount = order.items.length - 1;
+    return `${truncatedName} +${additionalCount} more`;
+  };
+
   useEffect(() => {
     // Show bar if there's an active order
     setShowBar(!!activeOrder);
@@ -93,13 +114,13 @@ export default function ActiveOrderBar() {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case "pending":
-        return <Clock className="h-4 w-4" />;
+        return <Clock className="h-3.5 w-3.5" />;
       case "preparing":
-        return <ChefHat className="h-4 w-4" />;
+        return <ChefHat className="h-3.5 w-3.5" />;
       case "ready":
-        return <Package className="h-4 w-4" />;
+        return <Package className="h-3.5 w-3.5" />;
       default:
-        return <Clock className="h-4 w-4" />;
+        return <Clock className="h-3.5 w-3.5" />;
     }
   };
 
@@ -142,31 +163,31 @@ export default function ActiveOrderBar() {
         >
           <div
             onClick={handleClick}
-            className="container mx-auto max-w-3xl bg-gradient-to-r from-orange-500 via-orange-600 to-red-600 rounded-lg shadow-2xl cursor-pointer hover-elevate active-elevate-2 overflow-hidden"
+            className="container mx-auto max-w-3xl bg-gradient-to-r from-orange-500 to-orange-600 rounded-lg shadow-lg cursor-pointer hover-elevate active-elevate-2 overflow-hidden min-h-[44px]"
             data-testid="button-view-active-order"
           >
-            <div className="flex items-center justify-between gap-3 px-4 py-2.5 text-white">
-              <div className="flex items-center gap-3 flex-1 min-w-0">
-                <div className={`p-1.5 ${getStatusColor(activeOrder.status)} rounded-md`}>
+            <div className="flex items-center justify-between gap-2 px-3 py-1.5 text-white">
+              <div className="flex items-center gap-2 flex-1 min-w-0">
+                <div className={`p-1 ${getStatusColor(activeOrder.status)} rounded`}>
                   {getStatusIcon(activeOrder.status)}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="font-semibold text-sm">
+                  <div className="font-semibold text-xs truncate">
                     {getStatusText(activeOrder.status)}
                   </div>
-                  <div className="text-xs text-white/90">
-                    #{activeOrder.id.slice(0, 8).toUpperCase()} • {activeOrder.items.length} {activeOrder.items.length === 1 ? 'item' : 'items'}
+                  <div className="text-xs text-white/90 truncate">
+                    {getItemsDisplayText(activeOrder)}
                   </div>
                 </div>
               </div>
-              <div className="flex items-center gap-2 flex-shrink-0">
+              <div className="flex items-center gap-1.5 flex-shrink-0">
                 <div className="text-right">
-                  <div className="font-bold text-base">
+                  <div className="font-bold text-sm">
                     ${Number(activeOrder.total).toFixed(2)}
                   </div>
-                  <div className="text-xs text-white/80 hidden sm:block">Tap to track</div>
+                  <div className="text-[10px] text-white/70 hidden sm:block">Tap to track</div>
                 </div>
-                <ArrowRight className="h-5 w-5" />
+                <ArrowRight className="h-4 w-4" />
               </div>
             </div>
           </div>
