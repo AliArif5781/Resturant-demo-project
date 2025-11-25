@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { CheckCircle, Home, ShoppingBag, Clock, Package, CheckCheck, Calendar, MapPin, Flame, Dumbbell, Loader2, XCircle, Sparkles } from "lucide-react";
+import { CheckCircle, Home, ShoppingBag, Clock, Package, CheckCheck, Calendar, MapPin, Flame, Dumbbell, Loader2, XCircle, Sparkles, Ban } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -119,6 +119,8 @@ export default function OrderConfirmation() {
   const guestArrived = orderStatusData?.order?.guestArrived === true;
   const isConfirmed = currentStatus === "preparing" || currentStatus === "completed";
   const isRejected = currentStatus === "rejected";
+  const isCancelled = currentStatus === "cancelled";
+  const canCancel = currentStatus === "pending";
 
   // Mutation to mark guest as arrived
   const markArrivedMutation = useMutation({
@@ -140,6 +142,32 @@ export default function OrderConfirmation() {
       toast({
         title: "Error",
         description: error.message || "Failed to mark as arrived. Please try again.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  // Mutation to cancel order
+  const cancelOrderMutation = useMutation({
+    mutationFn: async () => {
+      if (!orderData?.orderId) throw new Error("No order ID");
+      const response = await apiRequest("PATCH", `/api/orders/${orderData.orderId}/cancel`);
+      return await response.json();
+    },
+    onSuccess: (data: { order: Order }) => {
+      // Update cache immediately with the response
+      queryClient.setQueryData(["/api/orders", orderData?.orderId], data);
+      queryClient.invalidateQueries({ queryKey: ["/api/orders", orderData?.orderId] });
+      queryClient.invalidateQueries({ queryKey: ["/api/orders"] }); // Also refresh admin dashboard
+      toast({
+        title: "Order Cancelled",
+        description: "Your order has been cancelled successfully.",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message || "Failed to cancel order. Please try again.",
         variant: "destructive",
       });
     },
@@ -312,8 +340,53 @@ export default function OrderConfirmation() {
           </motion.div>
         )}
 
-        {/* Success Message - Only show if not rejected */}
-        {!isRejected && (<>
+        {/* Cancelled Notice */}
+        {isCancelled && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ type: "spring", stiffness: 100 }}
+            className="max-w-3xl mx-auto mb-8"
+          >
+            <Card className="border-2 border-orange-200 dark:border-orange-800 bg-orange-50 dark:bg-orange-950/30">
+              <CardContent className="p-6">
+                <div className="flex flex-col items-center text-center gap-4">
+                  <div className="inline-flex items-center justify-center w-16 h-16 bg-orange-100 dark:bg-orange-900/40 rounded-full">
+                    <Ban className="h-10 w-10 text-orange-600 dark:text-orange-400" />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl font-bold text-orange-900 dark:text-orange-100 mb-2" data-testid="text-order-cancelled-title">
+                      Order Cancelled
+                    </h2>
+                    <p className="text-orange-700 dark:text-orange-300 mb-4" data-testid="text-cancellation-message">
+                      You have cancelled this order.
+                    </p>
+                    <p className="text-sm text-orange-600 dark:text-orange-400">
+                      If this was a mistake or you'd like to place a new order, you can return to the menu.
+                    </p>
+                  </div>
+                  <div className="flex gap-3 mt-2">
+                    <Link href="/">
+                      <Button variant="default" className="gap-2" data-testid="button-return-home-cancelled">
+                        <Home className="h-4 w-4" />
+                        Return to Menu
+                      </Button>
+                    </Link>
+                    <Link href="/orders">
+                      <Button variant="outline" className="gap-2" data-testid="button-view-orders-cancelled">
+                        <ShoppingBag className="h-4 w-4" />
+                        View My Orders
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        )}
+
+        {/* Success Message - Only show if not rejected or cancelled */}
+        {!isRejected && !isCancelled && (<>
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -412,6 +485,27 @@ export default function OrderConfirmation() {
               </Badge>
             </motion.div>
           </div>
+
+          {/* Cancel Order Button - Only show for pending orders */}
+          {canCancel && (
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 }}
+              className="mt-6 flex justify-center"
+            >
+              <Button
+                variant="destructive"
+                onClick={() => cancelOrderMutation.mutate()}
+                disabled={cancelOrderMutation.isPending}
+                className="gap-2"
+                data-testid="button-cancel-order"
+              >
+                <Ban className="h-4 w-4" />
+                {cancelOrderMutation.isPending ? "Cancelling..." : "Cancel Order"}
+              </Button>
+            </motion.div>
+          )}
           </motion.div>
 
         {/* Order Timeline */}
