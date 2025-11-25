@@ -311,7 +311,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
-      const updatedOrder = await storage.updateOrderStatus(orderId, "cancelled");
+      const updatedOrder = await storage.updateOrderStatus(orderId, "cancelled", undefined, undefined, "guest");
       res.json({ order: updatedOrder });
     } catch (error: any) {
       res.status(400).json({ message: error.message });

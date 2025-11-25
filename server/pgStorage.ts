@@ -81,14 +81,19 @@ export class PgStorage implements IStorage {
     return result;
   }
 
-  async updateOrderStatus(orderId: string, status: string, preparationTime?: string, rejectionReason?: string): Promise<Order> {
-    const updateData: { status: string; preparationTime: string | null; rejectionReason: string | null } = { 
+  async updateOrderStatus(orderId: string, status: string, preparationTime?: string, rejectionReason?: string, cancelledBy?: string): Promise<Order> {
+    const updateData: { status: string; preparationTime: string | null; rejectionReason: string | null; cancelledBy?: string | null } = { 
       status,
       // Clear preparationTime unless explicitly provided
       preparationTime: preparationTime !== undefined ? preparationTime : null,
       // Clear rejectionReason unless explicitly provided
       rejectionReason: rejectionReason !== undefined ? rejectionReason : null
     };
+    
+    // Only include cancelledBy in update if explicitly provided
+    if (cancelledBy !== undefined) {
+      updateData.cancelledBy = cancelledBy;
+    }
     
     const [updatedOrder] = await db
       .update(orders)
