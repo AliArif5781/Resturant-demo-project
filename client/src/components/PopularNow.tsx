@@ -43,8 +43,8 @@ export default function PopularNow() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold mb-2" data-testid="text-popular-title">Popular right now</h2>
-        <p className="text-muted-foreground" data-testid="text-popular-subtitle">What guests are loving this hour.</p>
+        <h2 className="text-2xl font-bold mb-2 text-white" data-testid="text-popular-title">Popular right now</h2>
+        <p className="text-white/70" data-testid="text-popular-subtitle">What guests are loving this hour.</p>
       </div>
 
       <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">

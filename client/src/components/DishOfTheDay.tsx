@@ -45,8 +45,8 @@ export default function DishOfTheDay({ onAddToOrder, onSeeSimilar }: DishOfTheDa
             <Badge className="bg-primary/20 text-primary border-0 animate-pulse" data-testid="badge-dish-label">
               🌟 Dish of the Day
             </Badge>
-            <h3 className="text-2xl font-bold" data-testid="text-dish-name">Chicken Karahi (Bone-In)</h3>
-            <p className="text-muted-foreground" data-testid="text-dish-description">
+            <h3 className="text-2xl font-bold text-foreground" data-testid="text-dish-name">Chicken Karahi (Bone-In)</h3>
+            <p className="text-foreground/70" data-testid="text-dish-description">
               Slow-cooked tomato-based karahi with fresh ginger, chilies & coriander.
             </p>
             <div className="flex flex-wrap gap-2">

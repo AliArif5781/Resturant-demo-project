@@ -43,7 +43,7 @@ export default function DealsCarousel() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-2xl font-bold" data-testid="text-deals-title">Today's Specials</h2>
+        <h2 className="text-2xl font-bold text-white" data-testid="text-deals-title">Today's Specials</h2>
         <div className="flex gap-2">
           <Button size="icon" variant="outline" onClick={prev} data-testid="button-prev-deal">
             <ChevronLeft className="h-4 w-4" />

@@ -212,8 +212,8 @@ export default function RecommendedForYou() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold mb-2" data-testid="text-recommended-title">Recommended for you</h2>
-        <p className="text-muted-foreground" data-testid="text-recommended-subtitle">
+        <h2 className="text-2xl font-bold mb-2 text-white" data-testid="text-recommended-title">Recommended for you</h2>
+        <p className="text-white/70" data-testid="text-recommended-subtitle">
           {cartItems.length > 0 
             ? "Based on items in your cart" 
             : "Based on what you've ordered and what's popular tonight."}
