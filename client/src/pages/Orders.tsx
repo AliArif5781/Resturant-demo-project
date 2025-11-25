@@ -4,7 +4,7 @@ import { Link, useLocation } from "wouter";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Clock, ChefHat, Package, CheckCircle, ArrowLeft, XCircle } from "lucide-react";
+import { Clock, ChefHat, Package, CheckCircle, ArrowLeft, XCircle, Home } from "lucide-react";
 import type { Order } from "@shared/schema";
 
 export default function Orders() {
@@ -109,22 +109,34 @@ export default function Orders() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-orange-900 p-4">
-      <div className="container mx-auto max-w-4xl">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-orange-900">
+      {/* Header */}
+      <header className="border-b border-slate-700 sticky top-0 bg-slate-900/80 backdrop-blur-md z-50">
+        <div className="container mx-auto px-4 py-3">
+          <div className="flex items-center justify-between gap-4">
+            <Link href="/">
+              <div className="flex items-center gap-3 cursor-pointer">
+                <span className="font-bold text-lg text-white">Karahi Point</span>
+              </div>
+            </Link>
+            <Link href="/">
+              <Button variant="ghost" className="gap-2 text-white hover:bg-slate-700" data-testid="button-home">
+                <Home className="h-4 w-4" />
+                Home
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </header>
+
+      <div className="container mx-auto max-w-4xl p-4">
         <div className="mb-6">
-          <Link href="/">
-            <Button variant="ghost" size="sm" data-testid="button-back">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Menu
-            </Button>
-          </Link>
+          <h1 className="text-3xl font-bold text-white mb-2">My Orders</h1>
+          <p className="text-slate-200">Track your orders and view order history</p>
         </div>
 
         <Card>
-          <CardHeader>
-            <CardTitle>My Orders</CardTitle>
-          </CardHeader>
-          <CardContent>
+          <CardContent className="pt-6">
             {isLoading ? (
               <div className="text-center py-8 text-muted-foreground">
                 Loading orders...
