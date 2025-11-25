@@ -56,3 +56,8 @@ waitForPort = 5000
 [agent]
 integrations = ["javascript_mem_db:1.0.0", "javascript_openai:1.0.0"]
 expertMode = true
+
+[userenv]
+
+[userenv.shared]
+VITE_FIREBASE_API_KEY = "AIzaSyCXxqNs2yqBYe9CB56lNeOv9QZKJy6zldk"
