@@ -94,19 +94,17 @@ export default function Cart() {
               {items.map((item) => (
                 <Card key={item.id} className="overflow-hidden border-0" data-testid={`card-cart-item-${item.id}`}>
                   <CardContent className="p-0">
-                    <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-start">
-                      <div className="relative w-full sm:w-48 flex-shrink-0 rounded-lg overflow-hidden">
-                        <div className="aspect-[4/3]">
-                          <img
-                            src={item.image}
-                            alt={item.name}
-                            className="w-full h-full object-cover rounded-lg"
-                            data-testid={`img-cart-item-${item.id}`}
-                          />
-                        </div>
+                    <div className="flex flex-col sm:flex-row items-stretch">
+                      <div className="relative w-full sm:w-48 flex-shrink-0 overflow-hidden">
+                        <img
+                          src={item.image}
+                          alt={item.name}
+                          className="w-full h-full object-cover"
+                          data-testid={`img-cart-item-${item.id}`}
+                        />
                       </div>
                       
-                      <div className="flex-1 p-4 sm:py-4 sm:pr-4 sm:pl-0 flex flex-col gap-4">
+                      <div className="flex-1 p-4 flex flex-col gap-4">
                         <div className="space-y-2">
                           <h3 className="font-bold text-lg" data-testid={`text-cart-item-name-${item.id}`}>
                             {item.name}
