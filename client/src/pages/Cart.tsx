@@ -3,7 +3,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Minus, Plus, Trash2, ArrowLeft, ShoppingBag, X } from "lucide-react";
+import { Minus, Plus, Trash2, ArrowLeft, ShoppingBag } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import RecommendedForYou from "@/components/RecommendedForYou";
 import { useToast } from "@/hooks/use-toast";
@@ -103,16 +103,6 @@ export default function Cart() {
                           data-testid={`img-cart-item-${item.id}`}
                         />
                       </div>
-                      
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        className="absolute top-2 right-2 h-8 w-8 rounded-md"
-                        onClick={() => removeFromCart(item.id)}
-                        data-testid={`button-remove-top-${item.id}`}
-                      >
-                        <X className="h-4 w-4" />
-                      </Button>
                       
                       <div className="flex-1 p-4 flex flex-col justify-between">
                         <div>
