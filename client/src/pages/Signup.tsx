@@ -55,7 +55,15 @@ export default function Signup() {
         title: "Success",
         description: "Account created successfully!",
       });
-      setLocation(role === "admin" ? "/admin" : "/");
+      
+      // Check if there's a redirect URL stored
+      const redirectUrl = sessionStorage.getItem("redirectAfterSignin");
+      if (redirectUrl) {
+        sessionStorage.removeItem("redirectAfterSignin");
+        setLocation(redirectUrl);
+      } else {
+        setLocation(role === "admin" ? "/admin" : "/");
+      }
     } catch (error: any) {
       toast({
         title: "Error",
@@ -75,7 +83,15 @@ export default function Signup() {
         title: "Success",
         description: "Signed in with Google successfully!",
       });
-      setLocation(role === "admin" ? "/admin" : "/");
+      
+      // Check if there's a redirect URL stored
+      const redirectUrl = sessionStorage.getItem("redirectAfterSignin");
+      if (redirectUrl) {
+        sessionStorage.removeItem("redirectAfterSignin");
+        setLocation(redirectUrl);
+      } else {
+        setLocation(role === "admin" ? "/admin" : "/");
+      }
     } catch (error: any) {
       toast({
         title: "Error",

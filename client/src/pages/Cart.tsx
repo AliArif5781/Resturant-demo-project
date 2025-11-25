@@ -21,6 +21,8 @@ export default function Cart() {
         description: "You need to be signed in to place an order.",
         variant: "destructive",
       });
+      // Store the intended destination so we can redirect back after signin
+      sessionStorage.setItem("redirectAfterSignin", "/cart");
       setLocation("/signin");
       return;
     }
