@@ -8,9 +8,13 @@ import { useAuth } from "@/contexts/AuthContext";
 type Order = {
   id: string;
   status: string;
+  subtotal: number;
+  tax: number;
   total: number;
   createdAt: string;
   items: any[];
+  userEmail: string;
+  userName?: string;
 };
 
 export default function ActiveOrderBar() {
@@ -34,35 +38,55 @@ export default function ActiveOrderBar() {
   const orders = ordersData?.orders || [];
   
   // Find the most recent active order (not completed, cancelled, or rejected)
-  const activeOrder = orders.find(
-    (order) => 
-      order.status === "pending" || 
-      order.status === "preparing" || 
-      order.status === "ready"
-  );
+  // Sort by creation date descending to get the newest first
+  const activeOrder = [...orders]
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    .find(
+      (order) => 
+        order.status === "pending" || 
+        order.status === "preparing" || 
+        order.status === "ready"
+    );
 
   useEffect(() => {
     // Show bar if there's an active order
     setShowBar(!!activeOrder);
   }, [activeOrder]);
 
-  const handleClick = () => {
-    if (activeOrder) {
-      // Save order data to sessionStorage for the OrderConfirmation page
-      const orderData = {
-        orderId: activeOrder.id,
-        orderNumber: `#${activeOrder.id.slice(0, 8).toUpperCase()}`,
-        items: Array.isArray(activeOrder.items) ? activeOrder.items : [],
-        subtotal: `$${Number(activeOrder.total / 1.08).toFixed(2)}`,
-        tax: `$${Number(activeOrder.total * 0.08 / 1.08).toFixed(2)}`,
-        total: `$${Number(activeOrder.total).toFixed(2)}`,
-        userEmail: currentUser?.email || "",
-        userName: currentUser?.displayName || "Customer",
-        orderDate: new Date(activeOrder.createdAt).toLocaleDateString(),
-        status: activeOrder.status,
-      };
-      sessionStorage.setItem("lastOrder", JSON.stringify(orderData));
-      setLocation("/order-confirmation");
+  const handleClick = async () => {
+    if (activeOrder && currentUser) {
+      try {
+        // Fetch full order details from the API to ensure accuracy
+        const response = await fetch(`/api/orders/${activeOrder.id}`, {
+          headers: {
+            "x-firebase-uid": currentUser.uid,
+          },
+        });
+        
+        if (response.ok) {
+          const { order } = await response.json();
+          
+          // Save complete order data to sessionStorage for the OrderConfirmation page
+          const orderData = {
+            orderId: order.id,
+            orderNumber: `#${order.id.slice(0, 8).toUpperCase()}`,
+            items: Array.isArray(order.items) ? order.items : [],
+            subtotal: `$${Number(order.subtotal).toFixed(2)}`,
+            tax: `$${Number(order.tax).toFixed(2)}`,
+            total: `$${Number(order.total).toFixed(2)}`,
+            userEmail: order.userEmail,
+            userName: order.userName || "Customer",
+            orderDate: new Date(order.createdAt).toLocaleDateString(),
+            status: order.status,
+          };
+          sessionStorage.setItem("lastOrder", JSON.stringify(orderData));
+          setLocation("/order-confirmation");
+        }
+      } catch (error) {
+        console.error("Failed to fetch order details:", error);
+        // Fallback: navigate anyway
+        setLocation("/order-confirmation");
+      }
     }
   };
 
