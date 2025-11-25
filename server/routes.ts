@@ -235,8 +235,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Clear stale fields based on status transitions
       const finalPrepTime = status === "preparing" ? trimmedPrepTime : undefined;
       const finalRejectionReason = status === "rejected" ? trimmedRejectionReason : undefined;
+      const finalCancelledBy = status === "cancelled" ? "admin" : undefined;
 
-      const updatedOrder = await storage.updateOrderStatus(orderId, status, finalPrepTime, finalRejectionReason);
+      const updatedOrder = await storage.updateOrderStatus(orderId, status, finalPrepTime, finalRejectionReason, finalCancelledBy);
       res.json({ order: updatedOrder });
     } catch (error: any) {
       res.status(400).json({ message: error.message });
