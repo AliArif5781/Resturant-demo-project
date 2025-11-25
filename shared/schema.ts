@@ -31,6 +31,7 @@ export const orders = pgTable("orders", {
   status: text("status").notNull().default("pending"),
   preparationTime: text("preparation_time"),
   rejectionReason: text("rejection_reason"),
+  cancelledBy: text("cancelled_by"),
   guestArrived: boolean("guest_arrived").default(false).notNull(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
