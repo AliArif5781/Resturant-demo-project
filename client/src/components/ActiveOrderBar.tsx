@@ -93,13 +93,13 @@ export default function ActiveOrderBar() {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case "pending":
-        return <Clock className="h-5 w-5" />;
+        return <Clock className="h-4 w-4" />;
       case "preparing":
-        return <ChefHat className="h-5 w-5" />;
+        return <ChefHat className="h-4 w-4" />;
       case "ready":
-        return <Package className="h-5 w-5" />;
+        return <Package className="h-4 w-4" />;
       default:
-        return <Clock className="h-5 w-5" />;
+        return <Clock className="h-4 w-4" />;
     }
   };
 
@@ -142,31 +142,31 @@ export default function ActiveOrderBar() {
         >
           <div
             onClick={handleClick}
-            className="container mx-auto max-w-3xl bg-gradient-to-r from-orange-500 via-orange-600 to-red-600 rounded-xl shadow-2xl cursor-pointer hover-elevate active-elevate-2 overflow-hidden"
+            className="container mx-auto max-w-3xl bg-gradient-to-r from-orange-500 via-orange-600 to-red-600 rounded-lg shadow-2xl cursor-pointer hover-elevate active-elevate-2 overflow-hidden"
             data-testid="button-view-active-order"
           >
-            <div className="flex items-center justify-between gap-4 p-4 text-white">
-              <div className="flex items-center gap-4 flex-1">
-                <div className={`p-2 ${getStatusColor(activeOrder.status)} rounded-lg`}>
+            <div className="flex items-center justify-between gap-3 px-4 py-2.5 text-white">
+              <div className="flex items-center gap-3 flex-1 min-w-0">
+                <div className={`p-1.5 ${getStatusColor(activeOrder.status)} rounded-md`}>
                   {getStatusIcon(activeOrder.status)}
                 </div>
-                <div className="flex-1">
-                  <div className="font-bold text-lg">
+                <div className="flex-1 min-w-0">
+                  <div className="font-semibold text-sm">
                     {getStatusText(activeOrder.status)}
                   </div>
-                  <div className="text-sm text-white/90">
-                    Order #{activeOrder.id.slice(0, 8).toUpperCase()} • {activeOrder.items.length} items
+                  <div className="text-xs text-white/90">
+                    #{activeOrder.id.slice(0, 8).toUpperCase()} • {activeOrder.items.length} {activeOrder.items.length === 1 ? 'item' : 'items'}
                   </div>
                 </div>
               </div>
-              <div className="flex items-center gap-3">
-                <div className="text-right hidden sm:block">
-                  <div className="text-sm text-white/90">Tap to track</div>
-                  <div className="font-bold text-lg">
+              <div className="flex items-center gap-2 flex-shrink-0">
+                <div className="text-right">
+                  <div className="font-bold text-base">
                     ${Number(activeOrder.total).toFixed(2)}
                   </div>
+                  <div className="text-xs text-white/80 hidden sm:block">Tap to track</div>
                 </div>
-                <ArrowRight className="h-6 w-6" />
+                <ArrowRight className="h-5 w-5" />
               </div>
             </div>
           </div>
