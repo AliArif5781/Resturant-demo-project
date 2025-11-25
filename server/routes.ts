@@ -277,6 +277,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Cancel order (USER - own orders only, and only if status is pending)
+  app.patch("/api/orders/:orderId/cancel", async (req, res) => {
+    try {
+      const firebaseUid = req.headers["x-firebase-uid"] as string;
+      const { orderId } = req.params;
+      
+      if (!firebaseUid) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      // Verify user exists
+      const user = await storage.getUserByFirebaseUid(firebaseUid);
+      if (!user) {
+        return res.status(401).json({ message: "User not found" });
+      }
+
+      // Get the order to verify ownership and status
+      const order = await storage.getOrderById(orderId);
+      if (!order) {
+        return res.status(404).json({ message: "Order not found" });
+      }
+
+      // Only the order owner can cancel their own order
+      if (order.firebaseUid !== firebaseUid) {
+        return res.status(403).json({ message: "Access denied" });
+      }
+
+      // Can only cancel pending orders
+      if (order.status !== "pending") {
+        return res.status(400).json({ 
+          message: `Cannot cancel order with status "${order.status}". Only pending orders can be cancelled.` 
+        });
+      }
+
+      const updatedOrder = await storage.updateOrderStatus(orderId, "cancelled");
+      res.json({ order: updatedOrder });
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
   const httpServer = createServer(app);
 
   return httpServer;
