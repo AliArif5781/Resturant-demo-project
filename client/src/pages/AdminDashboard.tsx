@@ -314,7 +314,9 @@ export default function AdminDashboard() {
                                   }
                                   data-testid={`badge-order-status-${order.id}`}
                                 >
-                                  {order.status}
+                                  {order.status === "cancelled" && order.cancelledBy === "guest" 
+                                    ? "Cancelled by Guest" 
+                                    : order.status}
                                 </Badge>
                                 {order.guestArrived === true && (
                                   <Badge 
