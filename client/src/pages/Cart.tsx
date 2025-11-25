@@ -95,12 +95,12 @@ export default function Cart() {
                 <Card key={item.id} className="overflow-hidden border-0" data-testid={`card-cart-item-${item.id}`}>
                   <CardContent className="p-0">
                     <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-start">
-                      <div className="relative w-full sm:w-48 flex-shrink-0 rounded-lg overflow-hidden bg-muted/40">
+                      <div className="relative w-full sm:w-48 flex-shrink-0 rounded-lg overflow-hidden">
                         <div className="aspect-[4/3]">
                           <img
                             src={item.image}
                             alt={item.name}
-                            className="w-full h-full object-cover"
+                            className="w-full h-full object-cover rounded-lg"
                             data-testid={`img-cart-item-${item.id}`}
                           />
                         </div>
