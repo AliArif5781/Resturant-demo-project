@@ -131,7 +131,7 @@ export default function Checkout() {
           className="mb-6"
         >
           <Link href="/cart">
-            <Button variant="ghost" className="gap-2" data-testid="button-back-to-cart">
+            <Button variant="ghost" className="gap-2 text-white hover:text-white" data-testid="button-back-to-cart">
               <ArrowLeft className="h-4 w-4" />
               Back to Cart
             </Button>
@@ -143,10 +143,10 @@ export default function Checkout() {
           animate={{ opacity: 1, y: 0 }}
           className="mb-8"
         >
-          <h1 className="text-4xl font-bold mb-2" data-testid="text-checkout-title">
+          <h1 className="text-4xl font-bold mb-2 text-white" data-testid="text-checkout-title">
             Checkout
           </h1>
-          <p className="text-muted-foreground" data-testid="text-checkout-subtitle">
+          <p className="text-white/70" data-testid="text-checkout-subtitle">
             Review your order and complete your purchase
           </p>
         </motion.div>

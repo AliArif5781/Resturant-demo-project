@@ -37,7 +37,7 @@ export default function Cart() {
         <div className="container mx-auto px-4 py-8">
           <div className="mb-6">
             <Link href="/">
-              <Button variant="ghost" className="gap-2" data-testid="button-back">
+              <Button variant="ghost" className="gap-2 text-white hover:text-white" data-testid="button-back">
                 <ArrowLeft className="h-4 w-4" />
                 Back to Menu
               </Button>
@@ -45,9 +45,9 @@ export default function Cart() {
           </div>
           
           <div className="flex flex-col items-center justify-center py-16 text-center">
-            <ShoppingBag className="h-24 w-24 text-muted-foreground mb-4" />
-            <h2 className="text-2xl font-bold mb-2" data-testid="text-empty-title">Your cart is empty</h2>
-            <p className="text-muted-foreground mb-6" data-testid="text-empty-subtitle">
+            <ShoppingBag className="h-24 w-24 text-white/60 mb-4" />
+            <h2 className="text-2xl font-bold mb-2 text-white" data-testid="text-empty-title">Your cart is empty</h2>
+            <p className="text-white/70 mb-6" data-testid="text-empty-subtitle">
               Add some delicious items to get started!
             </p>
             <Link href="/">
@@ -64,7 +64,7 @@ export default function Cart() {
       <div className="container mx-auto px-4 py-8">
         <div className="mb-6 flex items-center justify-between gap-4">
           <Link href="/">
-            <Button variant="ghost" className="gap-2" data-testid="button-back">
+            <Button variant="ghost" className="gap-2 text-white hover:text-white" data-testid="button-back">
               <ArrowLeft className="h-4 w-4" />
               Back to Menu
             </Button>
@@ -73,7 +73,7 @@ export default function Cart() {
           <Button
             variant="outline"
             onClick={clearCart}
-            className="gap-2"
+            className="gap-2 text-white border-white/20 hover:bg-white/10 hover:text-white"
             data-testid="button-clear-cart"
           >
             <Trash2 className="h-4 w-4" />
@@ -84,8 +84,8 @@ export default function Cart() {
         <div className="grid lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-4">
             <div>
-              <h1 className="text-3xl font-bold mb-2" data-testid="text-cart-title">Your Order</h1>
-              <p className="text-muted-foreground" data-testid="text-cart-subtitle">
+              <h1 className="text-3xl font-bold mb-2 text-white" data-testid="text-cart-title">Your Order</h1>
+              <p className="text-white/70" data-testid="text-cart-subtitle">
                 {totalItems} {totalItems === 1 ? "item" : "items"} in your cart
               </p>
             </div>
