@@ -7,6 +7,7 @@ import { Minus, Plus, Trash2, ArrowLeft, ShoppingBag } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import RecommendedForYou from "@/components/RecommendedForYou";
 import { useToast } from "@/hooks/use-toast";
+import Header from "@/components/Header";
 
 export default function Cart() {
   const { items, removeFromCart, updateQuantity, clearCart, totalPrice, totalItems } = useCart();
@@ -34,16 +35,8 @@ export default function Cart() {
   if (items.length === 0) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-orange-900">
+        <Header />
         <div className="container mx-auto px-4 py-8">
-          <div className="mb-6">
-            <Link href="/">
-              <Button variant="ghost" className="gap-2 text-white hover:text-white" data-testid="button-back">
-                <ArrowLeft className="h-4 w-4" />
-                Back to Menu
-              </Button>
-            </Link>
-          </div>
-          
           <div className="flex flex-col items-center justify-center py-16 text-center">
             <ShoppingBag className="h-24 w-24 text-white/60 mb-4" />
             <h2 className="text-2xl font-bold mb-2 text-white" data-testid="text-empty-title">Your cart is empty</h2>
@@ -61,15 +54,9 @@ export default function Cart() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-orange-900">
+      <Header />
       <div className="container mx-auto px-4 py-8">
-        <div className="mb-6 flex items-center justify-between gap-4">
-          <Link href="/">
-            <Button variant="ghost" className="gap-2 text-white hover:text-white" data-testid="button-back">
-              <ArrowLeft className="h-4 w-4" />
-              Back to Menu
-            </Button>
-          </Link>
-          
+        <div className="mb-6 flex items-center justify-end">
           <Button
             variant="outline"
             onClick={clearCart}

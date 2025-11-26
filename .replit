@@ -27,16 +27,16 @@ localPort = 40901
 externalPort = 3002
 
 [[ports]]
-localPort = 42957
-externalPort = 5000
-
-[[ports]]
 localPort = 43827
 externalPort = 4200
 
 [[ports]]
 localPort = 44833
 externalPort = 3000
+
+[[ports]]
+localPort = 44933
+externalPort = 5000
 
 [env]
 PORT = "5000"
@@ -73,3 +73,4 @@ expertMode = true
 
 [userenv.shared]
 VITE_FIREBASE_API_KEY = "AIzaSyCXxqNs2yqBYe9CB56lNeOv9QZKJy6zldk"
+ADMIN_EMAILS = "ali@gmail.com"

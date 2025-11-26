@@ -4,12 +4,13 @@ import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Check, ShoppingBag, User, Mail, CreditCard, Home } from "lucide-react";
+import { ArrowLeft, Check, ShoppingBag, User, Mail, CreditCard } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
+import Header from "@/components/Header";
 
 export default function Checkout() {
   const { items, clearCart, totalPrice, totalItems } = useCart();
@@ -105,24 +106,7 @@ export default function Checkout() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-orange-900">
-      {/* Header */}
-      <header className="border-b sticky top-0 bg-background z-50" data-testid="header-checkout">
-        <div className="container mx-auto px-4 py-3">
-          <div className="flex items-center justify-between gap-4">
-            <Link href="/">
-              <div className="flex items-center gap-3 cursor-pointer">
-                <span className="font-bold text-lg" data-testid="text-brand-name">Karahi Point</span>
-              </div>
-            </Link>
-            <Link href="/">
-              <Button variant="ghost" className="gap-2" data-testid="button-home">
-                <Home className="h-4 w-4" />
-                Home
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </header>
+      <Header />
 
       <div className="container mx-auto px-4 py-8">
         <motion.div
