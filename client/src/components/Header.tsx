@@ -20,21 +20,13 @@ interface HeaderProps {
   tableNumber?: string;
 }
 
-const navItems = [
-  { label: "Menu", href: "/" },
-  { label: "Specials", href: "/" },
-  { label: "Catering", href: "/" },
-  { label: "About", href: "/" },
-  { label: "Locations", href: "/" },
-];
-
 export default function Header({
   mode,
   tableNumber,
 }: HeaderProps = {}) {
   const { totalItems } = useCart();
   const { currentUser, signout } = useAuth();
-  const [location, setLocation] = useLocation();
+  const [, setLocation] = useLocation();
   const { toast } = useToast();
 
   const handleSignout = async () => {
@@ -65,23 +57,6 @@ export default function Header({
               </span>
             </div>
           </Link>
-
-          <nav className="hidden md:flex items-center">
-            <div className="flex items-center gap-1 bg-white/10 backdrop-blur-md rounded-full px-2 py-1.5 border border-white/20">
-              {navItems.map((item) => (
-                <Link key={item.label} href={item.href}>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="text-white/90 rounded-full px-4 text-sm font-medium"
-                    data-testid={`nav-${item.label.toLowerCase()}`}
-                  >
-                    {item.label}
-                  </Button>
-                </Link>
-              ))}
-            </div>
-          </nav>
 
           <div className="flex items-center gap-3">
             <Button
@@ -175,7 +150,7 @@ export default function Header({
                     className="rounded-full px-5"
                     data-testid="button-signup"
                   >
-                    Contact Us
+                    Sign Up
                   </Button>
                 </Link>
               </div>

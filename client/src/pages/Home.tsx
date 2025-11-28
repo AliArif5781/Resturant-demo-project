@@ -14,7 +14,7 @@ export default function Home() {
   const [orderPanelOpen, setOrderPanelOpen] = useState(false);
 
   return (
-    <div className="min-h-screen bg-slate-900">
+    <div className="min-h-screen bg-[#1a1a2e]">
       <Header />
 
       <Hero
@@ -24,7 +24,7 @@ export default function Home() {
         onOrderLater={() => console.log("Order later")}
       />
 
-      <main className="bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900">
+      <main className="bg-gradient-to-b from-[#1a1a2e] via-[#16213e] to-[#1a1a2e]">
         <div className="container mx-auto px-6 md:px-12 lg:px-20 space-y-20 py-20 text-white">
           <DishOfTheDay
             onAddToOrder={() => console.log("Added dish of the day")}
