@@ -1,4 +1,4 @@
-import { User, ShoppingCart, LogOut, Package } from "lucide-react";
+import { User, ShoppingCart, LogOut, Package, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -20,13 +20,21 @@ interface HeaderProps {
   tableNumber?: string;
 }
 
+const navItems = [
+  { label: "Menu", href: "/" },
+  { label: "Specials", href: "/" },
+  { label: "Catering", href: "/" },
+  { label: "About", href: "/" },
+  { label: "Locations", href: "/" },
+];
+
 export default function Header({
   mode,
   tableNumber,
 }: HeaderProps = {}) {
   const { totalItems } = useCart();
   const { currentUser, signout } = useAuth();
-  const [, setLocation] = useLocation();
+  const [location, setLocation] = useLocation();
   const { toast } = useToast();
 
   const handleSignout = async () => {
@@ -47,24 +55,52 @@ export default function Header({
   };
 
   return (
-    <header className="bg-transparent" data-testid="header-main">
-      <div className="container mx-auto px-4 py-3">
+    <header className="absolute top-0 left-0 right-0 z-50" data-testid="header-main">
+      <div className="container mx-auto px-6 md:px-12 lg:px-20 py-5">
         <div className="flex items-center justify-between gap-4">
           <Link href="/">
             <div className="flex items-center gap-3 cursor-pointer">
-              <span className="font-bold text-lg text-white">Karahi Point</span>
+              <span className="font-bold text-xl text-white tracking-tight" data-testid="text-brand-name">
+                Karahi Point
+              </span>
             </div>
           </Link>
 
-          <div className="flex items-center gap-2">
+          <nav className="hidden md:flex items-center">
+            <div className="flex items-center gap-1 bg-white/10 backdrop-blur-md rounded-full px-2 py-1.5 border border-white/20">
+              {navItems.map((item) => (
+                <Link key={item.label} href={item.href}>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-white/90 rounded-full px-4 text-sm font-medium"
+                    data-testid={`nav-${item.label.toLowerCase()}`}
+                  >
+                    {item.label}
+                  </Button>
+                </Link>
+              ))}
+            </div>
+          </nav>
+
+          <div className="flex items-center gap-3">
+            <Button
+              size="icon"
+              variant="ghost"
+              className="text-white/90 rounded-full"
+              data-testid="button-search"
+            >
+              <Search className="h-5 w-5" />
+            </Button>
+
             <Link href="/cart">
               <Button
                 size="icon"
                 variant="ghost"
-                className="relative"
+                className="relative text-white/90 rounded-full"
                 data-testid="button-cart"
               >
-                <ShoppingCart className="h-5 w-5 text-white" />
+                <ShoppingCart className="h-5 w-5" />
                 {totalItems > 0 && (
                   <Badge
                     className="absolute -top-1 -right-1 h-4 w-4 min-w-[1rem] flex items-center justify-center p-0 text-[10px] font-semibold bg-primary text-primary-foreground rounded-full"
@@ -80,13 +116,13 @@ export default function Header({
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Avatar
-                    className="h-8 w-8 cursor-pointer"
+                    className="h-9 w-9 cursor-pointer border-2 border-white/20"
                     data-testid="avatar-user"
                   >
                     {currentUser.photoURL && (
                       <AvatarImage src={currentUser.photoURL} />
                     )}
-                    <AvatarFallback className="bg-accent text-xs">
+                    <AvatarFallback className="bg-white/20 text-white text-xs">
                       {currentUser.displayName ? (
                         currentUser.displayName.charAt(0).toUpperCase()
                       ) : (
@@ -124,17 +160,22 @@ export default function Header({
             ) : (
               <div className="flex items-center gap-2">
                 <Link href="/signin">
-                  <Button variant="white" size="sm" data-testid="button-signin">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="text-white/90 rounded-full px-4"
+                    data-testid="button-signin"
+                  >
                     Sign In
                   </Button>
                 </Link>
                 <Link href="/signup">
                   <Button
-                    variant="default"
                     size="sm"
+                    className="rounded-full px-5"
                     data-testid="button-signup"
                   >
-                    Sign Up
+                    Contact Us
                   </Button>
                 </Link>
               </div>

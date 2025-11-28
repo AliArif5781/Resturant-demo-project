@@ -6,17 +6,15 @@ import DealsCarousel from "@/components/DealsCarousel";
 import RecommendedForYou from "@/components/RecommendedForYou";
 import QuickCategories from "@/components/QuickCategories";
 import PopularNow from "@/components/PopularNow";
-import StickyCart from "@/components/StickyCart";
 import OrderStatusPanel from "@/components/OrderStatusPanel";
 import Footer from "@/components/Footer";
 import ActiveOrderBar from "@/components/ActiveOrderBar";
 
 export default function Home() {
   const [orderPanelOpen, setOrderPanelOpen] = useState(false);
-  const [cartMode] = useState<"cart" | "order">("cart");
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-orange-900">
+    <div className="min-h-screen bg-slate-900">
       <Header />
 
       <Hero
@@ -26,19 +24,20 @@ export default function Home() {
         onOrderLater={() => console.log("Order later")}
       />
 
-      <main className="container mx-auto px-4 space-y-16 py-12 text-white">
-        <DishOfTheDay
-          onAddToOrder={() => console.log("Added dish of the day")}
-          onSeeSimilar={() => console.log("See similar dishes")}
-        />
+      <main className="bg-gradient-to-b from-slate-900 via-slate-800 to-slate-900">
+        <div className="container mx-auto px-6 md:px-12 lg:px-20 space-y-20 py-20 text-white">
+          <DishOfTheDay
+            onAddToOrder={() => console.log("Added dish of the day")}
+          />
 
-        <DealsCarousel />
+          <DealsCarousel />
 
-        <RecommendedForYou />
+          <RecommendedForYou />
 
-        <QuickCategories />
+          <QuickCategories />
 
-        <PopularNow />
+          <PopularNow />
+        </div>
       </main>
 
       <Footer />

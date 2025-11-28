@@ -1,4 +1,5 @@
-import { Sparkles, Heart, Clock } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Sparkles, Heart, Clock, ChevronLeft, ChevronRight, ArrowUpRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import familyFeastImage from "@assets/generated_images/Family_feast_meal_spread_ba86b29a.png";
 
@@ -15,42 +16,65 @@ export default function Hero({
   onViewFavorites,
   onOrderLater,
 }: HeroProps) {
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const totalSlides = 5;
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % totalSlides);
+    }, 6000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const nextSlide = () => {
+    setCurrentSlide((prev) => (prev + 1) % totalSlides);
+  };
+
+  const prevSlide = () => {
+    setCurrentSlide((prev) => (prev - 1 + totalSlides) % totalSlides);
+  };
+
   return (
-    <section className="relative overflow-hidden text-white">
-      <div className="absolute inset-0 opacity-30">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-orange-500 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-blue-500 rounded-full blur-3xl animate-pulse" style={{ animationDelay: "1s" }} />
-      </div>
+    <section className="relative h-screen w-full overflow-hidden">
+      <div
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat transition-transform duration-700"
+        style={{
+          backgroundImage: `url(${familyFeastImage})`,
+        }}
+        data-testid="img-hero-food"
+      />
+      
+      <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/50 to-black/30" />
+      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20" />
 
-      <div className="container mx-auto px-4 py-12 md:py-20 relative z-10">
-
-        <div className="grid md:grid-cols-2 gap-12 items-center">
-          <div className="space-y-6 animate-in fade-in slide-in-from-left-8 duration-700">
-            <p className="text-primary text-sm font-medium uppercase tracking-wide">
-              Order from your phone. Skip the wait.
-            </p>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight">
-              Good evening, let's get your food started.
-            </h1>
-            <p className="text-lg text-slate-300 leading-relaxed">
-              Browse the full Karahi Point menu, get smart suggestions, and order without waiting for a server.
-            </p>
-
-            <div className="space-y-4 pt-4">
-              <Button
-                size="lg"
-                className="w-full sm:w-auto text-base px-8"
-                onClick={onStartOrdering}
-                data-testid="button-start-ordering"
-              >
-                Start Ordering
-                <span className="text-xs ml-2 opacity-80">Browse menu & add items</span>
-              </Button>
-
-              <div className="flex flex-wrap gap-3">
+      <div className="relative z-10 flex flex-col h-full">
+        <div className="flex-1 flex items-center">
+          <div className="container mx-auto px-6 md:px-12 lg:px-20">
+            <div className="max-w-2xl space-y-6 animate-in fade-in slide-in-from-left-8 duration-700">
+              <p className="text-white/80 text-sm font-medium uppercase tracking-widest">
+                Home of Authentic Cuisine
+              </p>
+              <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.1] text-white italic">
+                Discovering<br />
+                The Finest<br />
+                Flavors Of<br />
+                <span className="text-primary not-italic font-extrabold">Karahi Point!</span>
+              </h1>
+              
+              <div className="flex flex-wrap gap-3 pt-6">
+                <Button
+                  size="lg"
+                  onClick={onStartOrdering}
+                  data-testid="button-start-ordering"
+                >
+                  Start Ordering
+                  <span className="text-xs ml-2 opacity-80">Browse menu & add items</span>
+                </Button>
+                
                 <Button
                   variant="outline"
-                  className="bg-white/10 border-white/20 hover:bg-white/20 backdrop-blur-sm"
+                  size="lg"
+                  className="bg-white/10 border-white/30 text-white backdrop-blur-sm"
                   onClick={onSurprise}
                   data-testid="button-surprise"
                 >
@@ -59,7 +83,8 @@ export default function Hero({
                 </Button>
                 <Button
                   variant="outline"
-                  className="bg-white/10 border-white/20 hover:bg-white/20 backdrop-blur-sm"
+                  size="lg"
+                  className="bg-white/10 border-white/30 text-white backdrop-blur-sm"
                   onClick={onViewFavorites}
                   data-testid="button-favorites"
                 >
@@ -68,7 +93,8 @@ export default function Hero({
                 </Button>
                 <Button
                   variant="outline"
-                  className="bg-white/10 border-white/20 hover:bg-white/20 backdrop-blur-sm"
+                  size="lg"
+                  className="bg-white/10 border-white/30 text-white backdrop-blur-sm"
                   onClick={onOrderLater}
                   data-testid="button-order-later"
                 >
@@ -78,15 +104,63 @@ export default function Hero({
               </div>
             </div>
           </div>
+        </div>
 
-          <div className="relative animate-in fade-in slide-in-from-right-8 duration-700 delay-150 hidden md:block">
-            <img
-              src={familyFeastImage}
-              alt="Delicious food spread"
-              className="rounded-2xl shadow-2xl"
-              data-testid="img-hero-food"
-            />
+        <div className="absolute bottom-6 right-6 md:bottom-12 md:right-12 lg:right-20 max-w-sm">
+          <div className="bg-black/40 backdrop-blur-md rounded-xl p-5 border border-white/10">
+            <h3 className="text-white font-semibold text-lg mb-2">Authentic Pakistani Cuisine</h3>
+            <p className="text-white/70 text-sm leading-relaxed mb-4">
+              Karahi Point offers exceptional catering, bringing the essence of Pakistan to your events for a memorable experience.
+            </p>
+            <Button
+              variant="outline"
+              size="sm"
+              className="bg-white/10 border-white/30 text-white backdrop-blur-sm"
+              onClick={onStartOrdering}
+              data-testid="button-learn-more"
+            >
+              Learn More
+              <ArrowUpRight className="h-4 w-4 ml-1" />
+            </Button>
           </div>
+        </div>
+
+        <div className="absolute bottom-6 left-6 md:bottom-12 md:left-12 lg:left-20 flex items-center gap-4">
+          <div className="flex items-center gap-2">
+            {[...Array(totalSlides)].map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentSlide(index)}
+                className={`w-2 h-2 rounded-full transition-all duration-300 ${
+                  index === currentSlide
+                    ? "bg-white w-6"
+                    : "bg-white/40"
+                }`}
+                data-testid={`carousel-dot-${index}`}
+              />
+            ))}
+          </div>
+        </div>
+
+        <div className="absolute right-6 top-1/2 -translate-y-1/2 flex flex-col gap-3 md:right-12">
+          <Button
+            size="icon"
+            variant="outline"
+            className="bg-white/10 border-white/30 text-white backdrop-blur-sm rounded-full"
+            onClick={prevSlide}
+            data-testid="button-prev-slide"
+          >
+            <ChevronLeft className="h-5 w-5" />
+          </Button>
+          <Button
+            size="icon"
+            variant="outline"
+            className="bg-white/10 border-white/30 text-white backdrop-blur-sm rounded-full"
+            onClick={nextSlide}
+            data-testid="button-next-slide"
+          >
+            <ChevronRight className="h-5 w-5" />
+          </Button>
         </div>
       </div>
     </section>
