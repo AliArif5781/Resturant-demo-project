@@ -83,18 +83,18 @@ export default function Signin() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-orange-900">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="border-b border-slate-700 sticky top-0 bg-slate-900/80 backdrop-blur-md z-50" data-testid="header-signin">
+      <header className="border-b sticky top-0 bg-background/80 backdrop-blur-md z-50" data-testid="header-signin">
         <div className="container mx-auto px-4 py-3">
           <div className="flex items-center justify-between gap-4">
             <Link href="/">
               <div className="flex items-center gap-3 cursor-pointer">
-                <span className="font-bold text-lg text-white" data-testid="text-brand-name">Karahi Point</span>
+                <span className="font-bold text-lg" data-testid="text-brand-name">Karahi Point</span>
               </div>
             </Link>
             <Link href="/">
-              <Button variant="ghost" className="gap-2 text-white hover:bg-slate-700" data-testid="button-home">
+              <Button variant="ghost" className="gap-2" data-testid="button-home">
                 <Home className="h-4 w-4" />
                 Home
               </Button>

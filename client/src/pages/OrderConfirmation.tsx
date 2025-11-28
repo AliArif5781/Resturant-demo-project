@@ -266,21 +266,21 @@ export default function OrderConfirmation() {
   const currentStepIndex = statusToStepIndex[currentStatus] ?? 0;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-orange-900">
+    <div className="min-h-screen bg-background">
       {/* Party Celebration Effect */}
       {showCelebration && <CelebrationConfetti />}
       
       {/* Header */}
-      <header className="border-b border-slate-700 sticky top-0 bg-slate-900/80 backdrop-blur-md z-50" data-testid="header-order-confirmation">
+      <header className="border-b sticky top-0 bg-background/80 backdrop-blur-md z-50" data-testid="header-order-confirmation">
         <div className="container mx-auto px-4 py-3">
           <div className="flex items-center justify-between gap-4">
             <Link href="/" data-testid="link-brand-home">
               <div className="flex items-center gap-3 cursor-pointer">
-                <span className="font-bold text-lg text-white" data-testid="text-brand-name">Karahi Point</span>
+                <span className="font-bold text-lg" data-testid="text-brand-name">Karahi Point</span>
               </div>
             </Link>
             <Link href="/">
-              <Button variant="ghost" className="gap-2 text-white hover:bg-slate-700" data-testid="button-home">
+              <Button variant="ghost" className="gap-2" data-testid="button-home">
                 <Home className="h-4 w-4" />
                 Home
               </Button>
@@ -423,7 +423,7 @@ export default function OrderConfirmation() {
             } bg-clip-text text-transparent`} data-testid="text-order-success-title">
               {currentStatus === "completed" ? "Order Completed!" : isConfirmed ? "Order Confirmed Successfully!" : "Your Order is Pending"}
             </h1>
-            <p className="text-xl text-slate-200 mb-6 max-w-2xl mx-auto" data-testid="text-order-success-subtitle">
+            <p className="text-xl text-muted-foreground mb-6 max-w-2xl mx-auto" data-testid="text-order-success-subtitle">
               {currentStatus === "completed"
                 ? `Congratulations, ${orderData.userName}! Your order is ready! Thank you for choosing us. Enjoy your delicious meal!`
                 : isConfirmed

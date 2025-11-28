@@ -187,15 +187,15 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-orange-900">
-      <header className="border-b border-slate-700 bg-slate-900/50 backdrop-blur-sm">
+    <div className="min-h-screen bg-background">
+      <header className="border-b bg-background/80 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-4">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-            <h1 className="text-xl sm:text-2xl font-bold text-white" data-testid="title-admin-dashboard">
+            <h1 className="text-xl sm:text-2xl font-bold" data-testid="title-admin-dashboard">
               Karahi Point Admin
             </h1>
             <div className="flex items-center gap-2 flex-wrap">
-              <p className="text-sm text-white font-medium hidden md:block">
+              <p className="text-sm font-medium hidden md:block">
                 {currentUser?.displayName || currentUser?.email}
               </p>
               <Button 
@@ -203,7 +203,6 @@ export default function AdminDashboard() {
                 size="sm"
                 onClick={() => setLocation("/")} 
                 data-testid="button-home"
-                className="border-slate-400 text-white hover:bg-slate-700"
               >
                 <Home className="h-4 w-4 sm:mr-2" />
                 <span className="hidden sm:inline">Home</span>
@@ -213,7 +212,6 @@ export default function AdminDashboard() {
                 size="sm"
                 onClick={handleSignOut} 
                 data-testid="button-signout"
-                className="border-slate-400 text-white hover:bg-slate-700"
               >
                 Sign Out
               </Button>
@@ -224,8 +222,8 @@ export default function AdminDashboard() {
 
       <main className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h2 className="text-3xl font-bold mb-2 text-white">Dashboard</h2>
-          <p className="text-slate-200">
+          <h2 className="text-3xl font-bold mb-2">Dashboard</h2>
+          <p className="text-muted-foreground">
             Manage your restaurant operations and monitor performance
           </p>
         </div>
