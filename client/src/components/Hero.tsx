@@ -32,59 +32,60 @@ export default function Hero({
         <div className="flex-1 flex items-center">
           <div className="container mx-auto px-6 md:px-12 lg:px-20">
             <div className="max-w-2xl space-y-6 animate-in fade-in slide-in-from-left-8 duration-700">
-              <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.1] text-white italic">
+              <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.1] text-white italic">
                 Discovering<br />
                 The Finest<br />
                 Flavors Of<br />
                 <span className="text-primary not-italic font-extrabold">Karahi Point!</span>
               </h1>
               
-              <div className="flex flex-wrap gap-3 pt-6">
+              <div className="flex flex-wrap gap-2 sm:gap-3 pt-4 sm:pt-6">
                 <Button
-                  size="lg"
+                  size="default"
+                  className="sm:h-11 sm:px-8"
                   onClick={onStartOrdering}
                   data-testid="button-start-ordering"
                 >
                   Start Ordering
-                  <span className="text-xs ml-2 opacity-80">Browse menu & add items</span>
+                  <span className="hidden sm:inline text-xs ml-2 opacity-80">Browse menu & add items</span>
                 </Button>
                 
                 <Button
                   variant="outline"
-                  size="lg"
-                  className="bg-white/10 border-white/30 text-white backdrop-blur-sm"
+                  size="default"
+                  className="bg-white/10 border-white/30 text-white backdrop-blur-sm sm:h-11"
                   onClick={onSurprise}
                   data-testid="button-surprise"
                 >
-                  <Sparkles className="h-4 w-4 mr-2" />
-                  Surprise me
+                  <Sparkles className="h-4 w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Surprise me</span>
                 </Button>
                 <Button
                   variant="outline"
-                  size="lg"
-                  className="bg-white/10 border-white/30 text-white backdrop-blur-sm"
+                  size="default"
+                  className="bg-white/10 border-white/30 text-white backdrop-blur-sm sm:h-11"
                   onClick={onViewFavorites}
                   data-testid="button-favorites"
                 >
-                  <Heart className="h-4 w-4 mr-2" />
-                  View favorites
+                  <Heart className="h-4 w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">View favorites</span>
                 </Button>
                 <Button
                   variant="outline"
-                  size="lg"
-                  className="bg-white/10 border-white/30 text-white backdrop-blur-sm"
+                  size="default"
+                  className="bg-white/10 border-white/30 text-white backdrop-blur-sm sm:h-11"
                   onClick={onOrderLater}
                   data-testid="button-order-later"
                 >
-                  <Clock className="h-4 w-4 mr-2" />
-                  Order for later
+                  <Clock className="h-4 w-4 sm:mr-2" />
+                  <span className="hidden sm:inline">Order for later</span>
                 </Button>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="absolute right-6 top-1/2 -translate-y-1/2 flex flex-col gap-3 md:right-12">
+        <div className="hidden sm:flex absolute right-4 top-1/2 -translate-y-1/2 flex-col gap-3 md:right-12">
           <Button
             size="icon"
             variant="outline"

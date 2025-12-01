@@ -1,4 +1,4 @@
-import { User, ShoppingCart, LogOut, Package, UtensilsCrossed } from "lucide-react";
+import { User, ShoppingCart, LogOut, Package, UtensilsCrossed, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -71,7 +71,17 @@ export default function Header({
             </Link>
           </nav>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 md:gap-3">
+            <Link href="/menu" className="md:hidden">
+              <Button
+                size="icon"
+                variant="ghost"
+                className="text-white/90 rounded-full"
+                data-testid="button-menu-mobile"
+              >
+                <Menu className="h-5 w-5" />
+              </Button>
+            </Link>
             <Link href="/cart">
               <Button
                 size="icon"
@@ -137,24 +147,26 @@ export default function Header({
                 </DropdownMenuContent>
               </DropdownMenu>
             ) : (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-1 md:gap-2">
                 <Link href="/signin">
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="text-white/90 rounded-full px-4"
+                    className="text-white/90 rounded-full px-2 md:px-4"
                     data-testid="button-signin"
                   >
-                    Sign In
+                    <span className="hidden sm:inline">Sign In</span>
+                    <User className="h-4 w-4 sm:hidden" />
                   </Button>
                 </Link>
                 <Link href="/signup">
                   <Button
                     size="sm"
-                    className="rounded-full px-5"
+                    className="rounded-full px-3 md:px-5"
                     data-testid="button-signup"
                   >
-                    Sign Up
+                    <span className="hidden sm:inline">Sign Up</span>
+                    <span className="sm:hidden text-xs">Join</span>
                   </Button>
                 </Link>
               </div>
