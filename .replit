@@ -23,16 +23,16 @@ localPort = 40901
 externalPort = 3002
 
 [[ports]]
+localPort = 41403
+externalPort = 3001
+
+[[ports]]
 localPort = 41881
 externalPort = 5000
 
 [[ports]]
 localPort = 43827
 externalPort = 4200
-
-[[ports]]
-localPort = 43961
-externalPort = 3001
 
 [[ports]]
 localPort = 44801
@@ -78,3 +78,5 @@ expertMode = true
 [userenv.shared]
 VITE_FIREBASE_API_KEY = "AIzaSyCXxqNs2yqBYe9CB56lNeOv9QZKJy6zldk"
 ADMIN_EMAILS = "ali@gmail.com"
+VITE_FIREBASE_APP_ID = "1:992813066608:web:186b442ac9e3709536c7b5"
+VITE_FIREBASE_PROJECT_ID = "resturant-webapp-1cf11"
