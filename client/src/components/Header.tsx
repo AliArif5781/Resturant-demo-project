@@ -1,4 +1,4 @@
-import { User, ShoppingCart, LogOut, Package, Search } from "lucide-react";
+import { User, ShoppingCart, LogOut, Package, Search, UtensilsCrossed } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -57,6 +57,19 @@ export default function Header({
               </span>
             </div>
           </Link>
+
+          <nav className="hidden md:flex items-center">
+            <Link href="/menu">
+              <Button
+                variant="ghost"
+                className="text-white/90 rounded-full px-4 gap-2"
+                data-testid="link-menu"
+              >
+                <UtensilsCrossed className="h-4 w-4" />
+                Menu
+              </Button>
+            </Link>
+          </nav>
 
           <div className="flex items-center gap-3">
             <Button
