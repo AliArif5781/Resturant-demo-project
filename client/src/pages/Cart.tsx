@@ -36,7 +36,7 @@ export default function Cart() {
     return (
       <div className="min-h-screen bg-background">
         <Header />
-        <div className="container mx-auto px-4 py-8">
+        <div className="container mx-auto px-4 py-8 pt-24">
           <div className="flex flex-col items-center justify-center py-16 text-center">
             <ShoppingBag className="h-24 w-24 text-muted-foreground/60 mb-4" />
             <h2 className="text-2xl font-bold mb-2" data-testid="text-empty-title">Your cart is empty</h2>
@@ -55,26 +55,25 @@ export default function Cart() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      <div className="container mx-auto px-4 py-8">
-        <div className="mb-6 flex items-center justify-end">
-          <Button
-            variant="outline"
-            onClick={clearCart}
-            className="gap-2"
-            data-testid="button-clear-cart"
-          >
-            <Trash2 className="h-4 w-4" />
-            Clear Cart
-          </Button>
-        </div>
-
+      <div className="container mx-auto px-4 py-8 pt-24">
         <div className="grid lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 space-y-4">
-            <div>
-              <h1 className="text-3xl font-bold mb-2" data-testid="text-cart-title">Your Order</h1>
-              <p className="text-muted-foreground" data-testid="text-cart-subtitle">
-                {totalItems} {totalItems === 1 ? "item" : "items"} in your cart
-              </p>
+            <div className="flex items-start justify-between gap-4 flex-wrap">
+              <div>
+                <h1 className="text-3xl font-bold mb-2" data-testid="text-cart-title">Your Order</h1>
+                <p className="text-muted-foreground" data-testid="text-cart-subtitle">
+                  {totalItems} {totalItems === 1 ? "item" : "items"} in your cart
+                </p>
+              </div>
+              <Button
+                variant="outline"
+                onClick={clearCart}
+                className="gap-2"
+                data-testid="button-clear-cart"
+              >
+                <Trash2 className="h-4 w-4" />
+                Clear Cart
+              </Button>
             </div>
 
             <div className="space-y-4">
