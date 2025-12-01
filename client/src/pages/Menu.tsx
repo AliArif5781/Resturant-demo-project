@@ -5,9 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
-import { Home, ShoppingCart, Plus, Flame, Dumbbell, SlidersHorizontal, X, ArrowUpDown } from "lucide-react";
+import { ArrowLeft, Plus, Flame, Dumbbell, SlidersHorizontal, X, ArrowUpDown } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useToast } from "@/hooks/use-toast";
+import Header from "@/components/Header";
 
 import karahiImage from "@assets/generated_images/Chicken_Karahi_dish_closeup_1ee23ad4.png";
 import kabobImage from "@assets/generated_images/Beef_bihari_kabab_e2e73340.png";
@@ -182,7 +183,7 @@ export default function Menu() {
   const [proteinRange, setProteinRange] = useState("all");
   const [sortBy, setSortBy] = useState("default");
   const [showFilters, setShowFilters] = useState(false);
-  const { addToCart, totalItems } = useCart();
+  const { addToCart } = useCart();
   const { toast } = useToast();
 
   const handleAddToCart = (item: MenuItem) => {
@@ -277,39 +278,16 @@ export default function Menu() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b sticky top-0 bg-background/80 backdrop-blur-md z-50" data-testid="header-menu">
-        <div className="container mx-auto px-4 py-3">
-          <div className="flex items-center justify-between gap-4">
-            <Link href="/" data-testid="link-brand-home">
-              <div className="flex items-center gap-3 cursor-pointer">
-                <span className="font-bold text-lg" data-testid="text-brand-name">Karahi Point</span>
-              </div>
-            </Link>
-            <div className="flex items-center gap-2">
-              <Link href="/">
-                <Button variant="ghost" className="gap-2" data-testid="button-home">
-                  <Home className="h-4 w-4" />
-                  <span className="hidden sm:inline">Home</span>
-                </Button>
-              </Link>
-              <Link href="/cart">
-                <Button variant="outline" className="gap-2" data-testid="button-cart">
-                  <ShoppingCart className="h-4 w-4" />
-                  <span className="hidden sm:inline">Cart</span>
-                  {totalItems > 0 && (
-                    <Badge className="ml-1 h-5 w-5 flex items-center justify-center p-0 text-xs">
-                      {totalItems}
-                    </Badge>
-                  )}
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </header>
+      <Header />
 
-      <main className="container mx-auto px-4 py-8">
+      <main className="container mx-auto px-4 py-8 pt-24">
         <div className="mb-8">
+          <Link href="/">
+            <Button variant="ghost" className="gap-2 mb-4 -ml-2" data-testid="button-back-home">
+              <ArrowLeft className="h-4 w-4" />
+              Back to Home
+            </Button>
+          </Link>
           <h1 className="text-4xl font-bold mb-2" data-testid="text-menu-title">Our Menu</h1>
           <p className="text-muted-foreground" data-testid="text-menu-subtitle">
             Explore our authentic Pakistani cuisine crafted with love and tradition.
