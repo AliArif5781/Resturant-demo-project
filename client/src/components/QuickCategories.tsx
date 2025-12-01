@@ -27,7 +27,7 @@ export default function QuickCategories() {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-2xl font-bold text-white" data-testid="text-categories-title">Browse by craving</h2>
+      <h2 className="text-2xl font-bold" data-testid="text-categories-title">Browse by craving</h2>
 
       <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
         {categories.map((category) => (
