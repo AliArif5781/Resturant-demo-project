@@ -397,20 +397,26 @@ export default function OrderConfirmation() {
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ type: "spring", delay: 0.2, stiffness: 200 }}
-              className={`inline-flex items-center justify-center w-24 h-24 bg-gradient-to-br ${
+              className={`inline-flex items-center justify-center w-24 h-24 ${
                 isConfirmed
-                  ? "from-green-100 to-emerald-200 dark:from-green-900/40 dark:to-emerald-800/40"
-                  : "from-orange-100 to-amber-200 dark:from-orange-900/40 dark:to-amber-800/40"
+                  ? "bg-gradient-to-br from-green-100 to-emerald-200 dark:from-green-900/40 dark:to-emerald-800/40"
+                  : "bg-orange-100 dark:bg-orange-900/30 border-2 border-orange-300 dark:border-orange-700"
               } rounded-full mb-6 shadow-lg`}
             >
               {isConfirmed ? (
                 <CheckCircle className="h-16 w-16 text-green-600 dark:text-green-400" />
               ) : (
                 <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                  animate={{ 
+                    scale: [1, 1.05, 1],
+                  }}
+                  transition={{ 
+                    duration: 2, 
+                    repeat: Infinity, 
+                    ease: "easeInOut" 
+                  }}
                 >
-                  <Loader2 className="h-16 w-16 text-orange-600 dark:text-orange-400" />
+                  <Clock className="h-14 w-14 text-orange-600 dark:text-orange-400" />
                 </motion.div>
               )}
             </motion.div>
