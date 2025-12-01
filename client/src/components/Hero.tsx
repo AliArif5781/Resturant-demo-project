@@ -1,4 +1,4 @@
-import { Sparkles, Heart, Clock, ChevronLeft, ChevronRight, ArrowUpRight } from "lucide-react";
+import { Sparkles, Heart, Clock, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import familyFeastImage from "@assets/generated_images/Family_feast_meal_spread_ba86b29a.png";
 
@@ -81,25 +81,6 @@ export default function Hero({
                 </Button>
               </div>
             </div>
-          </div>
-        </div>
-
-        <div className="absolute bottom-6 right-6 md:bottom-12 md:right-12 lg:right-20 max-w-sm">
-          <div className="bg-[#1a0f0a]/60 backdrop-blur-md rounded-xl p-5 border border-white/10">
-            <h3 className="text-white font-semibold text-lg mb-2">Authentic Pakistani Cuisine</h3>
-            <p className="text-white/70 text-sm leading-relaxed mb-4">
-              Karahi Point offers exceptional catering, bringing the essence of Pakistan to your events for a memorable experience.
-            </p>
-            <Button
-              variant="outline"
-              size="sm"
-              className="bg-white/10 border-white/30 text-white backdrop-blur-sm"
-              onClick={onStartOrdering}
-              data-testid="button-learn-more"
-            >
-              Learn More
-              <ArrowUpRight className="h-4 w-4 ml-1" />
-            </Button>
           </div>
         </div>
 
