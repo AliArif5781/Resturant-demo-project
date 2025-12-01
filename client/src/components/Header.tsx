@@ -62,7 +62,7 @@ export default function Header({
             <Link href="/menu">
               <Button
                 variant="ghost"
-                className="text-white/90 rounded-full px-4 gap-2"
+                className="text-white/90 rounded-full px-4 gap-2 hover:bg-white/20 hover:text-white transition-all duration-200"
                 data-testid="link-menu"
               >
                 <UtensilsCrossed className="h-4 w-4" />
