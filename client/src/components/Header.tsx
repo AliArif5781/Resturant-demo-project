@@ -1,4 +1,4 @@
-import { User, ShoppingCart, LogOut, Package, Search, UtensilsCrossed } from "lucide-react";
+import { User, ShoppingCart, LogOut, Package, UtensilsCrossed } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -72,15 +72,6 @@ export default function Header({
           </nav>
 
           <div className="flex items-center gap-3">
-            <Button
-              size="icon"
-              variant="ghost"
-              className="text-white/90 rounded-full"
-              data-testid="button-search"
-            >
-              <Search className="h-5 w-5" />
-            </Button>
-
             <Link href="/cart">
               <Button
                 size="icon"
