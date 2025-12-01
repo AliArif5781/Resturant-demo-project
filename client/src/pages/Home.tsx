@@ -24,7 +24,7 @@ export default function Home() {
         onOrderLater={() => console.log("Order later")}
       />
 
-      <main className="bg-muted/30">
+      <main>
         <div className="container mx-auto px-6 md:px-12 lg:px-20 space-y-16 py-16">
           <DishOfTheDay
             onAddToOrder={() => console.log("Added dish of the day")}
