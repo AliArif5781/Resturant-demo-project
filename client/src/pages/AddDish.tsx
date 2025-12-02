@@ -14,14 +14,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import {
-  getAllMenuItems,
-  createMenuItem,
-  updateMenuItem,
-  deleteMenuItem,
-  type FirestoreMenuItem,
-} from "@/lib/menuService";
-import { auth } from "@/lib/firebase";
+import { apiRequest } from "@/lib/queryClient";
+import type { MenuItem } from "@shared/schema";
 
 const CATEGORIES = [
   { value: "Starters", label: "Starters" },
@@ -50,9 +44,9 @@ export default function AddDish() {
   const queryClient = useQueryClient();
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [editingItem, setEditingItem] = useState<FirestoreMenuItem | null>(null);
+  const [editingItem, setEditingItem] = useState<MenuItem | null>(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [itemToDelete, setItemToDelete] = useState<FirestoreMenuItem | null>(null);
+  const [itemToDelete, setItemToDelete] = useState<MenuItem | null>(null);
   
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [imagePreview, setImagePreview] = useState<string | null>(null);
@@ -71,14 +65,14 @@ export default function AddDish() {
     },
   });
 
-  const { data: menuItems = [], isLoading: menuItemsLoading, refetch } = useQuery<FirestoreMenuItem[]>({
-    queryKey: ["firestore-menu-items"],
-    queryFn: getAllMenuItems,
+  const { data: menuItemsData, isLoading: menuItemsLoading, refetch } = useQuery<{ items: MenuItem[] }>({
+    queryKey: ["/api/menu-items"],
     enabled: isAdmin,
   });
+  
+  const menuItems = menuItemsData?.items || [];
 
   const uploadImage = async (file: File): Promise<string> => {
-    const token = await auth.currentUser?.getIdToken();
     const formData = new FormData();
     formData.append("image", file);
 
@@ -116,7 +110,7 @@ export default function AddDish() {
         }
       }
 
-      return await createMenuItem({
+      const response = await apiRequest("POST", "/api/menu-items", {
         name: data.name,
         description: data.description,
         price: data.price,
@@ -125,9 +119,10 @@ export default function AddDish() {
         image: imageUrl,
         category: data.category,
       });
+      return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["firestore-menu-items"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/menu-items"] });
       form.reset();
       setImageFile(null);
       setImagePreview(null);
@@ -158,7 +153,7 @@ export default function AddDish() {
         }
       }
 
-      return await updateMenuItem(id, {
+      const response = await apiRequest("PATCH", `/api/menu-items/${id}`, {
         name: data.name,
         description: data.description,
         price: data.price,
@@ -167,9 +162,10 @@ export default function AddDish() {
         image: imageUrl,
         category: data.category,
       });
+      return response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["firestore-menu-items"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/menu-items"] });
       form.reset();
       setEditingItem(null);
       setImageFile(null);
@@ -190,10 +186,10 @@ export default function AddDish() {
 
   const deleteDishMutation = useMutation({
     mutationFn: async (id: string) => {
-      await deleteMenuItem(id);
+      await apiRequest("DELETE", `/api/menu-items/${id}`);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["firestore-menu-items"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/menu-items"] });
       setShowDeleteDialog(false);
       setItemToDelete(null);
       toast({
@@ -273,16 +269,16 @@ export default function AddDish() {
     }
   };
 
-  const handleEditClick = (item: FirestoreMenuItem) => {
+  const handleEditClick = (item: MenuItem) => {
     setEditingItem(item);
     setImagePreview(item.image);
     setImageFile(null);
     form.reset({
       name: item.name,
       description: item.description,
-      price: item.price,
-      calories: item.calories,
-      protein: item.protein,
+      price: String(item.price),
+      calories: String(item.calories),
+      protein: String(item.protein),
       category: item.category,
     });
   };
@@ -294,7 +290,7 @@ export default function AddDish() {
     form.reset();
   };
 
-  const handleDeleteClick = (item: FirestoreMenuItem) => {
+  const handleDeleteClick = (item: MenuItem) => {
     setItemToDelete(item);
     setShowDeleteDialog(true);
   };

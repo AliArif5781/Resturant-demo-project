@@ -4,11 +4,12 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Slider } from "@/components/ui/slider";
-import { ArrowLeft, Plus, Flame, Dumbbell, SlidersHorizontal, X, ArrowUpDown } from "lucide-react";
+import { ArrowLeft, Plus, Flame, Dumbbell, SlidersHorizontal, X, ArrowUpDown, Loader2 } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useToast } from "@/hooks/use-toast";
 import Header from "@/components/Header";
+import { useQuery } from "@tanstack/react-query";
+import type { MenuItem as DbMenuItem } from "@shared/schema";
 
 import karahiImage from "@assets/generated_images/Chicken_Karahi_dish_closeup_1ee23ad4.png";
 import kabobImage from "@assets/generated_images/Beef_bihari_kabab_e2e73340.png";
@@ -32,7 +33,7 @@ interface MenuItem {
   category: string;
 }
 
-const allMenuItems: MenuItem[] = [
+const defaultMenuItems: MenuItem[] = [
   {
     id: 1,
     name: "Chicken Karahi (Bone-In)",
@@ -185,6 +186,30 @@ export default function Menu() {
   const [showFilters, setShowFilters] = useState(false);
   const { addToCart } = useCart();
   const { toast } = useToast();
+
+  const { data: apiMenuData, isLoading } = useQuery<{ items: DbMenuItem[] }>({
+    queryKey: ["/api/menu-items"],
+  });
+
+  const allMenuItems: MenuItem[] = useMemo(() => {
+    const apiItems = apiMenuData?.items || [];
+    
+    if (apiItems.length > 0) {
+      return apiItems.map((item, index) => ({
+        id: index + 1000,
+        name: item.name,
+        description: item.description,
+        price: `$${item.price}`,
+        priceValue: parseFloat(String(item.price)),
+        calories: parseInt(String(item.calories)),
+        protein: parseInt(String(item.protein)),
+        image: item.image,
+        category: item.category,
+      }));
+    }
+    
+    return defaultMenuItems;
+  }, [apiMenuData]);
 
   const handleAddToCart = (item: MenuItem) => {
     addToCart({
@@ -494,6 +519,11 @@ export default function Menu() {
           </div>
         )}
 
+        {isLoading ? (
+          <div className="flex items-center justify-center py-12">
+            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          </div>
+        ) : (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredAndSortedItems.map((item) => (
             <Card
@@ -544,8 +574,9 @@ export default function Menu() {
             </Card>
           ))}
         </div>
+        )}
 
-        {filteredAndSortedItems.length === 0 && (
+        {!isLoading && filteredAndSortedItems.length === 0 && (
           <div className="text-center py-12">
             <p className="text-muted-foreground mb-4" data-testid="text-no-items">No items match your filters.</p>
             <Button variant="outline" onClick={clearAllFilters} data-testid="button-clear-filters-empty">

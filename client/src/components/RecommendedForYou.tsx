@@ -13,6 +13,9 @@ import pakoraImage from "@assets/generated_images/Vegetable_pakora_appetizers_1e
 import { useCart } from "@/contexts/CartContext";
 import { useToast } from "@/hooks/use-toast";
 import { useMemo } from "react";
+import { useQuery } from "@tanstack/react-query";
+import type { MenuItem as DbMenuItem } from "@shared/schema";
+import { Flame, Dumbbell } from "lucide-react";
 
 interface MenuItem {
   id: number;
@@ -28,7 +31,7 @@ interface MenuItem {
   score?: number;
 }
 
-const allMenuItems: MenuItem[] = [
+const defaultMenuItems: MenuItem[] = [
   {
     id: 1,
     name: "Chicken Karahi (Bone-In)",
@@ -134,6 +137,39 @@ export default function RecommendedForYou() {
   const { items: cartItems, addToCart } = useCart();
   const { toast } = useToast();
 
+  const { data: apiMenuData } = useQuery<{ items: DbMenuItem[] }>({
+    queryKey: ["/api/menu-items"],
+  });
+
+  const allMenuItems: MenuItem[] = useMemo(() => {
+    const apiItems = apiMenuData?.items || [];
+    
+    if (apiItems.length > 0) {
+      const categoryMap: Record<string, "curry" | "bbq" | "rice" | "bread" | "drink" | "appetizer"> = {
+        "Karahi & Curries": "curry",
+        "BBQ": "bbq",
+        "Rice & Biryani": "rice",
+        "Naans & Breads": "bread",
+        "Drinks": "drink",
+        "Starters": "appetizer",
+      };
+      
+      return apiItems.map((item, index) => ({
+        id: index + 1000,
+        name: item.name,
+        description: item.description,
+        price: `$${item.price}`,
+        calories: parseInt(String(item.calories)),
+        protein: parseInt(String(item.protein)),
+        image: item.image,
+        category: categoryMap[item.category] || "curry",
+        pairsWith: ["bread", "drink"] as string[],
+      }));
+    }
+    
+    return defaultMenuItems;
+  }, [apiMenuData]);
+
   const recommendations = useMemo(() => {
     if (cartItems.length === 0) {
       return allMenuItems.slice(0, 4);
@@ -192,7 +228,7 @@ export default function RecommendedForYou() {
       .slice(0, 4);
 
     return recommendedItems;
-  }, [cartItems]);
+  }, [cartItems, allMenuItems]);
 
   const handleQuickAdd = (item: MenuItem) => {
     addToCart({
@@ -247,10 +283,12 @@ export default function RecommendedForYou() {
                 </p>
                 <div className="flex gap-2 flex-wrap">
                   <Badge variant="outline" className="bg-orange-50 dark:bg-orange-950 text-orange-700 dark:text-orange-300 border-orange-200 dark:border-orange-800" data-testid={`text-recommended-calories-${item.id}`}>
-                    🔥 {item.calories} cal
+                    <Flame className="h-3 w-3 mr-1" />
+                    {item.calories} cal
                   </Badge>
                   <Badge variant="outline" className="bg-green-50 dark:bg-green-950 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800" data-testid={`text-recommended-protein-${item.id}`}>
-                    💪 {item.protein}g protein
+                    <Dumbbell className="h-3 w-3 mr-1" />
+                    {item.protein}g protein
                   </Badge>
                 </div>
                 <p className="text-lg font-bold text-primary" data-testid={`text-recommended-price-${item.id}`}>{item.price}</p>

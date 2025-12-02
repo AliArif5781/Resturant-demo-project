@@ -1,7 +1,8 @@
+import { useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Plus } from "lucide-react";
+import { Plus, Flame, Dumbbell, Loader2 } from "lucide-react";
 import karahiImage from "@assets/generated_images/Chicken_Karahi_dish_closeup_1ee23ad4.png";
 import kabobImage from "@assets/generated_images/Beef_bihari_kabab_e2e73340.png";
 import biryaniImage from "@assets/generated_images/Chicken_Biryani_overhead_shot_73a10a24.png";
@@ -10,8 +11,21 @@ import naanImage from "@assets/generated_images/Garlic_naan_bread_closeup_e17720
 import lassiImage from "@assets/generated_images/Mango_lassi_beverage_bebcb27b.png";
 import { useCart } from "@/contexts/CartContext";
 import { useToast } from "@/hooks/use-toast";
+import { useQuery } from "@tanstack/react-query";
+import type { MenuItem as DbMenuItem } from "@shared/schema";
 
-const popularItems = [
+interface PopularItem {
+  id: number;
+  name: string;
+  orders: number;
+  price: string;
+  calories: number;
+  protein: number;
+  image: string;
+  description: string;
+}
+
+const defaultPopularItems: PopularItem[] = [
   { id: 1, name: "Chicken Karahi", orders: 24, price: "$24.99", calories: 520, protein: 42, image: karahiImage, description: "Tender chicken cooked in a wok with tomatoes, ginger, and aromatic spices" },
   { id: 2, name: "Beef Bihari Kabab", orders: 18, price: "$26.99", calories: 380, protein: 38, image: kabobImage, description: "Marinated beef strips grilled to perfection with traditional Bihari spices" },
   { id: 3, name: "Chicken Biryani", orders: 21, price: "$21.99", calories: 650, protein: 35, image: biryaniImage, description: "Fragrant basmati rice layered with spiced chicken and caramelized onions" },
@@ -24,7 +38,30 @@ export default function PopularNow() {
   const { addToCart } = useCart();
   const { toast } = useToast();
 
-  const handleAddToCart = (item: typeof popularItems[0]) => {
+  const { data: apiMenuData, isLoading } = useQuery<{ items: DbMenuItem[] }>({
+    queryKey: ["/api/menu-items"],
+  });
+
+  const popularItems: PopularItem[] = useMemo(() => {
+    const apiItems = apiMenuData?.items || [];
+    
+    if (apiItems.length > 0) {
+      return apiItems.slice(0, 6).map((item, index) => ({
+        id: index + 1000,
+        name: item.name,
+        orders: Math.floor(Math.random() * 30) + 10,
+        price: `$${item.price}`,
+        calories: parseInt(String(item.calories)),
+        protein: parseInt(String(item.protein)),
+        image: item.image,
+        description: item.description,
+      }));
+    }
+    
+    return defaultPopularItems;
+  }, [apiMenuData]);
+
+  const handleAddToCart = (item: PopularItem) => {
     addToCart({
       id: item.id,
       name: item.name,
@@ -76,10 +113,12 @@ export default function PopularNow() {
                 </div>
                 <div className="flex gap-2 mb-2 flex-wrap">
                   <Badge variant="outline" className="bg-orange-50 dark:bg-orange-950 text-orange-700 dark:text-orange-300 border-orange-200 dark:border-orange-800" data-testid={`text-popular-calories-${item.id}`}>
-                    🔥 {item.calories} cal
+                    <Flame className="h-3 w-3 mr-1" />
+                    {item.calories} cal
                   </Badge>
                   <Badge variant="outline" className="bg-green-50 dark:bg-green-950 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800" data-testid={`text-popular-protein-${item.id}`}>
-                    💪 {item.protein}g protein
+                    <Dumbbell className="h-3 w-3 mr-1" />
+                    {item.protein}g protein
                   </Badge>
                 </div>
                 <div className="h-1 bg-muted rounded-full overflow-hidden">

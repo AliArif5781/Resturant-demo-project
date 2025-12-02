@@ -15,7 +15,7 @@ localPort = 5000
 externalPort = 80
 
 [[ports]]
-localPort = 33053
+localPort = 38039
 externalPort = 6800
 
 [[ports]]
@@ -88,3 +88,6 @@ VITE_FIREBASE_API_KEY = "AIzaSyCXxqNs2yqBYe9CB56lNeOv9QZKJy6zldk"
 ADMIN_EMAILS = "ali@gmail.com"
 VITE_FIREBASE_APP_ID = "1:992813066608:web:186b442ac9e3709536c7b5"
 VITE_FIREBASE_PROJECT_ID = "resturant-webapp-1cf11"
+CLOUDINARY_CLOUD_NAME = "dltvkh0hf"
+CLOUDINARY_API_KEY = "283773147951821"
+CLOUDINARY_API_SECRET = "R16PuuJ-kKgdZN9GymBMN9LTnSc"
