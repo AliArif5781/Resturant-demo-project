@@ -1,4 +1,4 @@
-import { type User, type InsertUser, type Order, type InsertOrder } from "@shared/schema";
+import { type User, type InsertUser, type Order, type InsertOrder, type MenuItem, type InsertMenuItem } from "@shared/schema";
 import { randomUUID } from "crypto";
 
 // modify the interface with any CRUD methods
@@ -14,15 +14,22 @@ export interface IStorage {
   getOrdersByUser(firebaseUid: string): Promise<Order[]>;
   updateOrderStatus(orderId: string, status: string, preparationTime?: string, rejectionReason?: string, cancelledBy?: string): Promise<Order>;
   updateGuestArrived(orderId: string, arrived: boolean): Promise<Order>;
+  createMenuItem(item: InsertMenuItem): Promise<MenuItem>;
+  getAllMenuItems(): Promise<MenuItem[]>;
+  getMenuItemById(id: string): Promise<MenuItem | undefined>;
+  updateMenuItem(id: string, item: Partial<InsertMenuItem>): Promise<MenuItem>;
+  deleteMenuItem(id: string): Promise<void>;
 }
 
 export class MemStorage implements IStorage {
   private users: Map<string, User>;
   private orders: Map<string, Order>;
+  private menuItems: Map<string, MenuItem>;
 
   constructor() {
     this.users = new Map();
     this.orders = new Map();
+    this.menuItems = new Map();
   }
 
   async getUser(id: string): Promise<User | undefined> {
@@ -129,6 +136,50 @@ export class MemStorage implements IStorage {
     const updatedOrder = { ...order, guestArrived: arrived };
     this.orders.set(orderId, updatedOrder);
     return updatedOrder;
+  }
+
+  async createMenuItem(insertMenuItem: InsertMenuItem): Promise<MenuItem> {
+    const id = randomUUID();
+    const menuItem: MenuItem = {
+      id,
+      name: insertMenuItem.name,
+      description: insertMenuItem.description,
+      price: insertMenuItem.price,
+      calories: insertMenuItem.calories,
+      protein: insertMenuItem.protein,
+      image: insertMenuItem.image,
+      category: insertMenuItem.category,
+      createdAt: new Date(),
+    };
+    this.menuItems.set(id, menuItem);
+    return menuItem;
+  }
+
+  async getAllMenuItems(): Promise<MenuItem[]> {
+    return Array.from(this.menuItems.values()).sort(
+      (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
+    );
+  }
+
+  async getMenuItemById(id: string): Promise<MenuItem | undefined> {
+    return this.menuItems.get(id);
+  }
+
+  async updateMenuItem(id: string, updateData: Partial<InsertMenuItem>): Promise<MenuItem> {
+    const menuItem = this.menuItems.get(id);
+    if (!menuItem) {
+      throw new Error("Menu item not found");
+    }
+    const updatedItem = { ...menuItem, ...updateData };
+    this.menuItems.set(id, updatedItem);
+    return updatedItem;
+  }
+
+  async deleteMenuItem(id: string): Promise<void> {
+    if (!this.menuItems.has(id)) {
+      throw new Error("Menu item not found");
+    }
+    this.menuItems.delete(id);
   }
 }
 

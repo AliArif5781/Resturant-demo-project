@@ -1,6 +1,6 @@
 import { eq, desc } from "drizzle-orm";
 import { db } from "./db";
-import { users, orders, type User, type InsertUser, type Order, type InsertOrder } from "@shared/schema";
+import { users, orders, menuItems, type User, type InsertUser, type Order, type InsertOrder, type MenuItem, type InsertMenuItem } from "@shared/schema";
 import { IStorage } from "./storage";
 
 export class PgStorage implements IStorage {
@@ -122,5 +122,54 @@ export class PgStorage implements IStorage {
     }
     
     return updatedOrder;
+  }
+
+  async createMenuItem(insertMenuItem: InsertMenuItem): Promise<MenuItem> {
+    const [newMenuItem] = await db
+      .insert(menuItems)
+      .values(insertMenuItem)
+      .returning();
+    return newMenuItem;
+  }
+
+  async getAllMenuItems(): Promise<MenuItem[]> {
+    const result = await db
+      .select()
+      .from(menuItems)
+      .orderBy(desc(menuItems.createdAt));
+    return result;
+  }
+
+  async getMenuItemById(id: string): Promise<MenuItem | undefined> {
+    const result = await db
+      .select()
+      .from(menuItems)
+      .where(eq(menuItems.id, id));
+    return result[0];
+  }
+
+  async updateMenuItem(id: string, updateData: Partial<InsertMenuItem>): Promise<MenuItem> {
+    const [updatedMenuItem] = await db
+      .update(menuItems)
+      .set(updateData)
+      .where(eq(menuItems.id, id))
+      .returning();
+    
+    if (!updatedMenuItem) {
+      throw new Error("Menu item not found");
+    }
+    
+    return updatedMenuItem;
+  }
+
+  async deleteMenuItem(id: string): Promise<void> {
+    const result = await db
+      .delete(menuItems)
+      .where(eq(menuItems.id, id))
+      .returning();
+    
+    if (result.length === 0) {
+      throw new Error("Menu item not found");
+    }
   }
 }
