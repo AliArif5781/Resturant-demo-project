@@ -2,6 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertOrderSchema, insertMenuItemSchema } from "@shared/schema";
+import { upload, uploadToCloudinary } from "./cloudinary";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || "")
@@ -316,6 +317,39 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json({ order: updatedOrder });
     } catch (error: any) {
       res.status(400).json({ message: error.message });
+    }
+  });
+
+  // ========== IMAGE UPLOAD ROUTE ==========
+
+  // Upload image to Cloudinary (ADMIN ONLY)
+  app.post("/api/upload", upload.single("image"), async (req, res) => {
+    try {
+      const firebaseUid = req.headers["x-firebase-uid"] as string;
+      
+      if (!firebaseUid) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      // Verify user exists and is admin
+      const user = await storage.getUserByFirebaseUid(firebaseUid);
+      if (!user) {
+        return res.status(401).json({ message: "User not found" });
+      }
+
+      if (user.role !== "admin") {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      if (!req.file) {
+        return res.status(400).json({ message: "No image file provided" });
+      }
+
+      const imageUrl = await uploadToCloudinary(req.file.buffer, "karahi-point-menu");
+      res.json({ url: imageUrl });
+    } catch (error: any) {
+      console.error("Upload error:", error);
+      res.status(500).json({ message: error.message || "Failed to upload image" });
     }
   });
 

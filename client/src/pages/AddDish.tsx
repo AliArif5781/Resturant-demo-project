@@ -1,22 +1,27 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useLocation } from "wouter";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Plus, Flame, Dumbbell, DollarSign, Upload, Trash2, Edit2 } from "lucide-react";
-import { useQuery, useMutation } from "@tanstack/react-query";
-import { apiRequest, queryClient } from "@/lib/queryClient";
+import { ArrowLeft, Plus, Flame, Dumbbell, DollarSign, Upload, Trash2, Edit2, ImagePlus, X, Loader2 } from "lucide-react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import type { MenuItem } from "@shared/schema";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+  getAllMenuItems,
+  createMenuItem,
+  updateMenuItem,
+  deleteMenuItem,
+  type FirestoreMenuItem,
+} from "@/lib/menuService";
+import { auth } from "@/lib/firebase";
 
 const CATEGORIES = [
   { value: "Starters", label: "Starters" },
@@ -33,7 +38,6 @@ const dishFormSchema = z.object({
   price: z.string().min(1, "Price is required").refine((val) => !isNaN(parseFloat(val)) && parseFloat(val) > 0, "Price must be a positive number"),
   calories: z.string().min(1, "Calories is required").refine((val) => !isNaN(parseInt(val)) && parseInt(val) >= 0, "Calories must be a non-negative number"),
   protein: z.string().min(1, "Protein is required").refine((val) => !isNaN(parseInt(val)) && parseInt(val) >= 0, "Protein must be a non-negative number"),
-  image: z.string().min(1, "Image URL is required").url("Please enter a valid URL"),
   category: z.string().min(1, "Category is required"),
 });
 
@@ -43,11 +47,17 @@ export default function AddDish() {
   const [, setLocation] = useLocation();
   const { currentUser, getUserRole } = useAuth();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
-  const [editingItem, setEditingItem] = useState<MenuItem | null>(null);
+  const [editingItem, setEditingItem] = useState<FirestoreMenuItem | null>(null);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-  const [itemToDelete, setItemToDelete] = useState<MenuItem | null>(null);
+  const [itemToDelete, setItemToDelete] = useState<FirestoreMenuItem | null>(null);
+  
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<DishFormData>({
     resolver: zodResolver(dishFormSchema),
@@ -57,34 +67,70 @@ export default function AddDish() {
       price: "",
       calories: "",
       protein: "",
-      image: "",
       category: "",
     },
   });
 
-  const { data: menuItemsData, isLoading: menuItemsLoading } = useQuery<{ items: MenuItem[] }>({
-    queryKey: ["/api/menu-items"],
+  const { data: menuItems = [], isLoading: menuItemsLoading, refetch } = useQuery<FirestoreMenuItem[]>({
+    queryKey: ["firestore-menu-items"],
+    queryFn: getAllMenuItems,
     enabled: isAdmin,
   });
 
-  const menuItems = menuItemsData?.items || [];
+  const uploadImage = async (file: File): Promise<string> => {
+    const token = await auth.currentUser?.getIdToken();
+    const formData = new FormData();
+    formData.append("image", file);
+
+    const response = await fetch("/api/upload", {
+      method: "POST",
+      headers: {
+        "x-firebase-uid": currentUser?.uid || "",
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.message || "Failed to upload image");
+    }
+
+    const data = await response.json();
+    return data.url;
+  };
 
   const createDishMutation = useMutation({
     mutationFn: async (data: DishFormData) => {
-      const response = await apiRequest("POST", "/api/menu-items", {
+      if (!imageFile && !imagePreview) {
+        throw new Error("Please select an image");
+      }
+
+      let imageUrl = imagePreview || "";
+      
+      if (imageFile) {
+        setIsUploading(true);
+        try {
+          imageUrl = await uploadImage(imageFile);
+        } finally {
+          setIsUploading(false);
+        }
+      }
+
+      return await createMenuItem({
         name: data.name,
         description: data.description,
         price: data.price,
         calories: data.calories,
         protein: data.protein,
-        image: data.image,
+        image: imageUrl,
         category: data.category,
       });
-      return await response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/menu-items"] });
+      queryClient.invalidateQueries({ queryKey: ["firestore-menu-items"] });
       form.reset();
+      setImageFile(null);
+      setImagePreview(null);
       toast({
         title: "Success",
         description: "Dish added successfully!",
@@ -101,21 +147,33 @@ export default function AddDish() {
 
   const updateDishMutation = useMutation({
     mutationFn: async ({ id, data }: { id: string; data: DishFormData }) => {
-      const response = await apiRequest("PATCH", `/api/menu-items/${id}`, {
+      let imageUrl = imagePreview || "";
+      
+      if (imageFile) {
+        setIsUploading(true);
+        try {
+          imageUrl = await uploadImage(imageFile);
+        } finally {
+          setIsUploading(false);
+        }
+      }
+
+      return await updateMenuItem(id, {
         name: data.name,
         description: data.description,
         price: data.price,
         calories: data.calories,
         protein: data.protein,
-        image: data.image,
+        image: imageUrl,
         category: data.category,
       });
-      return await response.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/menu-items"] });
+      queryClient.invalidateQueries({ queryKey: ["firestore-menu-items"] });
       form.reset();
       setEditingItem(null);
+      setImageFile(null);
+      setImagePreview(null);
       toast({
         title: "Success",
         description: "Dish updated successfully!",
@@ -132,11 +190,10 @@ export default function AddDish() {
 
   const deleteDishMutation = useMutation({
     mutationFn: async (id: string) => {
-      const response = await apiRequest("DELETE", `/api/menu-items/${id}`);
-      return await response.json();
+      await deleteMenuItem(id);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/menu-items"] });
+      queryClient.invalidateQueries({ queryKey: ["firestore-menu-items"] });
       setShowDeleteDialog(false);
       setItemToDelete(null);
       toast({
@@ -178,31 +235,81 @@ export default function AddDish() {
     checkAdminAccess();
   }, [currentUser, getUserRole, setLocation, toast]);
 
-  const handleEditClick = (item: MenuItem) => {
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      toast({
+        title: "Invalid file",
+        description: "Please select an image file",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      toast({
+        title: "File too large",
+        description: "Image must be less than 5MB",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setImageFile(file);
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setImagePreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleRemoveImage = () => {
+    setImageFile(null);
+    setImagePreview(null);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
+    }
+  };
+
+  const handleEditClick = (item: FirestoreMenuItem) => {
     setEditingItem(item);
+    setImagePreview(item.image);
+    setImageFile(null);
     form.reset({
       name: item.name,
       description: item.description,
       price: item.price,
       calories: item.calories,
       protein: item.protein,
-      image: item.image,
       category: item.category,
     });
   };
 
   const handleCancelEdit = () => {
     setEditingItem(null);
+    setImageFile(null);
+    setImagePreview(null);
     form.reset();
   };
 
-  const handleDeleteClick = (item: MenuItem) => {
+  const handleDeleteClick = (item: FirestoreMenuItem) => {
     setItemToDelete(item);
     setShowDeleteDialog(true);
   };
 
   const onSubmit = (data: DishFormData) => {
-    if (editingItem) {
+    if (!imagePreview && !imageFile) {
+      toast({
+        title: "Image required",
+        description: "Please upload an image for the dish",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (editingItem && editingItem.id) {
       updateDishMutation.mutate({ id: editingItem.id, data });
     } else {
       createDishMutation.mutate(data);
@@ -220,6 +327,8 @@ export default function AddDish() {
   if (!isAdmin) {
     return null;
   }
+
+  const isPending = createDishMutation.isPending || updateDishMutation.isPending || isUploading;
 
   return (
     <div className="min-h-screen bg-background">
@@ -388,40 +497,56 @@ export default function AddDish() {
                     />
                   </div>
 
-                  <FormField
-                    control={form.control}
-                    name="image"
-                    render={({ field }) => (
-                      <FormItem>
-                        <FormLabel className="flex items-center gap-1">
-                          <Upload className="h-4 w-4" />
-                          Image URL
-                        </FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder="https://example.com/dish-image.jpg"
-                            {...field}
-                            data-testid="input-dish-image"
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
+                  <div className="space-y-2">
+                    <FormLabel className="flex items-center gap-1">
+                      <ImagePlus className="h-4 w-4" />
+                      Dish Image
+                    </FormLabel>
+                    
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept="image/*"
+                      onChange={handleFileSelect}
+                      className="hidden"
+                      data-testid="input-dish-image-file"
+                    />
+                    
+                    {imagePreview ? (
+                      <div className="relative w-full h-48 rounded-md overflow-hidden border">
+                        <img
+                          src={imagePreview}
+                          alt="Dish preview"
+                          className="w-full h-full object-cover"
+                          data-testid="img-dish-preview"
+                        />
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="icon"
+                          className="absolute top-2 right-2"
+                          onClick={handleRemoveImage}
+                          data-testid="button-remove-image"
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ) : (
+                      <div
+                        className="border-2 border-dashed rounded-md p-8 text-center cursor-pointer hover-elevate transition-colors"
+                        onClick={() => fileInputRef.current?.click()}
+                        data-testid="dropzone-image"
+                      >
+                        <Upload className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
+                        <p className="text-sm text-muted-foreground">
+                          Click to upload an image
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          PNG, JPG, GIF up to 5MB
+                        </p>
+                      </div>
                     )}
-                  />
-
-                  {form.watch("image") && (
-                    <div className="relative w-full h-48 rounded-md overflow-hidden border">
-                      <img
-                        src={form.watch("image")}
-                        alt="Dish preview"
-                        className="w-full h-full object-cover"
-                        onError={(e) => {
-                          (e.target as HTMLImageElement).src = "https://via.placeholder.com/400x300?text=Invalid+Image+URL";
-                        }}
-                        data-testid="img-dish-preview"
-                      />
-                    </div>
-                  )}
+                  </div>
 
                   <div className="flex gap-2">
                     {editingItem && (
@@ -437,11 +562,14 @@ export default function AddDish() {
                     <Button
                       type="submit"
                       className="flex-1"
-                      disabled={createDishMutation.isPending || updateDishMutation.isPending}
+                      disabled={isPending}
                       data-testid="button-submit-dish"
                     >
-                      {createDishMutation.isPending || updateDishMutation.isPending ? (
-                        "Saving..."
+                      {isPending ? (
+                        <>
+                          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                          {isUploading ? "Uploading image..." : "Saving..."}
+                        </>
                       ) : editingItem ? (
                         <>
                           <Edit2 className="h-4 w-4 mr-2" />
@@ -576,7 +704,7 @@ export default function AddDish() {
             </Button>
             <Button
               variant="destructive"
-              onClick={() => itemToDelete && deleteDishMutation.mutate(itemToDelete.id)}
+              onClick={() => itemToDelete?.id && deleteDishMutation.mutate(itemToDelete.id)}
               disabled={deleteDishMutation.isPending}
               data-testid="button-confirm-delete"
             >
