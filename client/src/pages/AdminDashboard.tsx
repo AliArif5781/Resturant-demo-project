@@ -8,7 +8,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { Package, Home, Check, X, Clock, MapPin, Sparkles, Eye } from "lucide-react";
+import { Package, Home, Check, X, Clock, MapPin, Sparkles, Eye, UtensilsCrossed } from "lucide-react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import type { Order } from "@shared/schema";
@@ -198,6 +198,15 @@ export default function AdminDashboard() {
               <p className="text-sm font-medium hidden md:block">
                 {currentUser?.displayName || currentUser?.email}
               </p>
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => setLocation("/admin/menu")} 
+                data-testid="button-manage-menu"
+              >
+                <UtensilsCrossed className="h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">Manage Menu</span>
+              </Button>
               <Button 
                 variant="outline" 
                 size="sm"

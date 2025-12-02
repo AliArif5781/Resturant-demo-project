@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { insertOrderSchema } from "@shared/schema";
+import { insertOrderSchema, insertMenuItemSchema } from "@shared/schema";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || "")
@@ -314,6 +314,115 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const updatedOrder = await storage.updateOrderStatus(orderId, "cancelled", undefined, undefined, "guest");
       res.json({ order: updatedOrder });
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  // ========== MENU ITEMS ROUTES ==========
+
+  // Get all menu items (public)
+  app.get("/api/menu-items", async (req, res) => {
+    try {
+      const items = await storage.getAllMenuItems();
+      res.json({ items });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Get single menu item by ID (public)
+  app.get("/api/menu-items/:id", async (req, res) => {
+    try {
+      const { id } = req.params;
+      const item = await storage.getMenuItemById(id);
+      
+      if (!item) {
+        return res.status(404).json({ message: "Menu item not found" });
+      }
+      
+      res.json({ item });
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
+    }
+  });
+
+  // Create new menu item (ADMIN ONLY)
+  app.post("/api/menu-items", async (req, res) => {
+    try {
+      const firebaseUid = req.headers["x-firebase-uid"] as string;
+      
+      if (!firebaseUid) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      // Verify user exists and is admin
+      const user = await storage.getUserByFirebaseUid(firebaseUid);
+      if (!user) {
+        return res.status(401).json({ message: "User not found" });
+      }
+
+      if (user.role !== "admin") {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const validatedItem = insertMenuItemSchema.parse(req.body);
+      const item = await storage.createMenuItem(validatedItem);
+      res.json({ item });
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  // Update menu item (ADMIN ONLY)
+  app.patch("/api/menu-items/:id", async (req, res) => {
+    try {
+      const firebaseUid = req.headers["x-firebase-uid"] as string;
+      const { id } = req.params;
+      
+      if (!firebaseUid) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      // Verify user exists and is admin
+      const user = await storage.getUserByFirebaseUid(firebaseUid);
+      if (!user) {
+        return res.status(401).json({ message: "User not found" });
+      }
+
+      if (user.role !== "admin") {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      const item = await storage.updateMenuItem(id, req.body);
+      res.json({ item });
+    } catch (error: any) {
+      res.status(400).json({ message: error.message });
+    }
+  });
+
+  // Delete menu item (ADMIN ONLY)
+  app.delete("/api/menu-items/:id", async (req, res) => {
+    try {
+      const firebaseUid = req.headers["x-firebase-uid"] as string;
+      const { id } = req.params;
+      
+      if (!firebaseUid) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      // Verify user exists and is admin
+      const user = await storage.getUserByFirebaseUid(firebaseUid);
+      if (!user) {
+        return res.status(401).json({ message: "User not found" });
+      }
+
+      if (user.role !== "admin") {
+        return res.status(403).json({ message: "Admin access required" });
+      }
+
+      await storage.deleteMenuItem(id);
+      res.json({ message: "Menu item deleted successfully" });
     } catch (error: any) {
       res.status(400).json({ message: error.message });
     }
