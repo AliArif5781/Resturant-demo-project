@@ -88,7 +88,7 @@ export default function ItemDetail() {
     <div className="min-h-screen bg-background">
       <Header />
       
-      <main className="container mx-auto px-4 sm:px-6 md:px-12 lg:px-20 py-6 sm:py-8 md:py-12">
+      <main className="container mx-auto px-4 sm:px-6 md:px-12 lg:px-20 pt-24 pb-6 sm:pb-8 md:pb-12">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
