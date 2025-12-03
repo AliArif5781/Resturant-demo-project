@@ -1,5 +1,8 @@
-import { Sparkles, Heart, Clock, ChevronLeft, ChevronRight } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Sparkles, Heart, Clock, ChevronLeft, ChevronRight, LayoutDashboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useAuth } from "@/contexts/AuthContext";
+import { Link } from "wouter";
 import familyFeastImage from "@assets/generated_images/Family_feast_meal_spread_ba86b29a.png";
 
 interface HeroProps {
@@ -15,6 +18,20 @@ export default function Hero({
   onViewFavorites,
   onOrderLater,
 }: HeroProps) {
+  const { currentUser, getUserRole } = useAuth();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    const checkRole = async () => {
+      if (currentUser) {
+        const role = await getUserRole(currentUser.uid);
+        setIsAdmin(role === "admin");
+      } else {
+        setIsAdmin(false);
+      }
+    };
+    checkRole();
+  }, [currentUser, getUserRole]);
   return (
     <section className="relative h-screen w-full overflow-hidden">
       <div
@@ -40,46 +57,64 @@ export default function Hero({
               </h1>
               
               <div className="flex flex-wrap gap-2 sm:gap-3 pt-4 sm:pt-6">
-                <Button
-                  size="default"
-                  className="sm:h-11 sm:px-8"
-                  onClick={onStartOrdering}
-                  data-testid="button-start-ordering"
-                >
-                  Start Ordering
-                  <span className="hidden sm:inline text-xs ml-2 opacity-80">Browse menu & add items</span>
-                </Button>
+                {isAdmin ? (
+                  <Link href="/admin">
+                    <Button
+                      size="default"
+                      className="sm:h-11 sm:px-8"
+                      data-testid="button-admin-dashboard"
+                    >
+                      <LayoutDashboard className="h-4 w-4 mr-2" />
+                      Go to Dashboard
+                      <span className="hidden sm:inline text-xs ml-2 opacity-80">Manage orders & menu</span>
+                    </Button>
+                  </Link>
+                ) : (
+                  <Button
+                    size="default"
+                    className="sm:h-11 sm:px-8"
+                    onClick={onStartOrdering}
+                    data-testid="button-start-ordering"
+                  >
+                    Start Ordering
+                    <span className="hidden sm:inline text-xs ml-2 opacity-80">Browse menu & add items</span>
+                  </Button>
+                )}
                 
-                <Button
-                  variant="outline"
-                  size="default"
-                  className="bg-white/10 border-white/30 text-white backdrop-blur-sm sm:h-11"
-                  onClick={onSurprise}
-                  data-testid="button-surprise"
-                >
-                  <Sparkles className="h-4 w-4 sm:mr-2" />
-                  <span className="hidden sm:inline">Surprise me</span>
-                </Button>
-                <Button
-                  variant="outline"
-                  size="default"
-                  className="bg-white/10 border-white/30 text-white backdrop-blur-sm sm:h-11"
-                  onClick={onViewFavorites}
-                  data-testid="button-favorites"
-                >
-                  <Heart className="h-4 w-4 sm:mr-2" />
-                  <span className="hidden sm:inline">View favorites</span>
-                </Button>
-                <Button
-                  variant="outline"
-                  size="default"
-                  className="bg-white/10 border-white/30 text-white backdrop-blur-sm sm:h-11"
-                  onClick={onOrderLater}
-                  data-testid="button-order-later"
-                >
-                  <Clock className="h-4 w-4 sm:mr-2" />
-                  <span className="hidden sm:inline">Order for later</span>
-                </Button>
+                {!isAdmin && (
+                  <>
+                    <Button
+                      variant="outline"
+                      size="default"
+                      className="bg-white/10 border-white/30 text-white backdrop-blur-sm sm:h-11"
+                      onClick={onSurprise}
+                      data-testid="button-surprise"
+                    >
+                      <Sparkles className="h-4 w-4 sm:mr-2" />
+                      <span className="hidden sm:inline">Surprise me</span>
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="default"
+                      className="bg-white/10 border-white/30 text-white backdrop-blur-sm sm:h-11"
+                      onClick={onViewFavorites}
+                      data-testid="button-favorites"
+                    >
+                      <Heart className="h-4 w-4 sm:mr-2" />
+                      <span className="hidden sm:inline">View favorites</span>
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="default"
+                      className="bg-white/10 border-white/30 text-white backdrop-blur-sm sm:h-11"
+                      onClick={onOrderLater}
+                      data-testid="button-order-later"
+                    >
+                      <Clock className="h-4 w-4 sm:mr-2" />
+                      <span className="hidden sm:inline">Order for later</span>
+                    </Button>
+                  </>
+                )}
               </div>
             </div>
           </div>

@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Plus, Flame, Dumbbell, DollarSign, Upload, Trash2, Edit2, ImagePlus, X, Loader2 } from "lucide-react";
+import { ArrowLeft, Plus, Flame, Dumbbell, DollarSign, Upload, Trash2, Edit2, ImagePlus, X, Loader2, LayoutDashboard, UtensilsCrossed, ChefHat } from "lucide-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -328,21 +328,43 @@ export default function AddDish() {
 
   return (
     <div className="min-h-screen bg-background">
-      <header className="border-b bg-background/80 backdrop-blur-sm sticky top-0 z-50">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center gap-4">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setLocation("/admin")}
-              data-testid="button-back-admin"
-            >
-              <ArrowLeft className="h-4 w-4 mr-2" />
-              Back to Dashboard
-            </Button>
-            <h1 className="text-xl sm:text-2xl font-bold" data-testid="title-add-dish">
-              Manage Menu
-            </h1>
+      <header className="border-b bg-gradient-to-r from-primary/5 via-background to-primary/5 sticky top-0 z-40 backdrop-blur-md">
+        <div className="container mx-auto px-4 py-3">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-lg bg-primary/10">
+                <ChefHat className="h-6 w-6 text-primary" />
+              </div>
+              <div>
+                <h1 className="text-lg sm:text-xl font-bold" data-testid="title-add-dish">
+                  Manage Menu
+                </h1>
+                <p className="text-xs text-muted-foreground hidden sm:block">
+                  Add and edit your restaurant dishes
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 flex-wrap">
+              <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => setLocation("/admin")}
+                className="gap-2"
+                data-testid="button-dashboard"
+              >
+                <LayoutDashboard className="h-4 w-4" />
+                <span className="hidden sm:inline">Dashboard</span>
+              </Button>
+              <Button 
+                variant="default" 
+                size="sm"
+                className="gap-2"
+                data-testid="button-manage-menu"
+              >
+                <UtensilsCrossed className="h-4 w-4" />
+                <span className="hidden sm:inline">Manage Menu</span>
+              </Button>
+            </div>
           </div>
         </div>
       </header>

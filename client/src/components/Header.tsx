@@ -1,4 +1,5 @@
-import { User, ShoppingCart, LogOut, Package, UtensilsCrossed, Menu } from "lucide-react";
+import { useState, useEffect } from "react";
+import { User, ShoppingCart, LogOut, Package, UtensilsCrossed, Menu, LayoutDashboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -25,9 +26,24 @@ export default function Header({
   tableNumber,
 }: HeaderProps = {}) {
   const { totalItems } = useCart();
-  const { currentUser, signout } = useAuth();
+  const { currentUser, signout, getUserRole } = useAuth();
   const [, setLocation] = useLocation();
   const { toast } = useToast();
+  const [userRole, setUserRole] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchRole = async () => {
+      if (currentUser) {
+        const role = await getUserRole(currentUser.uid);
+        setUserRole(role);
+      } else {
+        setUserRole(null);
+      }
+    };
+    fetchRole();
+  }, [currentUser, getUserRole]);
+
+  const isAdmin = userRole === "admin";
 
   const handleSignout = async () => {
     try {
@@ -131,12 +147,21 @@ export default function Header({
                     {currentUser.email}
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
-                    <Link href="/orders" data-testid="link-my-orders">
-                      <Package className="mr-2 h-4 w-4" />
-                      My Orders
-                    </Link>
-                  </DropdownMenuItem>
+                  {isAdmin ? (
+                    <DropdownMenuItem asChild>
+                      <Link href="/admin" data-testid="link-admin-dashboard">
+                        <LayoutDashboard className="mr-2 h-4 w-4" />
+                        Dashboard
+                      </Link>
+                    </DropdownMenuItem>
+                  ) : (
+                    <DropdownMenuItem asChild>
+                      <Link href="/orders" data-testid="link-my-orders">
+                        <Package className="mr-2 h-4 w-4" />
+                        My Orders
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuItem
                     onClick={handleSignout}
                     data-testid="button-signout"
