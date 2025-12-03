@@ -72,14 +72,22 @@ Preferred communication style: Simple, everyday language.
 ### Database Design
 
 **Current Schema:**
-- Users table with username/password authentication
+- Users table with Firebase authentication sync
+- Orders table for order management
 - Schema defined in `shared/schema.ts` for type safety across stack
 - Drizzle migrations stored in `migrations/` directory
 
 **Database Provider:**
-- Neon serverless PostgreSQL for production
+- Neon serverless PostgreSQL for users and orders
 - Connection pooling handled by `@neondatabase/serverless`
 - Schema synchronization via `drizzle-kit push` command
+
+**Firestore Integration (Menu Items):**
+- Menu items are stored in Firebase Firestore (collection: `menuItems`)
+- Server-side Firebase Admin SDK for secure Firestore access
+- `server/firebase-admin.ts` - Firebase Admin initialization
+- `server/firestoreMenuService.ts` - CRUD operations for menu items
+- Requires `FIREBASE_SERVICE_ACCOUNT_KEY` secret for server-side access
 
 ### External Dependencies
 
@@ -125,6 +133,6 @@ Preferred communication style: Simple, everyday language.
 
 **Key Integration Points:**
 - No external payment processing (yet to be implemented)
-- No authentication service (local username/password only)
+- Firebase Authentication for user sign-in
 - No email/SMS notifications (yet to be implemented)
 - No real-time websockets (polling-based updates)
