@@ -67,59 +67,134 @@ export async function getOrderById(orderId: string): Promise<Order | undefined> 
 }
 
 export async function getRecentOrders(limit: number = 50): Promise<Order[]> {
-  const snapshot = await adminDb
-    .collection(ORDERS_COLLECTION)
-    .orderBy("createdAt", "desc")
-    .limit(limit)
-    .get();
+  try {
+    const snapshot = await adminDb
+      .collection(ORDERS_COLLECTION)
+      .orderBy("createdAt", "desc")
+      .limit(limit)
+      .get();
 
-  return snapshot.docs.map((doc) => {
-    const data = doc.data();
-    return {
-      id: doc.id,
-      firebaseUid: data.firebaseUid,
-      userEmail: data.userEmail,
-      userName: data.userName || null,
-      items: data.items,
-      subtotal: String(data.subtotal),
-      tax: String(data.tax),
-      total: String(data.total),
-      status: data.status,
-      preparationTime: data.preparationTime || null,
-      rejectionReason: data.rejectionReason || null,
-      cancelledBy: data.cancelledBy || null,
-      guestArrived: data.guestArrived || false,
-      createdAt: data.createdAt?.toDate?.() || new Date(),
-    } as Order;
-  });
+    return snapshot.docs.map((doc) => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        firebaseUid: data.firebaseUid,
+        userEmail: data.userEmail,
+        userName: data.userName || null,
+        items: data.items,
+        subtotal: String(data.subtotal),
+        tax: String(data.tax),
+        total: String(data.total),
+        status: data.status,
+        preparationTime: data.preparationTime || null,
+        rejectionReason: data.rejectionReason || null,
+        cancelledBy: data.cancelledBy || null,
+        guestArrived: data.guestArrived || false,
+        createdAt: data.createdAt?.toDate?.() || new Date(),
+      } as Order;
+    });
+  } catch (error: any) {
+    console.error("Error fetching recent orders:", error.message);
+    
+    if (error.code === 9 || error.message?.includes("index")) {
+      console.log("Index required. Falling back to client-side sorting...");
+      const snapshot = await adminDb
+        .collection(ORDERS_COLLECTION)
+        .get();
+
+      const orders = snapshot.docs.map((doc) => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          firebaseUid: data.firebaseUid,
+          userEmail: data.userEmail,
+          userName: data.userName || null,
+          items: data.items,
+          subtotal: String(data.subtotal),
+          tax: String(data.tax),
+          total: String(data.total),
+          status: data.status,
+          preparationTime: data.preparationTime || null,
+          rejectionReason: data.rejectionReason || null,
+          cancelledBy: data.cancelledBy || null,
+          guestArrived: data.guestArrived || false,
+          createdAt: data.createdAt?.toDate?.() || new Date(),
+        } as Order;
+      });
+
+      return orders
+        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+        .slice(0, limit);
+    }
+    
+    throw error;
+  }
 }
 
 export async function getOrdersByUser(firebaseUid: string): Promise<Order[]> {
-  const snapshot = await adminDb
-    .collection(ORDERS_COLLECTION)
-    .where("firebaseUid", "==", firebaseUid)
-    .orderBy("createdAt", "desc")
-    .get();
+  try {
+    const snapshot = await adminDb
+      .collection(ORDERS_COLLECTION)
+      .where("firebaseUid", "==", firebaseUid)
+      .orderBy("createdAt", "desc")
+      .get();
 
-  return snapshot.docs.map((doc) => {
-    const data = doc.data();
-    return {
-      id: doc.id,
-      firebaseUid: data.firebaseUid,
-      userEmail: data.userEmail,
-      userName: data.userName || null,
-      items: data.items,
-      subtotal: String(data.subtotal),
-      tax: String(data.tax),
-      total: String(data.total),
-      status: data.status,
-      preparationTime: data.preparationTime || null,
-      rejectionReason: data.rejectionReason || null,
-      cancelledBy: data.cancelledBy || null,
-      guestArrived: data.guestArrived || false,
-      createdAt: data.createdAt?.toDate?.() || new Date(),
-    } as Order;
-  });
+    return snapshot.docs.map((doc) => {
+      const data = doc.data();
+      return {
+        id: doc.id,
+        firebaseUid: data.firebaseUid,
+        userEmail: data.userEmail,
+        userName: data.userName || null,
+        items: data.items,
+        subtotal: String(data.subtotal),
+        tax: String(data.tax),
+        total: String(data.total),
+        status: data.status,
+        preparationTime: data.preparationTime || null,
+        rejectionReason: data.rejectionReason || null,
+        cancelledBy: data.cancelledBy || null,
+        guestArrived: data.guestArrived || false,
+        createdAt: data.createdAt?.toDate?.() || new Date(),
+      } as Order;
+    });
+  } catch (error: any) {
+    console.error("Error fetching user orders:", error.message);
+    
+    if (error.code === 9 || error.message?.includes("index")) {
+      console.log("Composite index required. Falling back to client-side sorting...");
+      const snapshot = await adminDb
+        .collection(ORDERS_COLLECTION)
+        .where("firebaseUid", "==", firebaseUid)
+        .get();
+
+      const orders = snapshot.docs.map((doc) => {
+        const data = doc.data();
+        return {
+          id: doc.id,
+          firebaseUid: data.firebaseUid,
+          userEmail: data.userEmail,
+          userName: data.userName || null,
+          items: data.items,
+          subtotal: String(data.subtotal),
+          tax: String(data.tax),
+          total: String(data.total),
+          status: data.status,
+          preparationTime: data.preparationTime || null,
+          rejectionReason: data.rejectionReason || null,
+          cancelledBy: data.cancelledBy || null,
+          guestArrived: data.guestArrived || false,
+          createdAt: data.createdAt?.toDate?.() || new Date(),
+        } as Order;
+      });
+
+      return orders.sort((a, b) => 
+        new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
+    }
+    
+    throw error;
+  }
 }
 
 export async function updateOrderStatus(
