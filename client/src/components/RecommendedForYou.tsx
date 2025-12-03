@@ -127,7 +127,7 @@ export default function RecommendedForYou() {
                   <h3 className="font-bold text-sm md:text-base line-clamp-1" data-testid={`text-recommended-name-${item.id}`}>
                     {item.name}
                   </h3>
-                  <p className="hidden lg:block text-xs md:text-sm text-muted-foreground line-clamp-3" data-testid={`text-recommended-desc-${item.id}`}>
+                  <p className="text-xs md:text-sm text-muted-foreground line-clamp-4" data-testid={`text-recommended-desc-${item.id}`}>
                     {item.description}
                   </p>
                   <div className="flex gap-1.5 flex-wrap">

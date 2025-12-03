@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { Sparkles, Heart, Clock, ChevronLeft, ChevronRight, LayoutDashboard, MapPin, Phone, Star } from "lucide-react";
+import { Sparkles, Heart, Clock, ChevronLeft, ChevronRight, LayoutDashboard, MapPin, Phone } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/contexts/AuthContext";
@@ -113,22 +113,6 @@ export default function Hero({
         <div className="flex-1 flex items-center">
           <div className="container mx-auto px-6 md:px-12 lg:px-20">
             <div className="max-w-2xl space-y-6">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2, duration: 0.6 }}
-                className="flex items-center gap-3"
-              >
-                <Badge className="bg-primary/90 text-primary-foreground border-0 px-4 py-1.5 text-sm font-medium backdrop-blur-sm">
-                  <Star className="h-3.5 w-3.5 mr-1.5 fill-current" />
-                  4.9 Rating
-                </Badge>
-                <Badge variant="outline" className="bg-white/10 text-white border-white/30 px-4 py-1.5 text-sm backdrop-blur-sm">
-                  <MapPin className="h-3.5 w-3.5 mr-1.5" />
-                  Open Now
-                </Badge>
-              </motion.div>
-
               <AnimatePresence mode="wait">
                 <motion.div
                   key={currentSlide}
