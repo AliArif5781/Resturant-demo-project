@@ -109,7 +109,7 @@ function StatusWidget({
         <CardContent className="p-4 md:p-6 relative">
           <div className="flex items-center justify-between gap-4">
             <div className="space-y-2">
-              <p className={`text-sm font-semibold uppercase tracking-wide ${colors.text} opacity-80`}>{title}</p>
+              <p className={`text-sm font-semibold uppercase tracking-wide ${colors.text} opacity-80 whitespace-nowrap`}>{title}</p>
               <div className="flex items-baseline gap-2">
                 <motion.span 
                   key={count}
