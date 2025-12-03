@@ -167,46 +167,58 @@ function FloatingElements({ reducedMotion = false }: { reducedMotion?: boolean }
 }
 
 function DecorativeFoodStrip() {
-  const foodItems = [
+  const leftItems = [
     { img: biryaniImage, name: "Biryani" },
     { img: karahiImage, name: "Karahi" },
+  ];
+  
+  const rightItems = [
     { img: naanImage, name: "Naan" },
     { img: tikkaImage, name: "Tikka" },
   ];
 
+  const renderFoodItem = (item: { img: string; name: string }, i: number, fromLeft: boolean) => (
+    <motion.div
+      key={i}
+      initial={{ opacity: 0, x: fromLeft ? -50 : 50 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ delay: 0.5 + i * 0.15 }}
+    >
+      <motion.div
+        animate={{ 
+          y: [-2, 2, -2],
+          rotate: [-1, 1, -1]
+        }}
+        transition={{ 
+          duration: 3 + i * 0.5,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+        className="relative group"
+      >
+        <div className="absolute inset-0 bg-gradient-to-br from-orange-400/40 to-amber-500/40 rounded-full blur-lg scale-110 group-hover:scale-125 transition-transform" />
+        <img 
+          src={item.img} 
+          alt={item.name}
+          className="w-14 h-14 rounded-full object-cover border-2 border-white/40 shadow-lg shadow-black/20 group-hover:scale-105 transition-transform"
+        />
+      </motion.div>
+    </motion.div>
+  );
+
   return (
-    <div className="hidden xl:block fixed right-0 top-1/2 -translate-y-1/2 z-30 pr-4">
-      <div className="flex flex-col gap-3">
-        {foodItems.map((item, i) => (
-          <motion.div
-            key={i}
-            initial={{ opacity: 0, x: 50 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.5 + i * 0.15 }}
-          >
-            <motion.div
-              animate={{ 
-                y: [-2, 2, -2],
-                rotate: [-1, 1, -1]
-              }}
-              transition={{ 
-                duration: 3 + i * 0.5,
-                repeat: Infinity,
-                ease: "easeInOut"
-              }}
-              className="relative group"
-            >
-              <div className="absolute inset-0 bg-gradient-to-br from-orange-400/40 to-amber-500/40 rounded-full blur-lg scale-110 group-hover:scale-125 transition-transform" />
-              <img 
-                src={item.img} 
-                alt={item.name}
-                className="w-14 h-14 rounded-full object-cover border-2 border-white/40 shadow-lg shadow-black/20 group-hover:scale-105 transition-transform"
-              />
-            </motion.div>
-          </motion.div>
-        ))}
+    <>
+      <div className="hidden xl:block fixed left-0 top-1/2 -translate-y-1/2 z-30 pl-4">
+        <div className="flex flex-col gap-3">
+          {leftItems.map((item, i) => renderFoodItem(item, i, true))}
+        </div>
       </div>
-    </div>
+      <div className="hidden xl:block fixed right-0 top-1/2 -translate-y-1/2 z-30 pr-4">
+        <div className="flex flex-col gap-3">
+          {rightItems.map((item, i) => renderFoodItem(item, i, false))}
+        </div>
+      </div>
+    </>
   );
 }
 
