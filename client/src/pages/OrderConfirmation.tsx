@@ -7,7 +7,8 @@ import { Separator } from "@/components/ui/separator";
 import { 
   CheckCircle, Home, ShoppingBag, Clock, Package, CheckCheck, 
   Calendar, MapPin, Flame, Dumbbell, XCircle, Sparkles, Ban,
-  ChefHat, Timer, UtensilsCrossed, CookingPot, Star, Heart
+  ChefHat, Timer, UtensilsCrossed, CookingPot, Star, Heart,
+  Utensils
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, useMutation } from "@tanstack/react-query";
@@ -15,6 +16,10 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import type { Order } from "@shared/schema";
 import kitchenBgImage from "@assets/stock_images/professional_restaur_b40a6500.jpg";
+import biryaniImage from "@assets/generated_images/Chicken_Biryani_overhead_shot_73a10a24.png";
+import karahiImage from "@assets/generated_images/Chicken_Karahi_dish_closeup_1ee23ad4.png";
+import naanImage from "@assets/generated_images/Garlic_naan_bread_closeup_e1772073.png";
+import tikkaImage from "@assets/stock_images/aromatic_chicken_tik_1a7c825e.jpg";
 
 function CelebrationConfetti() {
   const confettiColors = [
@@ -68,38 +73,117 @@ function CelebrationConfetti() {
 }
 
 function FloatingElements() {
+  const foodImages = [biryaniImage, karahiImage, naanImage, tikkaImage];
+  
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
-      {[...Array(6)].map((_, i) => (
+      {foodImages.map((img, i) => (
         <motion.div
-          key={i}
+          key={`food-${i}`}
+          className="absolute hidden md:block"
+          style={{
+            left: i % 2 === 0 ? `${5 + i * 3}%` : `${75 + i * 3}%`,
+            top: `${15 + i * 18}%`,
+          }}
+          animate={{ 
+            y: [-5, 5, -5],
+            rotate: [-3, 3, -3],
+            scale: [1, 1.02, 1]
+          }}
+          transition={{ 
+            duration: 4 + i,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: i * 0.5
+          }}
+        >
+          <div className="relative">
+            <div className="absolute inset-0 bg-gradient-to-br from-orange-500/30 to-amber-600/30 rounded-full blur-xl scale-110" />
+            <img 
+              src={img} 
+              alt="" 
+              className="w-16 h-16 lg:w-20 lg:h-20 rounded-full object-cover border-2 border-white/30 shadow-lg shadow-black/20"
+            />
+          </div>
+        </motion.div>
+      ))}
+      
+      {[...Array(8)].map((_, i) => (
+        <motion.div
+          key={`icon-${i}`}
           className="absolute"
           initial={{ 
-            x: Math.random() * 100 + "%", 
-            y: Math.random() * 100 + "%",
-            opacity: 0.1 
+            x: `${10 + Math.random() * 80}%`, 
+            y: `${Math.random() * 100}%`,
+            opacity: 0.15 
           }}
           animate={{ 
             y: ["-10%", "110%"],
-            opacity: [0.1, 0.3, 0.1],
-            rotate: [0, 360]
+            opacity: [0.15, 0.35, 0.15],
+            rotate: [0, 180, 360]
           }}
           transition={{ 
-            duration: 15 + Math.random() * 10,
+            duration: 12 + Math.random() * 8,
             repeat: Infinity,
-            delay: i * 2,
+            delay: i * 1.5,
             ease: "linear"
           }}
         >
-          {i % 3 === 0 ? (
-            <Star className="h-6 w-6 text-white/20" />
-          ) : i % 3 === 1 ? (
-            <Sparkles className="h-8 w-8 text-white/15" />
+          {i % 4 === 0 ? (
+            <Star className="h-5 w-5 md:h-6 md:w-6 text-yellow-300/40" />
+          ) : i % 4 === 1 ? (
+            <Sparkles className="h-6 w-6 md:h-8 md:w-8 text-white/30" />
+          ) : i % 4 === 2 ? (
+            <Utensils className="h-5 w-5 md:h-6 md:w-6 text-amber-200/25" />
           ) : (
-            <Heart className="h-5 w-5 text-white/10" />
+            <Heart className="h-4 w-4 md:h-5 md:w-5 text-red-300/20" />
           )}
         </motion.div>
       ))}
+    </div>
+  );
+}
+
+function DecorativeFoodStrip() {
+  const foodItems = [
+    { img: biryaniImage, name: "Biryani" },
+    { img: karahiImage, name: "Karahi" },
+    { img: naanImage, name: "Naan" },
+    { img: tikkaImage, name: "Tikka" },
+  ];
+
+  return (
+    <div className="hidden xl:block fixed right-0 top-1/2 -translate-y-1/2 z-30 pr-4">
+      <div className="flex flex-col gap-3">
+        {foodItems.map((item, i) => (
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, x: 50 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.5 + i * 0.15 }}
+          >
+            <motion.div
+              animate={{ 
+                y: [-2, 2, -2],
+                rotate: [-1, 1, -1]
+              }}
+              transition={{ 
+                duration: 3 + i * 0.5,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+              className="relative group"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-orange-400/40 to-amber-500/40 rounded-full blur-lg scale-110 group-hover:scale-125 transition-transform" />
+              <img 
+                src={item.img} 
+                alt={item.name}
+                className="w-14 h-14 rounded-full object-cover border-2 border-white/40 shadow-lg shadow-black/20 group-hover:scale-105 transition-transform"
+              />
+            </motion.div>
+          </motion.div>
+        ))}
+      </div>
     </div>
   );
 }
@@ -110,13 +194,14 @@ function FoodPreparationAnimation({ status }: { status: string }) {
   const isPending = status === "pending";
 
   return (
-    <div className="relative w-full py-8 sm:py-12 md:py-16 overflow-hidden">
+    <div className="relative w-full py-10 sm:py-14 md:py-20 overflow-hidden">
       <div 
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+        className="absolute inset-0 bg-cover bg-center bg-no-repeat scale-105"
         style={{ backgroundImage: `url(${kitchenBgImage})` }}
       />
-      <div className="absolute inset-0 bg-gradient-to-r from-orange-900/90 via-amber-800/85 to-orange-900/90" />
-      <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-black/40" />
+      <div className="absolute inset-0 bg-gradient-to-r from-orange-900/92 via-amber-800/88 to-orange-900/92" />
+      <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/50" />
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,rgba(0,0,0,0.3)_100%)]" />
       
       <FloatingElements />
       
@@ -467,8 +552,12 @@ export default function OrderConfirmation() {
   const currentStepIndex = statusToStepIndex[currentStatus] ?? 0;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-background to-muted/30">
+    <div className="min-h-screen bg-gradient-to-b from-background via-muted/20 to-muted/40 relative">
       {showCelebration && <CelebrationConfetti />}
+      <DecorativeFoodStrip />
+      
+      <div className="hidden lg:block fixed left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-orange-500/5 to-transparent pointer-events-none z-10" />
+      <div className="hidden lg:block fixed right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-orange-500/5 to-transparent pointer-events-none z-10" />
       
       <header className="border-b sticky top-0 bg-background/95 backdrop-blur-md z-50 shadow-sm" data-testid="header-order-confirmation">
         <div className="container mx-auto px-4 py-3">
@@ -601,47 +690,71 @@ export default function OrderConfirmation() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.1 }}
             >
-              <Card className="shadow-lg border-0 bg-card/80 backdrop-blur-sm" data-testid="card-order-status">
-                <CardContent className="p-4 md:p-6 lg:p-8">
-                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6 md:mb-8">
-                    <div>
-                      <motion.h2 
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        className="text-2xl md:text-3xl font-bold text-foreground" 
-                        data-testid="text-order-greeting"
+              <Card className="shadow-2xl border-0 bg-gradient-to-br from-card via-card to-muted/30 backdrop-blur-sm overflow-hidden relative" data-testid="card-order-status">
+                <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-orange-400 via-amber-500 to-orange-400" />
+                <div className="absolute -top-20 -right-20 w-40 h-40 bg-orange-500/5 rounded-full blur-3xl" />
+                <div className="absolute -bottom-20 -left-20 w-40 h-40 bg-amber-500/5 rounded-full blur-3xl" />
+                
+                <CardContent className="p-5 md:p-8 lg:p-10 relative">
+                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8 md:mb-10">
+                    <div className="flex items-start gap-4">
+                      <motion.div 
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        transition={{ type: "spring", stiffness: 200, delay: 0.2 }}
+                        className="hidden sm:flex items-center justify-center w-14 h-14 md:w-16 md:h-16 rounded-2xl bg-gradient-to-br from-orange-400 to-amber-500 shadow-lg shadow-orange-500/20"
                       >
-                        Thank you, {orderData.userName}!
-                      </motion.h2>
-                      <p className="text-muted-foreground text-sm md:text-base mt-1">
-                        Order #{orderData.orderNumber}
-                      </p>
+                        <Utensils className="h-7 w-7 md:h-8 md:w-8 text-white" />
+                      </motion.div>
+                      <div>
+                        <motion.h2 
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          className="text-2xl md:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-foreground via-foreground to-foreground/80 bg-clip-text" 
+                          data-testid="text-order-greeting"
+                        >
+                          Thank you, {orderData.userName}!
+                        </motion.h2>
+                        <motion.p 
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          transition={{ delay: 0.3 }}
+                          className="text-muted-foreground text-sm md:text-base mt-1 flex items-center gap-2"
+                        >
+                          <span className="font-mono bg-muted px-2 py-0.5 rounded text-xs md:text-sm">#{orderData.orderNumber}</span>
+                        </motion.p>
+                      </div>
                     </div>
-                    <div className="flex flex-wrap gap-2">
+                    <motion.div 
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.4 }}
+                      className="flex flex-wrap gap-2"
+                    >
                       <Badge 
                         variant="outline" 
-                        className={`px-3 py-1.5 text-sm font-medium ${
+                        className={`px-4 py-2 text-sm font-semibold shadow-sm ${
                           currentStatus === "completed"
-                            ? "bg-green-100 dark:bg-green-900/50 border-green-300 dark:border-green-700 text-green-800 dark:text-green-200"
+                            ? "bg-gradient-to-r from-green-100 to-emerald-100 dark:from-green-900/60 dark:to-emerald-900/60 border-green-300 dark:border-green-600 text-green-800 dark:text-green-200"
                             : isConfirmed
-                            ? "bg-blue-100 dark:bg-blue-900/50 border-blue-300 dark:border-blue-700 text-blue-800 dark:text-blue-200"
-                            : "bg-orange-100 dark:bg-orange-900/50 border-orange-300 dark:border-orange-700 text-orange-800 dark:text-orange-200"
+                            ? "bg-gradient-to-r from-blue-100 to-indigo-100 dark:from-blue-900/60 dark:to-indigo-900/60 border-blue-300 dark:border-blue-600 text-blue-800 dark:text-blue-200"
+                            : "bg-gradient-to-r from-orange-100 to-amber-100 dark:from-orange-900/60 dark:to-amber-900/60 border-orange-300 dark:border-orange-600 text-orange-800 dark:text-orange-200"
                         }`}
                         data-testid="badge-order-status"
                       >
                         {currentStatus === "completed" ? (
-                          <><Sparkles className="h-3.5 w-3.5 mr-1.5" /> Completed</>
+                          <><Sparkles className="h-4 w-4 mr-2" /> Completed</>
                         ) : isConfirmed ? (
-                          <><CookingPot className="h-3.5 w-3.5 mr-1.5" /> Preparing</>
+                          <><CookingPot className="h-4 w-4 mr-2" /> Preparing</>
                         ) : (
-                          <><Clock className="h-3.5 w-3.5 mr-1.5" /> Pending</>
+                          <><Clock className="h-4 w-4 mr-2" /> Pending</>
                         )}
                       </Badge>
-                      <Badge variant="outline" className="px-3 py-1.5 text-sm bg-muted/50" data-testid="badge-order-date">
-                        <Calendar className="h-3.5 w-3.5 mr-1.5" />
+                      <Badge variant="outline" className="px-4 py-2 text-sm bg-muted/60 border-border shadow-sm" data-testid="badge-order-date">
+                        <Calendar className="h-4 w-4 mr-2" />
                         {orderData.orderDate}
                       </Badge>
-                    </div>
+                    </motion.div>
                   </div>
 
                   {preparationTime && isConfirmed && remainingSeconds !== null && (
@@ -666,19 +779,23 @@ export default function OrderConfirmation() {
                     </motion.div>
                   )}
 
-                  <div className="relative py-4">
-                    <div className="hidden md:block absolute top-1/2 left-0 right-0 h-1 bg-gradient-to-r from-muted via-muted to-muted -translate-y-1/2 mx-20 rounded-full" />
-                    <div 
-                      className="hidden md:block absolute top-1/2 left-0 h-1 -translate-y-1/2 ml-20 rounded-full transition-all duration-500"
+                  <div className="relative py-6 md:py-8">
+                    <div className="hidden md:block absolute top-1/2 left-0 right-0 h-1.5 bg-gradient-to-r from-muted via-muted/80 to-muted -translate-y-1/2 mx-24 rounded-full shadow-inner" />
+                    <motion.div 
+                      initial={{ scaleX: 0 }}
+                      animate={{ scaleX: 1 }}
+                      transition={{ duration: 0.8, ease: "easeOut" }}
+                      className="hidden md:block absolute top-1/2 left-0 h-1.5 -translate-y-1/2 ml-24 rounded-full transition-all duration-500 shadow-sm"
                       style={{
-                        width: `calc(${(currentStepIndex / 2) * 100}% - 5rem)`,
+                        width: `calc(${(currentStepIndex / 2) * 100}% - 6rem)`,
                         background: currentStatus === "completed" 
-                          ? "linear-gradient(to right, #22c55e, #10b981)" 
-                          : "linear-gradient(to right, #f97316, #fb923c)"
+                          ? "linear-gradient(to right, #22c55e, #10b981, #059669)" 
+                          : "linear-gradient(to right, #f97316, #fb923c, #fbbf24)",
+                        transformOrigin: "left"
                       }}
                     />
                     
-                    <div className="grid grid-cols-3 gap-2 md:gap-4 relative z-10">
+                    <div className="grid grid-cols-3 gap-3 md:gap-6 relative z-10">
                       {orderSteps.map((step, index) => {
                         const Icon = step.icon;
                         const isActive = index <= currentStepIndex;
@@ -688,54 +805,76 @@ export default function OrderConfirmation() {
                         return (
                           <motion.div
                             key={step.id}
-                            initial={{ opacity: 0, y: 10 }}
+                            initial={{ opacity: 0, y: 15 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.1 * index }}
+                            transition={{ delay: 0.15 * index, type: "spring", stiffness: 100 }}
                             className="flex flex-col items-center text-center"
                           >
                             <motion.div
                               animate={{
-                                scale: isCurrent ? [1, 1.08, 1] : 1,
+                                scale: isCurrent ? [1, 1.1, 1] : 1,
+                                y: isCurrent ? [0, -3, 0] : 0,
                               }}
                               transition={{ 
-                                duration: 2, 
+                                duration: 2.5, 
                                 repeat: isCurrent ? Infinity : 0,
                                 ease: "easeInOut"
                               }}
-                              className={`relative flex items-center justify-center w-14 h-14 md:w-18 md:h-18 lg:w-20 lg:h-20 rounded-full mb-3 transition-all duration-500 shadow-lg ${
+                              className="relative mb-4"
+                            >
+                              <div className={`flex items-center justify-center w-16 h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 rounded-2xl md:rounded-3xl transition-all duration-500 ${
                                 isCompleted
-                                  ? "bg-gradient-to-br from-green-400 to-green-600 dark:from-green-500 dark:to-green-700"
+                                  ? "bg-gradient-to-br from-green-400 via-green-500 to-emerald-600 shadow-xl shadow-green-500/30"
                                   : isCurrent
                                     ? step.id === "preparing"
-                                      ? "bg-gradient-to-br from-blue-400 to-blue-600 dark:from-blue-500 dark:to-blue-700"
+                                      ? "bg-gradient-to-br from-blue-400 via-blue-500 to-indigo-600 shadow-xl shadow-blue-500/30"
                                       : step.id === "completed"
-                                        ? "bg-gradient-to-br from-green-400 to-green-600"
-                                        : "bg-gradient-to-br from-orange-400 to-orange-600 dark:from-orange-500 dark:to-orange-700"
-                                    : "bg-muted"
-                              }`}
-                            >
-                              <Icon className={`h-6 w-6 md:h-8 md:w-8 ${
-                                isActive ? "text-white drop-shadow" : "text-muted-foreground"
-                              }`} />
+                                        ? "bg-gradient-to-br from-green-400 via-green-500 to-emerald-600 shadow-xl shadow-green-500/30"
+                                        : "bg-gradient-to-br from-orange-400 via-orange-500 to-amber-600 shadow-xl shadow-orange-500/30"
+                                    : "bg-gradient-to-br from-muted to-muted/80 shadow-lg"
+                              }`}>
+                                <Icon className={`h-7 w-7 md:h-9 md:w-9 lg:h-10 lg:w-10 ${
+                                  isActive ? "text-white drop-shadow-md" : "text-muted-foreground"
+                                }`} />
+                              </div>
+                              
                               {isCurrent && (
-                                <motion.div
-                                  className="absolute inset-0 rounded-full border-2 border-current opacity-50"
-                                  animate={{ scale: [1, 1.3, 1.5], opacity: [0.5, 0.25, 0] }}
-                                  transition={{ duration: 2, repeat: Infinity }}
-                                  style={{ 
-                                    borderColor: step.id === "preparing" ? "#3b82f6" : 
-                                                step.id === "completed" ? "#22c55e" : "#f97316" 
-                                  }}
-                                />
+                                <>
+                                  <motion.div
+                                    className="absolute inset-0 rounded-2xl md:rounded-3xl border-2"
+                                    animate={{ scale: [1, 1.2, 1.4], opacity: [0.6, 0.3, 0] }}
+                                    transition={{ duration: 2, repeat: Infinity }}
+                                    style={{ 
+                                      borderColor: step.id === "preparing" ? "#3b82f6" : 
+                                                  step.id === "completed" ? "#22c55e" : "#f97316" 
+                                    }}
+                                  />
+                                  <motion.div
+                                    className="absolute inset-0 rounded-2xl md:rounded-3xl border-2"
+                                    animate={{ scale: [1, 1.3, 1.6], opacity: [0.4, 0.2, 0] }}
+                                    transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
+                                    style={{ 
+                                      borderColor: step.id === "preparing" ? "#3b82f6" : 
+                                                  step.id === "completed" ? "#22c55e" : "#f97316" 
+                                    }}
+                                  />
+                                </>
+                              )}
+                              
+                              {isCompleted && (
+                                <div className="absolute -top-1 -right-1 w-6 h-6 md:w-7 md:h-7 bg-green-500 rounded-full flex items-center justify-center shadow-lg border-2 border-white dark:border-card">
+                                  <CheckCircle className="h-4 w-4 md:h-5 md:w-5 text-white" />
+                                </div>
                               )}
                             </motion.div>
-                            <p className={`text-xs md:text-sm font-semibold ${
+                            
+                            <p className={`text-sm md:text-base font-bold ${
                               isActive ? "text-foreground" : "text-muted-foreground"
                             }`}>
                               {step.label}
                             </p>
-                            <p className={`text-[10px] md:text-xs hidden sm:block ${
-                              isActive ? "text-muted-foreground" : "text-muted-foreground/60"
+                            <p className={`text-xs md:text-sm hidden sm:block mt-0.5 ${
+                              isActive ? "text-muted-foreground" : "text-muted-foreground/50"
                             }`}>
                               {step.sublabel}
                             </p>
