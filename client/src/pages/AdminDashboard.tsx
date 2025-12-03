@@ -554,6 +554,16 @@ export default function AdminDashboard() {
             </div>
             <div className="flex items-center gap-2 flex-wrap">
               <Button 
+                variant="outline" 
+                size="sm"
+                onClick={() => setLocation("/")}
+                className="gap-2"
+                data-testid="button-home"
+              >
+                <Home className="h-4 w-4" />
+                <span className="hidden sm:inline">Home</span>
+              </Button>
+              <Button 
                 variant="default" 
                 size="sm"
                 className="gap-2"

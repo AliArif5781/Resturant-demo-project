@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Plus, Flame, Dumbbell, DollarSign, Upload, Trash2, Edit2, ImagePlus, X, Loader2, LayoutDashboard, UtensilsCrossed, ChefHat } from "lucide-react";
+import { ArrowLeft, Plus, Flame, Dumbbell, DollarSign, Upload, Trash2, Edit2, ImagePlus, X, Loader2, LayoutDashboard, UtensilsCrossed, ChefHat, Home } from "lucide-react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -348,6 +348,16 @@ export default function AddDish() {
               <Button 
                 variant="outline" 
                 size="sm"
+                onClick={() => setLocation("/")}
+                className="gap-2"
+                data-testid="button-home"
+              >
+                <Home className="h-4 w-4" />
+                <span className="hidden sm:inline">Home</span>
+              </Button>
+              <Button 
+                variant="outline" 
+                size="sm"
                 onClick={() => setLocation("/admin")}
                 className="gap-2"
                 data-testid="button-dashboard"
@@ -370,6 +380,18 @@ export default function AddDish() {
       </header>
 
       <main className="container mx-auto px-4 py-8">
+        <div className="mb-6">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setLocation("/admin")}
+            className="gap-2"
+            data-testid="button-back-to-dashboard"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Dashboard
+          </Button>
+        </div>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <Card data-testid="card-add-dish-form">
             <CardHeader>
