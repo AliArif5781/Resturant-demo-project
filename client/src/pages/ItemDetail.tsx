@@ -88,7 +88,7 @@ export default function ItemDetail() {
     <div className="min-h-screen bg-background">
       <Header />
       
-      <main className="container mx-auto px-6 md:px-12 lg:px-20 py-8 md:py-12">
+      <main className="container mx-auto px-4 sm:px-6 md:px-12 lg:px-20 py-6 sm:py-8 md:py-12">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -104,88 +104,92 @@ export default function ItemDetail() {
             Back
           </Button>
 
-          <div className="grid md:grid-cols-2 gap-8 lg:gap-12">
-            <div className="relative aspect-square md:aspect-[4/3] lg:aspect-square overflow-hidden rounded-lg">
-              <img
-                src={item.image}
-                alt={item.name}
-                className="w-full h-full object-cover"
-                data-testid="img-item-detail"
-              />
-              <div className="absolute top-4 right-4">
-                <Badge className="bg-white/90 text-foreground border-0 shadow-lg" data-testid="badge-category">
-                  {item.category}
-                </Badge>
+          <div className="flex flex-col lg:flex-row gap-6 lg:gap-12">
+            <div className="relative w-full lg:w-1/2 flex-shrink-0">
+              <div className="relative w-full aspect-[4/3] sm:aspect-[16/10] lg:aspect-square overflow-hidden rounded-lg">
+                <img
+                  src={item.image}
+                  alt={item.name}
+                  className="w-full h-full object-cover"
+                  data-testid="img-item-detail"
+                />
+                <div className="absolute top-3 right-3 sm:top-4 sm:right-4">
+                  <Badge className="bg-white/90 text-foreground border-0 shadow-lg text-xs sm:text-sm" data-testid="badge-category">
+                    {item.category}
+                  </Badge>
+                </div>
               </div>
             </div>
 
-            <div className="space-y-6">
+            <div className="flex-1 space-y-4 sm:space-y-6">
               <div>
-                <h1 className="text-3xl md:text-4xl font-bold mb-2" data-testid="text-item-name">
+                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold mb-1 sm:mb-2" data-testid="text-item-name">
                   {item.name}
                 </h1>
-                <p className="text-3xl font-bold text-primary" data-testid="text-item-price">
+                <p className="text-2xl sm:text-3xl font-bold text-primary" data-testid="text-item-price">
                   ${item.price}
                 </p>
               </div>
 
-              <div className="flex gap-3 flex-wrap">
+              <div className="flex gap-2 sm:gap-3 flex-wrap">
                 <Badge 
                   variant="outline" 
-                  className="bg-orange-50 dark:bg-orange-950 text-orange-700 dark:text-orange-300 border-orange-200 dark:border-orange-800 text-sm py-1 px-3"
+                  className="bg-orange-50 dark:bg-orange-950 text-orange-700 dark:text-orange-300 border-orange-200 dark:border-orange-800 text-xs sm:text-sm py-1 px-2 sm:px-3"
                   data-testid="badge-calories"
                 >
-                  <Flame className="h-4 w-4 mr-1.5" />
+                  <Flame className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-1.5" />
                   {item.calories} calories
                 </Badge>
                 <Badge 
                   variant="outline" 
-                  className="bg-green-50 dark:bg-green-950 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800 text-sm py-1 px-3"
+                  className="bg-green-50 dark:bg-green-950 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800 text-xs sm:text-sm py-1 px-2 sm:px-3"
                   data-testid="badge-protein"
                 >
-                  <Dumbbell className="h-4 w-4 mr-1.5" />
+                  <Dumbbell className="h-3 w-3 sm:h-4 sm:w-4 mr-1 sm:mr-1.5" />
                   {item.protein}g protein
                 </Badge>
               </div>
 
               <div>
-                <h2 className="text-lg font-semibold mb-2">Description</h2>
-                <p className="text-muted-foreground leading-relaxed" data-testid="text-item-description">
+                <h2 className="text-base sm:text-lg font-semibold mb-1 sm:mb-2">Description</h2>
+                <p className="text-sm sm:text-base text-muted-foreground leading-relaxed" data-testid="text-item-description">
                   {item.description}
                 </p>
               </div>
 
               <Card className="border-0 bg-muted/50">
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between gap-4">
-                    <div className="flex items-center gap-3">
-                      <span className="text-sm font-medium text-muted-foreground">Quantity:</span>
-                      <div className="flex items-center gap-2">
+                <CardContent className="p-3 sm:p-4">
+                  <div className="flex items-center justify-between gap-3 sm:gap-4">
+                    <div className="flex items-center gap-2 sm:gap-3">
+                      <span className="text-xs sm:text-sm font-medium text-muted-foreground">Quantity:</span>
+                      <div className="flex items-center gap-1 sm:gap-2">
                         <Button
                           size="icon"
                           variant="outline"
                           onClick={decrementQuantity}
                           disabled={quantity <= 1}
+                          className="h-8 w-8 sm:h-9 sm:w-9"
                           data-testid="button-decrease-quantity"
                         >
-                          <Minus className="h-4 w-4" />
+                          <Minus className="h-3 w-3 sm:h-4 sm:w-4" />
                         </Button>
-                        <span className="w-8 text-center font-semibold" data-testid="text-quantity">
+                        <span className="w-6 sm:w-8 text-center font-semibold text-sm sm:text-base" data-testid="text-quantity">
                           {quantity}
                         </span>
                         <Button
                           size="icon"
                           variant="outline"
                           onClick={incrementQuantity}
+                          className="h-8 w-8 sm:h-9 sm:w-9"
                           data-testid="button-increase-quantity"
                         >
-                          <Plus className="h-4 w-4" />
+                          <Plus className="h-3 w-3 sm:h-4 sm:w-4" />
                         </Button>
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="text-sm text-muted-foreground">Total</p>
-                      <p className="text-xl font-bold text-primary" data-testid="text-total-price">
+                      <p className="text-xs sm:text-sm text-muted-foreground">Total</p>
+                      <p className="text-lg sm:text-xl font-bold text-primary" data-testid="text-total-price">
                         ${(parseFloat(String(item.price)) * quantity).toFixed(2)}
                       </p>
                     </div>
@@ -195,11 +199,11 @@ export default function ItemDetail() {
 
               <Button 
                 size="lg" 
-                className="w-full gap-2 shadow-lg shadow-primary/25"
+                className="w-full gap-2 shadow-lg shadow-primary/25 text-sm sm:text-base"
                 onClick={handleAddToCart}
                 data-testid="button-add-to-cart"
               >
-                <Plus className="h-5 w-5" />
+                <Plus className="h-4 w-4 sm:h-5 sm:w-5" />
                 Add to Cart
               </Button>
             </div>
