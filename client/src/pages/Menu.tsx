@@ -4,22 +4,12 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Plus, Flame, Dumbbell, SlidersHorizontal, X, ArrowUpDown, Loader2 } from "lucide-react";
+import { ArrowLeft, Plus, Flame, Dumbbell, SlidersHorizontal, X, ArrowUpDown, Loader2, UtensilsCrossed } from "lucide-react";
 import { useCart } from "@/contexts/CartContext";
 import { useToast } from "@/hooks/use-toast";
 import Header from "@/components/Header";
 import { useQuery } from "@tanstack/react-query";
 import type { MenuItem as DbMenuItem } from "@shared/schema";
-
-import karahiImage from "@assets/generated_images/Chicken_Karahi_dish_closeup_1ee23ad4.png";
-import kabobImage from "@assets/generated_images/Beef_bihari_kabab_e2e73340.png";
-import biryaniImage from "@assets/generated_images/Chicken_Biryani_overhead_shot_73a10a24.png";
-import butterChickenImage from "@assets/generated_images/Butter_chicken_curry_8dff6ea9.png";
-import naanImage from "@assets/generated_images/Garlic_naan_bread_closeup_e1772073.png";
-import lassiImage from "@assets/generated_images/Mango_lassi_beverage_bebcb27b.png";
-import bbqImage from "@assets/generated_images/BBQ_mixed_grill_platter_6ba4d702.png";
-import samoasImage from "@assets/generated_images/Samosa_chaat_starter_82ea98a8.png";
-import pakoraImage from "@assets/generated_images/Vegetable_pakora_appetizers_1e9a5a83.png";
 
 interface MenuItem {
   id: number;
@@ -32,108 +22,6 @@ interface MenuItem {
   image: string;
   category: string;
 }
-
-const defaultMenuItems: MenuItem[] = [
-  {
-    id: 1,
-    name: "Chicken Karahi (Bone-In)",
-    description: "Slow-cooked tomato-based karahi with fresh ginger, chilies & coriander.",
-    price: "$24.99",
-    priceValue: 24.99,
-    calories: 520,
-    protein: 42,
-    image: karahiImage,
-    category: "Karahi & Curries",
-  },
-  {
-    id: 2,
-    name: "Beef Bihari Kabab",
-    description: "Tender beef strips marinated in yogurt and spices, grilled to perfection.",
-    price: "$26.99",
-    priceValue: 26.99,
-    calories: 380,
-    protein: 38,
-    image: kabobImage,
-    category: "BBQ",
-  },
-  {
-    id: 3,
-    name: "Chicken Biryani",
-    description: "Aromatic basmati rice layered with spiced chicken and herbs.",
-    price: "$21.99",
-    priceValue: 21.99,
-    calories: 650,
-    protein: 35,
-    image: biryaniImage,
-    category: "Rice & Biryani",
-  },
-  {
-    id: 4,
-    name: "Butter Chicken",
-    description: "Rich, creamy tomato-based curry with tender chicken pieces.",
-    price: "$19.99",
-    priceValue: 19.99,
-    calories: 480,
-    protein: 32,
-    image: butterChickenImage,
-    category: "Karahi & Curries",
-  },
-  {
-    id: 5,
-    name: "Garlic Naan",
-    description: "Freshly baked bread with garlic and butter.",
-    price: "$3.99",
-    priceValue: 3.99,
-    calories: 290,
-    protein: 8,
-    image: naanImage,
-    category: "Naans & Breads",
-  },
-  {
-    id: 6,
-    name: "Mango Lassi",
-    description: "Refreshing yogurt drink blended with sweet mango pulp.",
-    price: "$5.99",
-    priceValue: 5.99,
-    calories: 180,
-    protein: 6,
-    image: lassiImage,
-    category: "Drinks",
-  },
-  {
-    id: 7,
-    name: "Mixed Grill Platter",
-    description: "Seekh kabab, chicken tikka, and beef boti on a sizzling plate.",
-    price: "$28.99",
-    priceValue: 28.99,
-    calories: 720,
-    protein: 65,
-    image: bbqImage,
-    category: "BBQ",
-  },
-  {
-    id: 8,
-    name: "Samosa Chaat",
-    description: "Crispy samosas topped with chickpeas, yogurt, and tangy chutneys.",
-    price: "$7.99",
-    priceValue: 7.99,
-    calories: 320,
-    protein: 9,
-    image: samoasImage,
-    category: "Starters",
-  },
-  {
-    id: 9,
-    name: "Vegetable Pakora",
-    description: "Crispy vegetable fritters with mint chutney.",
-    price: "$6.99",
-    priceValue: 6.99,
-    calories: 240,
-    protein: 6,
-    image: pakoraImage,
-    category: "Starters",
-  },
-];
 
 const categories = [
   { id: "all", name: "All Items" },
@@ -194,21 +82,17 @@ export default function Menu() {
   const allMenuItems: MenuItem[] = useMemo(() => {
     const apiItems = apiMenuData?.items || [];
     
-    if (apiItems.length > 0) {
-      return apiItems.map((item, index) => ({
-        id: index + 1000,
-        name: item.name,
-        description: item.description,
-        price: `$${item.price}`,
-        priceValue: parseFloat(String(item.price)),
-        calories: parseInt(String(item.calories)),
-        protein: parseInt(String(item.protein)),
-        image: item.image,
-        category: item.category,
-      }));
-    }
-    
-    return defaultMenuItems;
+    return apiItems.map((item, index) => ({
+      id: index + 1000,
+      name: item.name,
+      description: item.description,
+      price: `$${item.price}`,
+      priceValue: parseFloat(String(item.price)),
+      calories: parseInt(String(item.calories)),
+      protein: parseInt(String(item.protein)),
+      image: item.image,
+      category: item.category,
+    }));
   }, [apiMenuData]);
 
   const handleAddToCart = (item: MenuItem) => {
@@ -578,10 +462,20 @@ export default function Menu() {
 
         {!isLoading && filteredAndSortedItems.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-muted-foreground mb-4" data-testid="text-no-items">No items match your filters.</p>
-            <Button variant="outline" onClick={clearAllFilters} data-testid="button-clear-filters-empty">
-              Clear all filters
-            </Button>
+            <UtensilsCrossed className="h-16 w-16 mx-auto text-muted-foreground/50 mb-4" />
+            {allMenuItems.length === 0 ? (
+              <>
+                <p className="text-xl font-semibold mb-2" data-testid="text-no-items">No menu items yet</p>
+                <p className="text-muted-foreground mb-4">Menu items will appear here once added through the admin dashboard.</p>
+              </>
+            ) : (
+              <>
+                <p className="text-muted-foreground mb-4" data-testid="text-no-items">No items match your filters.</p>
+                <Button variant="outline" onClick={clearAllFilters} data-testid="button-clear-filters-empty">
+                  Clear all filters
+                </Button>
+              </>
+            )}
           </div>
         )}
       </main>
