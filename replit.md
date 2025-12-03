@@ -115,8 +115,13 @@ Preferred communication style: Simple, everyday language.
 
 **Assets:**
 - Generated images stored in `attached_assets/generated_images/`
+- Stock images stored in `attached_assets/stock_images/` (biryani, tikka, curry, naan)
 - Food photography for dishes (Chicken Karahi, BBQ, Biryani, etc.)
 - Static assets resolved via Vite alias `@assets`
+
+**Animation Library:**
+- Framer Motion for component transitions and interactions
+- Restrained animation durations (0.4-1.2s) for professional feel
 
 **Key Integration Points:**
 - No external payment processing (yet to be implemented)
