@@ -429,7 +429,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "Admin access required" });
       }
 
-      const item = await firestoreMenu.updateMenuItem(id, req.body);
+      // Validate the update data using partial schema
+      const updateSchema = insertMenuItemSchema.partial();
+      const validatedData = updateSchema.parse(req.body);
+
+      const item = await firestoreMenu.updateMenuItem(id, validatedData);
       res.json({ item });
     } catch (error: any) {
       res.status(400).json({ message: error.message });

@@ -1,4 +1,5 @@
 import { adminDb } from "./firebase-admin";
+import admin from "firebase-admin";
 import type { MenuItem, InsertMenuItem } from "@shared/schema";
 
 const MENU_COLLECTION = "menuItems";
@@ -47,6 +48,7 @@ export async function getMenuItemById(id: string): Promise<MenuItem | undefined>
 }
 
 export async function createMenuItem(item: InsertMenuItem): Promise<MenuItem> {
+  const now = admin.firestore.Timestamp.now();
   const docRef = await adminDb.collection(MENU_COLLECTION).add({
     name: item.name,
     description: item.description,
@@ -55,7 +57,7 @@ export async function createMenuItem(item: InsertMenuItem): Promise<MenuItem> {
     protein: item.protein,
     image: item.image,
     category: item.category,
-    createdAt: new Date(),
+    createdAt: now,
   });
 
   return {
@@ -67,7 +69,7 @@ export async function createMenuItem(item: InsertMenuItem): Promise<MenuItem> {
     protein: item.protein,
     image: item.image,
     category: item.category,
-    createdAt: new Date(),
+    createdAt: now.toDate(),
   } as MenuItem;
 }
 
