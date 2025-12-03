@@ -109,7 +109,7 @@ export default function Hero({
       <div className="absolute inset-0 bg-gradient-to-r from-[#1a0f0a]/95 via-[#2d1810]/75 to-transparent" />
       <div className="absolute inset-0 bg-gradient-to-t from-[#1a0f0a]/90 via-transparent to-[#1a0f0a]/40" />
 
-      <div className="relative z-10 flex flex-col h-full">
+      <div className="relative z-10 flex flex-col h-full pt-20">
         <div className="flex-1 flex items-center">
           <div className="container mx-auto px-6 md:px-12 lg:px-20">
             <div className="max-w-2xl space-y-6">
