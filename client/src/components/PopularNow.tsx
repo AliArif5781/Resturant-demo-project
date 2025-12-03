@@ -7,10 +7,12 @@ import { motion } from "framer-motion";
 import { useCart } from "@/contexts/CartContext";
 import { useToast } from "@/hooks/use-toast";
 import { useQuery } from "@tanstack/react-query";
+import { useLocation } from "wouter";
 import type { MenuItem as DbMenuItem } from "@shared/schema";
 
 interface PopularItem {
   id: number;
+  dbId: string;
   name: string;
   price: string;
   calories: number;
@@ -23,6 +25,7 @@ interface PopularItem {
 export default function PopularNow() {
   const { addToCart } = useCart();
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
 
   const { data: apiMenuData, isLoading } = useQuery<{ items: DbMenuItem[] }>({
     queryKey: ["/api/menu-items"],
@@ -33,6 +36,7 @@ export default function PopularNow() {
     
     return apiItems.slice(0, 6).map((item, index) => ({
       id: index + 1000,
+      dbId: item.id,
       name: item.name || "",
       price: `$${item.price || "0"}`,
       calories: parseInt(String(item.calories || 0)),
@@ -92,8 +96,9 @@ export default function PopularNow() {
             transition={{ delay: idx * 0.1, duration: 0.4 }}
           >
             <Card
-              className="min-w-[280px] max-w-[280px] overflow-hidden border-0 group"
+              className="min-w-[280px] max-w-[280px] overflow-hidden border-0 group cursor-pointer hover-elevate"
               data-testid={`card-popular-${item.id}`}
+              onClick={() => setLocation(`/item/${item.dbId}`)}
             >
               <CardContent className="p-0">
                 <div className="relative h-44 overflow-hidden">
@@ -126,7 +131,10 @@ export default function PopularNow() {
                     </div>
                     <Button 
                       size="icon" 
-                      onClick={() => handleAddToCart(item)} 
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleAddToCart(item);
+                      }} 
                       className="shadow-lg shadow-primary/25 shrink-0"
                       data-testid={`button-add-popular-${item.id}`}
                     >

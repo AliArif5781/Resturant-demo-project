@@ -15,6 +15,7 @@ import Signin from "@/pages/Signin";
 import Signup from "@/pages/Signup";
 import AdminDashboard from "@/pages/AdminDashboard";
 import AddDish from "@/pages/AddDish";
+import ItemDetail from "@/pages/ItemDetail";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -30,6 +31,7 @@ function Router() {
       <Route path="/signup" component={Signup} />
       <Route path="/admin" component={AdminDashboard} />
       <Route path="/admin/menu" component={AddDish} />
+      <Route path="/item/:id" component={ItemDetail} />
       <Route component={NotFound} />
     </Switch>
   );

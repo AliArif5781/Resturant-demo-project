@@ -7,10 +7,12 @@ import { useCart } from "@/contexts/CartContext";
 import { useToast } from "@/hooks/use-toast";
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { useLocation } from "wouter";
 import type { MenuItem as DbMenuItem } from "@shared/schema";
 
 interface MenuItem {
   id: number;
+  dbId: string;
   name: string;
   description: string;
   price: string;
@@ -23,6 +25,7 @@ interface MenuItem {
 export default function RecommendedForYou() {
   const { items: cartItems, addToCart } = useCart();
   const { toast } = useToast();
+  const [, setLocation] = useLocation();
 
   const { data: apiMenuData } = useQuery<{ items: DbMenuItem[] }>({
     queryKey: ["/api/menu-items"],
@@ -33,6 +36,7 @@ export default function RecommendedForYou() {
     
     return apiItems.map((item, index) => ({
       id: index + 1000,
+      dbId: item.id,
       name: item.name || "",
       description: item.description || "",
       price: `$${item.price || "0"}`,
@@ -96,8 +100,9 @@ export default function RecommendedForYou() {
             transition={{ delay: idx * 0.1, duration: 0.4 }}
           >
             <Card
-              className="overflow-hidden group border-0 h-full flex flex-col"
+              className="overflow-hidden group border-0 h-full flex flex-col cursor-pointer hover-elevate"
               data-testid={`card-recommended-${item.id}`}
+              onClick={() => setLocation(`/item/${item.dbId}`)}
             >
               <CardContent className="p-0 flex-1">
                 <div className="relative h-36 md:h-48 overflow-hidden">
@@ -122,7 +127,7 @@ export default function RecommendedForYou() {
                   <h3 className="font-bold text-sm md:text-base line-clamp-1" data-testid={`text-recommended-name-${item.id}`}>
                     {item.name}
                   </h3>
-                  <p className="text-xs md:text-sm text-muted-foreground line-clamp-2 hidden sm:block" data-testid={`text-recommended-desc-${item.id}`}>
+                  <p className="text-xs md:text-sm text-muted-foreground line-clamp-4" data-testid={`text-recommended-desc-${item.id}`}>
                     {item.description}
                   </p>
                   <div className="flex gap-1.5 flex-wrap">
@@ -144,7 +149,10 @@ export default function RecommendedForYou() {
                 <Button 
                   className="w-full gap-2 shadow-lg shadow-primary/20" 
                   size="sm"
-                  onClick={() => handleQuickAdd(item)} 
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleQuickAdd(item);
+                  }} 
                   data-testid={`button-quick-add-${item.id}`}
                 >
                   <Plus className="h-4 w-4" />
