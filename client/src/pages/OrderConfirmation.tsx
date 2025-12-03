@@ -779,108 +779,213 @@ export default function OrderConfirmation() {
                     </motion.div>
                   )}
 
-                  <div className="relative py-6 md:py-8">
-                    <div className="hidden md:block absolute top-1/2 left-0 right-0 h-1.5 bg-gradient-to-r from-muted via-muted/80 to-muted -translate-y-1/2 mx-24 rounded-full shadow-inner" />
-                    <motion.div 
-                      initial={{ scaleX: 0 }}
-                      animate={{ scaleX: 1 }}
-                      transition={{ duration: 0.8, ease: "easeOut" }}
-                      className="hidden md:block absolute top-1/2 left-0 h-1.5 -translate-y-1/2 ml-24 rounded-full transition-all duration-500 shadow-sm"
-                      style={{
-                        width: `calc(${(currentStepIndex / 2) * 100}% - 6rem)`,
-                        background: currentStatus === "completed" 
-                          ? "linear-gradient(to right, #22c55e, #10b981, #059669)" 
-                          : "linear-gradient(to right, #f97316, #fb923c, #fbbf24)",
-                        transformOrigin: "left"
-                      }}
-                    />
+                  <div className="relative py-8 md:py-12">
+                    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                      <div className="absolute top-0 left-1/4 w-32 h-32 bg-orange-500/5 rounded-full blur-3xl" />
+                      <div className="absolute bottom-0 right-1/4 w-32 h-32 bg-amber-500/5 rounded-full blur-3xl" />
+                      {currentStatus === "completed" && (
+                        <>
+                          <div className="absolute top-1/2 left-1/3 w-24 h-24 bg-green-500/10 rounded-full blur-2xl animate-pulse" />
+                          <div className="absolute top-1/2 right-1/3 w-24 h-24 bg-emerald-500/10 rounded-full blur-2xl animate-pulse" />
+                        </>
+                      )}
+                    </div>
+
+                    <div className="hidden md:flex absolute top-1/2 left-0 right-0 -translate-y-1/2 mx-auto max-w-md justify-center items-center px-24">
+                      <div className="flex-1 h-2 bg-gradient-to-r from-muted/60 via-muted/40 to-muted/60 rounded-full relative overflow-hidden">
+                        <motion.div 
+                          initial={{ width: 0 }}
+                          animate={{ width: `${Math.min((currentStepIndex / 2) * 100 + (currentStepIndex > 0 ? 10 : 0), 100)}%` }}
+                          transition={{ duration: 1, ease: "easeOut", delay: 0.3 }}
+                          className="absolute inset-y-0 left-0 rounded-full"
+                          style={{
+                            background: currentStatus === "completed" 
+                              ? "linear-gradient(90deg, #22c55e 0%, #10b981 50%, #059669 100%)" 
+                              : "linear-gradient(90deg, #ea580c 0%, #f97316 50%, #fb923c 100%)",
+                          }}
+                        />
+                        {currentStepIndex > 0 && currentStepIndex < 2 && (
+                          <motion.div
+                            className="absolute inset-y-0 right-0 w-8 rounded-full"
+                            animate={{ opacity: [0.5, 1, 0.5], x: [-2, 2, -2] }}
+                            transition={{ duration: 1.5, repeat: Infinity }}
+                            style={{
+                              background: "linear-gradient(90deg, transparent, rgba(251, 146, 60, 0.8))",
+                              left: `${(currentStepIndex / 2) * 100}%`,
+                            }}
+                          />
+                        )}
+                      </div>
+                    </div>
                     
-                    <div className="grid grid-cols-3 gap-3 md:gap-6 relative z-10">
+                    <div className="grid grid-cols-3 gap-4 md:gap-8 lg:gap-12 relative z-10">
                       {orderSteps.map((step, index) => {
                         const Icon = step.icon;
                         const isActive = index <= currentStepIndex;
                         const isCompleted = index < currentStepIndex;
                         const isCurrent = index === currentStepIndex;
                         
+                        const getStepGradient = () => {
+                          if (isCompleted) return "from-green-400 via-green-500 to-emerald-600";
+                          if (isCurrent) {
+                            if (step.id === "preparing") return "from-blue-400 via-blue-500 to-indigo-600";
+                            if (step.id === "completed") return "from-green-400 via-green-500 to-emerald-600";
+                            return "from-orange-400 via-orange-500 to-amber-600";
+                          }
+                          return "";
+                        };
+
+                        const getShadowColor = () => {
+                          if (isCompleted) return "shadow-green-500/40";
+                          if (isCurrent) {
+                            if (step.id === "preparing") return "shadow-blue-500/40";
+                            if (step.id === "completed") return "shadow-green-500/40";
+                            return "shadow-orange-500/40";
+                          }
+                          return "shadow-muted/20";
+                        };
+
+                        const getBorderColor = () => {
+                          if (step.id === "preparing") return "#3b82f6";
+                          if (step.id === "completed") return "#22c55e";
+                          return "#f97316";
+                        };
+                        
                         return (
                           <motion.div
                             key={step.id}
-                            initial={{ opacity: 0, y: 15 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.15 * index, type: "spring", stiffness: 100 }}
+                            initial={{ opacity: 0, y: 20, scale: 0.9 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            transition={{ delay: 0.2 + 0.15 * index, type: "spring", stiffness: 120 }}
                             className="flex flex-col items-center text-center"
                           >
                             <motion.div
                               animate={{
-                                scale: isCurrent ? [1, 1.1, 1] : 1,
-                                y: isCurrent ? [0, -3, 0] : 0,
+                                scale: isCurrent ? [1, 1.08, 1] : 1,
+                                y: isCurrent ? [0, -5, 0] : 0,
                               }}
                               transition={{ 
-                                duration: 2.5, 
+                                duration: 2, 
                                 repeat: isCurrent ? Infinity : 0,
                                 ease: "easeInOut"
                               }}
-                              className="relative mb-4"
+                              className="relative mb-5"
                             >
-                              <div className={`flex items-center justify-center w-16 h-16 md:w-20 md:h-20 lg:w-24 lg:h-24 rounded-2xl md:rounded-3xl transition-all duration-500 ${
-                                isCompleted
-                                  ? "bg-gradient-to-br from-green-400 via-green-500 to-emerald-600 shadow-xl shadow-green-500/30"
-                                  : isCurrent
-                                    ? step.id === "preparing"
-                                      ? "bg-gradient-to-br from-blue-400 via-blue-500 to-indigo-600 shadow-xl shadow-blue-500/30"
-                                      : step.id === "completed"
-                                        ? "bg-gradient-to-br from-green-400 via-green-500 to-emerald-600 shadow-xl shadow-green-500/30"
-                                        : "bg-gradient-to-br from-orange-400 via-orange-500 to-amber-600 shadow-xl shadow-orange-500/30"
-                                    : "bg-gradient-to-br from-muted to-muted/80 shadow-lg"
-                              }`}>
-                                <Icon className={`h-7 w-7 md:h-9 md:w-9 lg:h-10 lg:w-10 ${
-                                  isActive ? "text-white drop-shadow-md" : "text-muted-foreground"
-                                }`} />
+                              <div className={`relative flex items-center justify-center w-18 h-18 md:w-24 md:h-24 lg:w-28 lg:h-28 rounded-3xl transition-all duration-500 ${
+                                isActive
+                                  ? `bg-gradient-to-br ${getStepGradient()} shadow-2xl ${getShadowColor()}`
+                                  : "bg-gradient-to-br from-muted/80 to-muted/60 shadow-lg border border-muted-foreground/10"
+                              }`}
+                              style={{
+                                width: 'clamp(4.5rem, 8vw, 7rem)',
+                                height: 'clamp(4.5rem, 8vw, 7rem)',
+                              }}
+                              >
+                                {isActive && (
+                                  <div className="absolute inset-0 rounded-3xl bg-gradient-to-t from-white/20 to-transparent" />
+                                )}
+                                
+                                <motion.div
+                                  animate={isCurrent ? { rotate: step.id === "pending" ? [0, 0, 0] : [0, -5, 5, 0] } : {}}
+                                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                                >
+                                  <Icon className={`h-8 w-8 md:h-10 md:w-10 lg:h-12 lg:w-12 ${
+                                    isActive ? "text-white drop-shadow-lg" : "text-muted-foreground/70"
+                                  }`} />
+                                </motion.div>
+
+                                {isActive && (
+                                  <div className="absolute inset-0 rounded-3xl overflow-hidden">
+                                    <motion.div
+                                      className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full"
+                                      animate={{ translateX: ["100%", "-100%"] }}
+                                      transition={{ duration: 3, repeat: Infinity, repeatDelay: 2 }}
+                                    />
+                                  </div>
+                                )}
                               </div>
                               
                               {isCurrent && (
                                 <>
                                   <motion.div
-                                    className="absolute inset-0 rounded-2xl md:rounded-3xl border-2"
-                                    animate={{ scale: [1, 1.2, 1.4], opacity: [0.6, 0.3, 0] }}
+                                    className="absolute inset-0 rounded-3xl"
+                                    style={{ border: `3px solid ${getBorderColor()}` }}
+                                    animate={{ scale: [1, 1.15, 1.3], opacity: [0.8, 0.4, 0] }}
                                     transition={{ duration: 2, repeat: Infinity }}
-                                    style={{ 
-                                      borderColor: step.id === "preparing" ? "#3b82f6" : 
-                                                  step.id === "completed" ? "#22c55e" : "#f97316" 
-                                    }}
                                   />
                                   <motion.div
-                                    className="absolute inset-0 rounded-2xl md:rounded-3xl border-2"
-                                    animate={{ scale: [1, 1.3, 1.6], opacity: [0.4, 0.2, 0] }}
-                                    transition={{ duration: 2, repeat: Infinity, delay: 0.5 }}
-                                    style={{ 
-                                      borderColor: step.id === "preparing" ? "#3b82f6" : 
-                                                  step.id === "completed" ? "#22c55e" : "#f97316" 
-                                    }}
+                                    className="absolute inset-0 rounded-3xl"
+                                    style={{ border: `2px solid ${getBorderColor()}` }}
+                                    animate={{ scale: [1, 1.25, 1.45], opacity: [0.5, 0.25, 0] }}
+                                    transition={{ duration: 2, repeat: Infinity, delay: 0.4 }}
+                                  />
+                                  <motion.div
+                                    className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-3 h-3 rounded-full"
+                                    style={{ backgroundColor: getBorderColor() }}
+                                    animate={{ scale: [1, 1.3, 1], opacity: [1, 0.7, 1] }}
+                                    transition={{ duration: 1.5, repeat: Infinity }}
                                   />
                                 </>
                               )}
                               
                               {isCompleted && (
-                                <div className="absolute -top-1 -right-1 w-6 h-6 md:w-7 md:h-7 bg-green-500 rounded-full flex items-center justify-center shadow-lg border-2 border-white dark:border-card">
-                                  <CheckCircle className="h-4 w-4 md:h-5 md:w-5 text-white" />
-                                </div>
+                                <motion.div 
+                                  initial={{ scale: 0 }}
+                                  animate={{ scale: 1 }}
+                                  transition={{ type: "spring", stiffness: 300, delay: 0.3 }}
+                                  className="absolute -top-2 -right-2 w-8 h-8 md:w-9 md:h-9 bg-gradient-to-br from-green-400 to-green-600 rounded-full flex items-center justify-center shadow-lg shadow-green-500/30 border-3 border-white dark:border-card"
+                                >
+                                  <CheckCircle className="h-5 w-5 md:h-6 md:w-6 text-white" />
+                                </motion.div>
+                              )}
+
+                              {!isActive && (
+                                <div className="absolute inset-0 rounded-3xl border-2 border-dashed border-muted-foreground/20" />
                               )}
                             </motion.div>
                             
-                            <p className={`text-sm md:text-base font-bold ${
-                              isActive ? "text-foreground" : "text-muted-foreground"
-                            }`}>
-                              {step.label}
-                            </p>
-                            <p className={`text-xs md:text-sm hidden sm:block mt-0.5 ${
-                              isActive ? "text-muted-foreground" : "text-muted-foreground/50"
-                            }`}>
-                              {step.sublabel}
-                            </p>
+                            <motion.div
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              transition={{ delay: 0.4 + 0.1 * index }}
+                            >
+                              <p className={`text-sm md:text-lg font-bold mb-1 ${
+                                isActive 
+                                  ? isCurrent 
+                                    ? step.id === "preparing" ? "text-blue-600 dark:text-blue-400" 
+                                      : step.id === "completed" ? "text-green-600 dark:text-green-400"
+                                      : "text-orange-600 dark:text-orange-400"
+                                    : "text-green-600 dark:text-green-400"
+                                  : "text-muted-foreground/60"
+                              }`}>
+                                {step.label}
+                              </p>
+                              <p className={`text-xs md:text-sm hidden sm:block ${
+                                isActive ? "text-muted-foreground" : "text-muted-foreground/40"
+                              }`}>
+                                {step.sublabel}
+                              </p>
+                            </motion.div>
                           </motion.div>
                         );
                       })}
+                    </div>
+
+                    <div className="flex md:hidden justify-center mt-6 gap-2">
+                      {orderSteps.map((step, index) => (
+                        <motion.div
+                          key={step.id}
+                          className={`h-1.5 rounded-full transition-all ${
+                            index <= currentStepIndex 
+                              ? index === currentStepIndex && currentStatus !== "completed"
+                                ? "w-8 bg-orange-500"
+                                : "w-6 bg-green-500"
+                              : "w-6 bg-muted"
+                          }`}
+                          animate={index === currentStepIndex ? { scale: [1, 1.1, 1] } : {}}
+                          transition={{ duration: 1.5, repeat: Infinity }}
+                        />
+                      ))}
                     </div>
                   </div>
 
