@@ -3,6 +3,7 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { insertOrderSchema, insertMenuItemSchema } from "@shared/schema";
 import { upload, uploadToCloudinary } from "./cloudinary";
+import * as firestoreMenu from "./firestoreMenuService";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || "")
@@ -355,21 +356,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   // ========== MENU ITEMS ROUTES ==========
 
-  // Get all menu items (public)
+  // Get all menu items (public) - Uses Firestore
   app.get("/api/menu-items", async (req, res) => {
     try {
-      const items = await storage.getAllMenuItems();
+      const items = await firestoreMenu.getAllMenuItems();
       res.json({ items });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
   });
 
-  // Get single menu item by ID (public)
+  // Get single menu item by ID (public) - Uses Firestore
   app.get("/api/menu-items/:id", async (req, res) => {
     try {
       const { id } = req.params;
-      const item = await storage.getMenuItemById(id);
+      const item = await firestoreMenu.getMenuItemById(id);
       
       if (!item) {
         return res.status(404).json({ message: "Menu item not found" });
@@ -381,7 +382,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Create new menu item (ADMIN ONLY)
+  // Create new menu item (ADMIN ONLY) - Uses Firestore
   app.post("/api/menu-items", async (req, res) => {
     try {
       const firebaseUid = req.headers["x-firebase-uid"] as string;
@@ -401,14 +402,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const validatedItem = insertMenuItemSchema.parse(req.body);
-      const item = await storage.createMenuItem(validatedItem);
+      const item = await firestoreMenu.createMenuItem(validatedItem);
       res.json({ item });
     } catch (error: any) {
       res.status(400).json({ message: error.message });
     }
   });
 
-  // Update menu item (ADMIN ONLY)
+  // Update menu item (ADMIN ONLY) - Uses Firestore
   app.patch("/api/menu-items/:id", async (req, res) => {
     try {
       const firebaseUid = req.headers["x-firebase-uid"] as string;
@@ -428,14 +429,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "Admin access required" });
       }
 
-      const item = await storage.updateMenuItem(id, req.body);
+      const item = await firestoreMenu.updateMenuItem(id, req.body);
       res.json({ item });
     } catch (error: any) {
       res.status(400).json({ message: error.message });
     }
   });
 
-  // Delete menu item (ADMIN ONLY)
+  // Delete menu item (ADMIN ONLY) - Uses Firestore
   app.delete("/api/menu-items/:id", async (req, res) => {
     try {
       const firebaseUid = req.headers["x-firebase-uid"] as string;
@@ -455,7 +456,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "Admin access required" });
       }
 
-      await storage.deleteMenuItem(id);
+      await firestoreMenu.deleteMenuItem(id);
       res.json({ message: "Menu item deleted successfully" });
     } catch (error: any) {
       res.status(400).json({ message: error.message });
