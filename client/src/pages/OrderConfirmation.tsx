@@ -167,58 +167,51 @@ function FloatingElements({ reducedMotion = false }: { reducedMotion?: boolean }
 }
 
 function DecorativeFoodStrip() {
-  const leftItems = [
-    { img: biryaniImage, name: "Biryani" },
-    { img: karahiImage, name: "Karahi" },
-  ];
-  
-  const rightItems = [
-    { img: naanImage, name: "Naan" },
-    { img: tikkaImage, name: "Tikka" },
-  ];
-
-  const renderFoodItem = (item: { img: string; name: string }, i: number, fromLeft: boolean) => (
-    <motion.div
-      key={i}
-      initial={{ opacity: 0, x: fromLeft ? -50 : 50 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ delay: 0.5 + i * 0.15 }}
-    >
-      <motion.div
-        animate={{ 
-          y: [-2, 2, -2],
-          rotate: [-1, 1, -1]
-        }}
-        transition={{ 
-          duration: 3 + i * 0.5,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
-        className="relative group"
-      >
-        <div className="absolute inset-0 bg-gradient-to-br from-orange-400/40 to-amber-500/40 rounded-full blur-lg scale-110 group-hover:scale-125 transition-transform" />
-        <img 
-          src={item.img} 
-          alt={item.name}
-          className="w-14 h-14 rounded-full object-cover border-2 border-white/40 shadow-lg shadow-black/20 group-hover:scale-105 transition-transform"
-        />
-      </motion.div>
-    </motion.div>
-  );
+  const foodItems = useMemo(() => [
+    { img: biryaniImage, name: "Biryani", left: "3%", top: "20%" },
+    { img: karahiImage, name: "Karahi", left: "8%", top: "65%" },
+    { img: naanImage, name: "Naan", right: "3%", top: "25%" },
+    { img: tikkaImage, name: "Tikka", right: "8%", top: "70%" },
+  ], []);
 
   return (
-    <>
-      <div className="hidden xl:block fixed left-0 top-1/2 -translate-y-1/2 z-30 pl-4">
-        <div className="flex flex-col gap-3">
-          {leftItems.map((item, i) => renderFoodItem(item, i, true))}
-        </div>
-      </div>
-      <div className="hidden xl:block fixed right-0 top-1/2 -translate-y-1/2 z-30 pr-4">
-        <div className="flex flex-col gap-3">
-          {rightItems.map((item, i) => renderFoodItem(item, i, false))}
-        </div>
-      </div>
-    </>
+    <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      {foodItems.map((item, i) => (
+        <motion.div
+          key={i}
+          className="absolute hidden md:block"
+          style={{
+            left: item.left,
+            right: item.right,
+            top: item.top,
+          }}
+          initial={{ opacity: 0, scale: 0.5 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ delay: 0.3 + i * 0.15, duration: 0.5 }}
+        >
+          <motion.div
+            animate={{ 
+              y: [-4, 4, -4],
+              rotate: [-3, 3, -3],
+              scale: [1, 1.05, 1]
+            }}
+            transition={{ 
+              duration: 3 + i * 0.5,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+            className="relative group"
+          >
+            <div className="absolute inset-0 bg-gradient-to-br from-orange-400/50 to-amber-500/50 rounded-full blur-xl scale-125" />
+            <img 
+              src={item.img} 
+              alt={item.name}
+              className="w-12 h-12 lg:w-16 lg:h-16 rounded-full object-cover border-2 border-white/50 shadow-lg shadow-black/30"
+            />
+          </motion.div>
+        </motion.div>
+      ))}
+    </div>
   );
 }
 
@@ -237,6 +230,7 @@ function FoodPreparationAnimation({ status, reducedMotion = false }: { status: s
       <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/50" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,rgba(0,0,0,0.3)_100%)]" />
       
+      <DecorativeFoodStrip />
       <FloatingElements reducedMotion={reducedMotion} />
       
       <div className="relative flex items-center justify-center px-4">
@@ -589,10 +583,6 @@ export default function OrderConfirmation() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-muted/20 to-muted/40 relative">
       {showCelebration && <CelebrationConfetti reducedMotion={prefersReducedMotion} />}
-      <DecorativeFoodStrip />
-      
-      <div className="hidden lg:block fixed left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-orange-500/5 to-transparent pointer-events-none z-10" />
-      <div className="hidden lg:block fixed right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-orange-500/5 to-transparent pointer-events-none z-10" />
       
       <header className="border-b sticky top-0 bg-background/95 backdrop-blur-md z-50 shadow-sm" data-testid="header-order-confirmation">
         <div className="container mx-auto px-4 py-3">
