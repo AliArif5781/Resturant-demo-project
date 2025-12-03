@@ -1,6 +1,8 @@
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { motion } from "framer-motion";
+import { Plus, Flame, Dumbbell, Sparkles, Star } from "lucide-react";
 import butterChickenImage from "@assets/generated_images/Butter_chicken_curry_8dff6ea9.png";
 import biryaniImage from "@assets/generated_images/Chicken_Biryani_overhead_shot_73a10a24.png";
 import bbqImage from "@assets/generated_images/BBQ_mixed_grill_platter_6ba4d702.png";
@@ -15,7 +17,6 @@ import { useToast } from "@/hooks/use-toast";
 import { useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import type { MenuItem as DbMenuItem } from "@shared/schema";
-import { Flame, Dumbbell } from "lucide-react";
 
 interface MenuItem {
   id: number;
@@ -29,6 +30,7 @@ interface MenuItem {
   pairsWith: string[];
   badge?: string;
   score?: number;
+  rating: number;
 }
 
 const defaultMenuItems: MenuItem[] = [
@@ -42,6 +44,7 @@ const defaultMenuItems: MenuItem[] = [
     image: karahiImage,
     category: "curry",
     pairsWith: ["bread", "rice", "drink"],
+    rating: 4.9,
   },
   {
     id: 2,
@@ -53,6 +56,7 @@ const defaultMenuItems: MenuItem[] = [
     image: kabobImage,
     category: "bbq",
     pairsWith: ["bread", "rice", "drink", "appetizer"],
+    rating: 4.8,
   },
   {
     id: 3,
@@ -64,6 +68,7 @@ const defaultMenuItems: MenuItem[] = [
     image: biryaniImage,
     category: "rice",
     pairsWith: ["curry", "drink", "appetizer"],
+    rating: 4.9,
   },
   {
     id: 4,
@@ -75,6 +80,7 @@ const defaultMenuItems: MenuItem[] = [
     image: butterChickenImage,
     category: "curry",
     pairsWith: ["bread", "rice", "drink"],
+    rating: 4.7,
   },
   {
     id: 5,
@@ -86,6 +92,7 @@ const defaultMenuItems: MenuItem[] = [
     image: naanImage,
     category: "bread",
     pairsWith: ["curry", "bbq"],
+    rating: 4.8,
   },
   {
     id: 6,
@@ -97,6 +104,7 @@ const defaultMenuItems: MenuItem[] = [
     image: lassiImage,
     category: "drink",
     pairsWith: ["curry", "bbq", "rice", "appetizer"],
+    rating: 4.6,
   },
   {
     id: 7,
@@ -108,6 +116,7 @@ const defaultMenuItems: MenuItem[] = [
     image: bbqImage,
     category: "bbq",
     pairsWith: ["bread", "rice", "drink"],
+    rating: 4.9,
   },
   {
     id: 8,
@@ -119,6 +128,7 @@ const defaultMenuItems: MenuItem[] = [
     image: samoasImage,
     category: "appetizer",
     pairsWith: ["curry", "bbq", "drink"],
+    rating: 4.5,
   },
   {
     id: 9,
@@ -130,6 +140,7 @@ const defaultMenuItems: MenuItem[] = [
     image: pakoraImage,
     category: "appetizer",
     pairsWith: ["curry", "bbq", "drink"],
+    rating: 4.4,
   },
 ];
 
@@ -164,6 +175,7 @@ export default function RecommendedForYou() {
         image: item.image,
         category: categoryMap[item.category] || "curry",
         pairsWith: ["bread", "drink"] as string[],
+        rating: 4.5 + Math.random() * 0.5,
       }));
     }
     
@@ -246,61 +258,96 @@ export default function RecommendedForYou() {
   };
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold mb-2" data-testid="text-recommended-title">Recommended for you</h2>
-        <p className="text-muted-foreground" data-testid="text-recommended-subtitle">
-          {cartItems.length > 0 
-            ? "Based on items in your cart" 
-            : "Based on what you've ordered and what's popular tonight."}
-        </p>
+    <motion.div 
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-100px" }}
+      transition={{ duration: 0.6 }}
+      className="space-y-6"
+    >
+      <div className="flex items-center gap-2">
+        <Sparkles className="h-5 w-5 text-primary" />
+        <div>
+          <h2 className="text-2xl md:text-3xl font-bold" data-testid="text-recommended-title">Recommended for You</h2>
+          <p className="text-muted-foreground mt-1" data-testid="text-recommended-subtitle">
+            {cartItems.length > 0 
+              ? "Based on items in your cart" 
+              : "Based on what's popular tonight"}
+          </p>
+        </div>
       </div>
 
-      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
         {recommendations.map((item, idx) => (
-          <Card
+          <motion.div
             key={item.id}
-            className="overflow-hidden hover-elevate active-elevate-2 group border-0"
-            style={{ animationDelay: `${idx * 50}ms` }}
-            data-testid={`card-recommended-${item.id}`}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: idx * 0.1, duration: 0.4 }}
           >
-            <CardContent className="p-0">
-              <div className="relative h-48 overflow-hidden">
-                <img
-                  src={item.image}
-                  alt={item.name}
-                  className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
-                  data-testid={`img-recommended-${item.id}`}
-                />
-              </div>
-              <div className="p-4 space-y-2">
-                <Badge variant="secondary" className="text-xs" data-testid={`badge-recommended-${item.id}`}>
-                  {item.badge}
-                </Badge>
-                <h3 className="font-bold" data-testid={`text-recommended-name-${item.id}`}>{item.name}</h3>
-                <p className="text-sm text-muted-foreground line-clamp-2" data-testid={`text-recommended-desc-${item.id}`}>
-                  {item.description}
-                </p>
-                <div className="flex gap-2 flex-wrap">
-                  <Badge variant="outline" className="bg-orange-50 dark:bg-orange-950 text-orange-700 dark:text-orange-300 border-orange-200 dark:border-orange-800" data-testid={`text-recommended-calories-${item.id}`}>
-                    <Flame className="h-3 w-3 mr-1" />
-                    {item.calories} cal
-                  </Badge>
-                  <Badge variant="outline" className="bg-green-50 dark:bg-green-950 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800" data-testid={`text-recommended-protein-${item.id}`}>
-                    <Dumbbell className="h-3 w-3 mr-1" />
-                    {item.protein}g protein
-                  </Badge>
+            <Card
+              className="overflow-hidden group border-0 h-full flex flex-col"
+              data-testid={`card-recommended-${item.id}`}
+            >
+              <CardContent className="p-0 flex-1">
+                <div className="relative h-36 md:h-48 overflow-hidden">
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    data-testid={`img-recommended-${item.id}`}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+                  <div className="absolute top-2 right-2 md:top-3 md:right-3">
+                    <Badge className="bg-white/90 text-foreground border-0 shadow-lg gap-1 text-xs">
+                      <Star className="h-3 w-3 fill-yellow-500 text-yellow-500" />
+                      {item.rating.toFixed(1)}
+                    </Badge>
+                  </div>
                 </div>
-                <p className="text-lg font-bold text-primary" data-testid={`text-recommended-price-${item.id}`}>{item.price}</p>
-              </div>
-            </CardContent>
-            <CardFooter className="p-4 pt-0 gap-2">
-              <Button className="flex-1" onClick={() => handleQuickAdd(item)} data-testid={`button-quick-add-${item.id}`}>Quick Add</Button>
-              {/* <Button variant="outline" data-testid={`button-details-${item.id}`}>Details</Button> */}
-            </CardFooter>
-          </Card>
+                <div className="p-3 md:p-4 space-y-2">
+                  <Badge variant="secondary" className="text-xs gap-1" data-testid={`badge-recommended-${item.id}`}>
+                    <Sparkles className="h-3 w-3" />
+                    {item.badge}
+                  </Badge>
+                  <h3 className="font-bold text-sm md:text-base line-clamp-1" data-testid={`text-recommended-name-${item.id}`}>
+                    {item.name}
+                  </h3>
+                  <p className="text-xs md:text-sm text-muted-foreground line-clamp-2 hidden sm:block" data-testid={`text-recommended-desc-${item.id}`}>
+                    {item.description}
+                  </p>
+                  <div className="flex gap-1.5 flex-wrap">
+                    <Badge variant="outline" className="bg-orange-50 dark:bg-orange-950 text-orange-700 dark:text-orange-300 border-orange-200 dark:border-orange-800 text-xs py-0.5" data-testid={`text-recommended-calories-${item.id}`}>
+                      <Flame className="h-3 w-3 mr-0.5" />
+                      {item.calories}
+                    </Badge>
+                    <Badge variant="outline" className="bg-green-50 dark:bg-green-950 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800 text-xs py-0.5" data-testid={`text-recommended-protein-${item.id}`}>
+                      <Dumbbell className="h-3 w-3 mr-0.5" />
+                      {item.protein}g
+                    </Badge>
+                  </div>
+                  <p className="text-base md:text-lg font-bold text-primary" data-testid={`text-recommended-price-${item.id}`}>
+                    {item.price}
+                  </p>
+                </div>
+              </CardContent>
+              <CardFooter className="p-3 md:p-4 pt-0">
+                <Button 
+                  className="w-full gap-2 shadow-lg shadow-primary/20" 
+                  size="sm"
+                  onClick={() => handleQuickAdd(item)} 
+                  data-testid={`button-quick-add-${item.id}`}
+                >
+                  <Plus className="h-4 w-4" />
+                  <span className="hidden sm:inline">Quick Add</span>
+                  <span className="sm:hidden">Add</span>
+                </Button>
+              </CardFooter>
+            </Card>
+          </motion.div>
         ))}
       </div>
-    </div>
+    </motion.div>
   );
 }

@@ -2,7 +2,8 @@ import { useMemo } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Flame, Dumbbell, Loader2 } from "lucide-react";
+import { Plus, Flame, Dumbbell, TrendingUp, Star } from "lucide-react";
+import { motion } from "framer-motion";
 import karahiImage from "@assets/generated_images/Chicken_Karahi_dish_closeup_1ee23ad4.png";
 import kabobImage from "@assets/generated_images/Beef_bihari_kabab_e2e73340.png";
 import biryaniImage from "@assets/generated_images/Chicken_Biryani_overhead_shot_73a10a24.png";
@@ -23,15 +24,16 @@ interface PopularItem {
   protein: number;
   image: string;
   description: string;
+  rating: number;
 }
 
 const defaultPopularItems: PopularItem[] = [
-  { id: 1, name: "Chicken Karahi", orders: 24, price: "$24.99", calories: 520, protein: 42, image: karahiImage, description: "Tender chicken cooked in a wok with tomatoes, ginger, and aromatic spices" },
-  { id: 2, name: "Beef Bihari Kabab", orders: 18, price: "$26.99", calories: 380, protein: 38, image: kabobImage, description: "Marinated beef strips grilled to perfection with traditional Bihari spices" },
-  { id: 3, name: "Chicken Biryani", orders: 21, price: "$21.99", calories: 650, protein: 35, image: biryaniImage, description: "Fragrant basmati rice layered with spiced chicken and caramelized onions" },
-  { id: 4, name: "Butter Chicken", orders: 15, price: "$19.99", calories: 480, protein: 32, image: butterChickenImage, description: "Creamy tomato curry with tender chicken pieces in rich butter sauce" },
-  { id: 5, name: "Garlic Naan", orders: 32, price: "$3.99", calories: 290, protein: 8, image: naanImage, description: "Soft flatbread brushed with garlic butter and fresh herbs" },
-  { id: 6, name: "Mango Lassi", orders: 14, price: "$5.99", calories: 180, protein: 6, image: lassiImage, description: "Refreshing yogurt-based drink blended with sweet mango pulp" },
+  { id: 1, name: "Chicken Karahi", orders: 24, price: "$24.99", calories: 520, protein: 42, image: karahiImage, description: "Tender chicken cooked in a wok with tomatoes, ginger, and aromatic spices", rating: 4.9 },
+  { id: 2, name: "Beef Bihari Kabab", orders: 18, price: "$26.99", calories: 380, protein: 38, image: kabobImage, description: "Marinated beef strips grilled to perfection with traditional Bihari spices", rating: 4.8 },
+  { id: 3, name: "Chicken Biryani", orders: 21, price: "$21.99", calories: 650, protein: 35, image: biryaniImage, description: "Fragrant basmati rice layered with spiced chicken and caramelized onions", rating: 4.9 },
+  { id: 4, name: "Butter Chicken", orders: 15, price: "$19.99", calories: 480, protein: 32, image: butterChickenImage, description: "Creamy tomato curry with tender chicken pieces in rich butter sauce", rating: 4.7 },
+  { id: 5, name: "Garlic Naan", orders: 32, price: "$3.99", calories: 290, protein: 8, image: naanImage, description: "Soft flatbread brushed with garlic butter and fresh herbs", rating: 4.8 },
+  { id: 6, name: "Mango Lassi", orders: 14, price: "$5.99", calories: 180, protein: 6, image: lassiImage, description: "Refreshing yogurt-based drink blended with sweet mango pulp", rating: 4.6 },
 ];
 
 export default function PopularNow() {
@@ -55,6 +57,7 @@ export default function PopularNow() {
         protein: parseInt(String(item.protein)),
         image: item.image,
         description: item.description,
+        rating: 4.5 + Math.random() * 0.5,
       }));
     }
     
@@ -78,60 +81,102 @@ export default function PopularNow() {
   };
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h2 className="text-2xl font-bold mb-2" data-testid="text-popular-title">Popular right now</h2>
-        <p className="text-muted-foreground" data-testid="text-popular-subtitle">What guests are loving this hour.</p>
+    <motion.div 
+      initial={{ opacity: 0, y: 30 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-100px" }}
+      transition={{ duration: 0.6 }}
+      className="space-y-6"
+    >
+      <div className="flex items-center justify-between gap-4">
+        <div>
+          <div className="flex items-center gap-2 mb-2">
+            <TrendingUp className="h-5 w-5 text-primary" />
+            <Badge variant="secondary" className="font-medium">Trending</Badge>
+          </div>
+          <h2 className="text-2xl md:text-3xl font-bold" data-testid="text-popular-title">Popular Right Now</h2>
+          <p className="text-muted-foreground mt-1" data-testid="text-popular-subtitle">What guests are loving this hour</p>
+        </div>
       </div>
 
-      <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide">
+      <div className="flex gap-4 overflow-x-auto pb-4 scrollbar-hide -mx-4 px-4 md:mx-0 md:px-0">
         {popularItems.map((item, idx) => (
-          <Card
+          <motion.div
             key={item.id}
-            className="min-w-[280px] overflow-hidden hover-elevate active-elevate-2 border-0"
-            style={{ animationDelay: `${idx * 100}ms` }}
-            data-testid={`card-popular-${item.id}`}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: idx * 0.1, duration: 0.4 }}
           >
-            <CardContent className="p-0">
-              <div className="relative h-40">
-                <img
-                  src={item.image}
-                  alt={item.name}
-                  className="w-full h-full object-cover"
-                  data-testid={`img-popular-${item.id}`}
-                />
-              </div>
-              <div className="p-4">
-                <div className="flex items-center justify-between mb-3">
-                  <div>
-                    <h3 className="font-bold" data-testid={`text-popular-name-${item.id}`}>{item.name}</h3>
-                    <p className="text-lg font-bold text-primary" data-testid={`text-popular-price-${item.id}`}>{item.price}</p>
-                  </div>
-                  <Button size="icon" onClick={() => handleAddToCart(item)} data-testid={`button-add-popular-${item.id}`}>
-                    <Plus className="h-4 w-4" />
-                  </Button>
-                </div>
-                <div className="flex gap-2 mb-2 flex-wrap">
-                  <Badge variant="outline" className="bg-orange-50 dark:bg-orange-950 text-orange-700 dark:text-orange-300 border-orange-200 dark:border-orange-800" data-testid={`text-popular-calories-${item.id}`}>
-                    <Flame className="h-3 w-3 mr-1" />
-                    {item.calories} cal
-                  </Badge>
-                  <Badge variant="outline" className="bg-green-50 dark:bg-green-950 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800" data-testid={`text-popular-protein-${item.id}`}>
-                    <Dumbbell className="h-3 w-3 mr-1" />
-                    {item.protein}g protein
-                  </Badge>
-                </div>
-                <div className="h-1 bg-muted rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-primary transition-all duration-500"
-                    style={{ width: `${(item.orders / 32) * 100}%` }}
+            <Card
+              className="min-w-[280px] max-w-[280px] overflow-hidden border-0 group"
+              data-testid={`card-popular-${item.id}`}
+            >
+              <CardContent className="p-0">
+                <div className="relative h-44 overflow-hidden">
+                  <img
+                    src={item.image}
+                    alt={item.name}
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+                    data-testid={`img-popular-${item.id}`}
                   />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+                  <div className="absolute top-3 right-3">
+                    <Badge className="bg-white/90 text-foreground border-0 shadow-lg gap-1">
+                      <Star className="h-3 w-3 fill-yellow-500 text-yellow-500" />
+                      {item.rating.toFixed(1)}
+                    </Badge>
+                  </div>
+                  <div className="absolute bottom-3 left-3">
+                    <Badge className="bg-primary/90 text-primary-foreground border-0 shadow-lg">
+                      {item.orders} ordered today
+                    </Badge>
+                  </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
+                <div className="p-4 space-y-3">
+                  <div className="flex items-start justify-between gap-2">
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-bold text-lg truncate" data-testid={`text-popular-name-${item.id}`}>
+                        {item.name}
+                      </h3>
+                      <p className="text-xl font-bold text-primary mt-0.5" data-testid={`text-popular-price-${item.id}`}>
+                        {item.price}
+                      </p>
+                    </div>
+                    <Button 
+                      size="icon" 
+                      onClick={() => handleAddToCart(item)} 
+                      className="shadow-lg shadow-primary/25 shrink-0"
+                      data-testid={`button-add-popular-${item.id}`}
+                    >
+                      <Plus className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  <div className="flex gap-2 flex-wrap">
+                    <Badge variant="outline" className="bg-orange-50 dark:bg-orange-950 text-orange-700 dark:text-orange-300 border-orange-200 dark:border-orange-800" data-testid={`text-popular-calories-${item.id}`}>
+                      <Flame className="h-3 w-3 mr-1" />
+                      {item.calories} cal
+                    </Badge>
+                    <Badge variant="outline" className="bg-green-50 dark:bg-green-950 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800" data-testid={`text-popular-protein-${item.id}`}>
+                      <Dumbbell className="h-3 w-3 mr-1" />
+                      {item.protein}g
+                    </Badge>
+                  </div>
+                  <div className="relative h-1.5 bg-muted rounded-full overflow-hidden">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      whileInView={{ width: `${(item.orders / 32) * 100}%` }}
+                      viewport={{ once: true }}
+                      transition={{ delay: 0.3, duration: 0.8, ease: "easeOut" }}
+                      className="absolute inset-y-0 left-0 bg-gradient-to-r from-primary to-primary/70 rounded-full"
+                    />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
         ))}
       </div>
-    </div>
+    </motion.div>
   );
 }
