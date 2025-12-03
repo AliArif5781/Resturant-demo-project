@@ -112,13 +112,13 @@ export default function DealsCarousel() {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.2 }}
                     >
-                      <h3 className="text-2xl md:text-3xl font-bold mb-2 text-white" data-testid={`text-deal-title-${deals[currentIndex].id}`}>
+                      <h3 className="text-2xl md:text-3xl font-bold mb-2 text-gray-100" data-testid={`text-deal-title-${deals[currentIndex].id}`}>
                         {deals[currentIndex].title}
                       </h3>
-                      <p className="text-base md:text-lg text-white/90 mb-3" data-testid={`text-deal-desc-${deals[currentIndex].id}`}>
+                      <p className="text-base md:text-lg text-gray-300 mb-3" data-testid={`text-deal-desc-${deals[currentIndex].id}`}>
                         {deals[currentIndex].description}
                       </p>
-                      <p className="text-xl md:text-2xl font-bold text-white" data-testid={`text-deal-price-${deals[currentIndex].id}`}>
+                      <p className="text-xl md:text-2xl font-bold text-gray-100" data-testid={`text-deal-price-${deals[currentIndex].id}`}>
                         {deals[currentIndex].price}
                       </p>
                     </motion.div>

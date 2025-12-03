@@ -166,7 +166,6 @@ export default function Hero({
                     >
                       <LayoutDashboard className="h-4 w-4 mr-2" />
                       Go to Dashboard
-                      <span className="hidden sm:inline text-xs ml-2 opacity-80">Manage orders & menu</span>
                     </Button>
                   </Link>
                 ) : (
@@ -178,7 +177,6 @@ export default function Hero({
                       data-testid="button-start-ordering"
                     >
                       Start Ordering
-                      <span className="hidden sm:inline text-xs ml-2 opacity-80">Browse menu & add items</span>
                     </Button>
                   </Link>
                 )}

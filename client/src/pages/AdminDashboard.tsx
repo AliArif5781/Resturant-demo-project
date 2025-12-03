@@ -709,18 +709,6 @@ export default function AdminDashboard() {
                   {filteredOrders.length} {filteredOrders.length === 1 ? "order" : "orders"} found
                 </CardDescription>
               </div>
-              {activeFilter !== "all" && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setActiveFilter("all")}
-                  className="gap-2"
-                  data-testid="button-clear-filter"
-                >
-                  <X className="h-4 w-4" />
-                  Clear Filter
-                </Button>
-              )}
             </div>
           </CardHeader>
           <CardContent>
