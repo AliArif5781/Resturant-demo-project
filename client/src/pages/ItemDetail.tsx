@@ -95,9 +95,9 @@ export default function ItemDetail() {
           transition={{ duration: 0.5 }}
         >
           <Button 
-            variant="ghost" 
+            variant="outline" 
             onClick={() => setLocation("/")}
-            className="mb-6"
+            className="mb-6 bg-background/80 backdrop-blur-sm border-border shadow-sm"
             data-testid="button-back"
           >
             <ArrowLeft className="h-4 w-4 mr-2" />

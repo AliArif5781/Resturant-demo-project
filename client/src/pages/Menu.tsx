@@ -192,7 +192,7 @@ export default function Menu() {
       <main className="container mx-auto px-4 py-8 pt-24">
         <div className="mb-8">
           <Link href="/">
-            <Button variant="ghost" className="gap-2 mb-4 -ml-2" data-testid="button-back-home">
+            <Button variant="outline" className="gap-2 mb-4 bg-background/80 backdrop-blur-sm border-border shadow-sm" data-testid="button-back-home">
               <ArrowLeft className="h-4 w-4" />
               Back to Home
             </Button>
