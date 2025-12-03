@@ -104,20 +104,6 @@ function OrderCard({ order, onClick }: { order: Order; onClick: () => void }) {
     return `${items[0].name} +${items.length - 1} more`;
   };
 
-  const getStatusGradient = () => {
-    if (isActive) return "from-orange-500/10 via-transparent to-transparent dark:from-orange-500/20";
-    if (isCompleted) return "from-green-500/10 via-transparent to-transparent dark:from-green-500/20";
-    if (isRejected || isCancelled) return "from-red-500/10 via-transparent to-transparent dark:from-red-500/20";
-    return "from-gray-500/5 via-transparent to-transparent";
-  };
-
-  const getAccentColor = () => {
-    if (isActive) return "border-l-orange-500";
-    if (isCompleted) return "border-l-green-500";
-    if (isRejected || isCancelled) return "border-l-red-500";
-    return "border-l-gray-400";
-  };
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -127,11 +113,10 @@ function OrderCard({ order, onClick }: { order: Order; onClick: () => void }) {
       transition={{ type: "spring", stiffness: 400, damping: 25 }}
     >
       <Card
-        className={`overflow-hidden cursor-pointer border-l-4 ${getAccentColor()} hover:shadow-lg transition-all duration-300`}
+        className="overflow-hidden cursor-pointer hover:shadow-lg transition-all duration-300"
         onClick={onClick}
         data-testid={`order-card-${order.id}`}
       >
-        <div className={`absolute inset-0 bg-gradient-to-r ${getStatusGradient()} pointer-events-none`} />
         <CardContent className="p-0">
           <div className="p-4 md:p-5">
             <div className="flex items-start justify-between gap-4">
