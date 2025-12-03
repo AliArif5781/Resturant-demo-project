@@ -1,4 +1,22 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
+
+const useReducedMotion = () => {
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
+  
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setPrefersReducedMotion(mediaQuery.matches);
+    
+    const handleChange = (e: MediaQueryListEvent) => {
+      setPrefersReducedMotion(e.matches);
+    };
+    
+    mediaQuery.addEventListener("change", handleChange);
+    return () => mediaQuery.removeEventListener("change", handleChange);
+  }, []);
+  
+  return prefersReducedMotion;
+};
 import { useLocation, Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -21,7 +39,7 @@ import karahiImage from "@assets/generated_images/Chicken_Karahi_dish_closeup_1e
 import naanImage from "@assets/generated_images/Garlic_naan_bread_closeup_e1772073.png";
 import tikkaImage from "@assets/stock_images/aromatic_chicken_tik_1a7c825e.jpg";
 
-function CelebrationConfetti() {
+function CelebrationConfetti({ reducedMotion = false }: { reducedMotion?: boolean }) {
   const confettiColors = [
     "bg-yellow-400",
     "bg-green-400",
@@ -33,7 +51,7 @@ function CelebrationConfetti() {
     "bg-amber-400",
   ];
 
-  const confettiPieces = Array.from({ length: 60 }, (_, i) => ({
+  const confettiPieces = useMemo(() => Array.from({ length: 60 }, (_, i) => ({
     id: i,
     color: confettiColors[Math.floor(Math.random() * confettiColors.length)],
     delay: Math.random() * 0.5,
@@ -41,10 +59,12 @@ function CelebrationConfetti() {
     rotation: Math.random() * 360,
     scale: 0.5 + Math.random() * 0.5,
     shape: Math.random() > 0.5 ? "rounded-full" : "rounded-sm",
-  }));
+  })), []);
+
+  if (reducedMotion) return null;
 
   return (
-    <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden">
+    <div className="fixed inset-0 pointer-events-none z-50 overflow-hidden" aria-hidden="true">
       {confettiPieces.map((piece) => (
         <motion.div
           key={piece.id}
@@ -72,11 +92,13 @@ function CelebrationConfetti() {
   );
 }
 
-function FloatingElements() {
+function FloatingElements({ reducedMotion = false }: { reducedMotion?: boolean }) {
   const foodImages = [biryaniImage, karahiImage, naanImage, tikkaImage];
   
+  if (reducedMotion) return null;
+  
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+    <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
       {foodImages.map((img, i) => (
         <motion.div
           key={`food-${i}`}
@@ -188,13 +210,13 @@ function DecorativeFoodStrip() {
   );
 }
 
-function FoodPreparationAnimation({ status }: { status: string }) {
+function FoodPreparationAnimation({ status, reducedMotion = false }: { status: string; reducedMotion?: boolean }) {
   const isPreparing = status === "preparing";
   const isCompleted = status === "completed";
   const isPending = status === "pending";
 
   return (
-    <div className="relative w-full py-10 sm:py-14 md:py-20 overflow-hidden">
+    <div className="relative w-full py-10 sm:py-14 md:py-20 overflow-hidden" aria-hidden="true">
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat scale-105"
         style={{ backgroundImage: `url(${kitchenBgImage})` }}
@@ -203,7 +225,7 @@ function FoodPreparationAnimation({ status }: { status: string }) {
       <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/50" />
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_0%,rgba(0,0,0,0.3)_100%)]" />
       
-      <FloatingElements />
+      <FloatingElements reducedMotion={reducedMotion} />
       
       <div className="relative flex items-center justify-center px-4">
         <div className="relative flex flex-col items-center gap-3 sm:gap-4 md:flex-row md:gap-8 lg:gap-12">
@@ -415,6 +437,7 @@ export default function OrderConfirmation() {
   const [showCelebration, setShowCelebration] = useState(false);
   const [celebratedOrderIds, setCelebratedOrderIds] = useState<Set<string>>(new Set());
   const { toast } = useToast();
+  const prefersReducedMotion = useReducedMotion();
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -553,7 +576,7 @@ export default function OrderConfirmation() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-background via-muted/20 to-muted/40 relative">
-      {showCelebration && <CelebrationConfetti />}
+      {showCelebration && <CelebrationConfetti reducedMotion={prefersReducedMotion} />}
       <DecorativeFoodStrip />
       
       <div className="hidden lg:block fixed left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-orange-500/5 to-transparent pointer-events-none z-10" />
@@ -578,7 +601,7 @@ export default function OrderConfirmation() {
       </header>
 
       {!isRejected && !isCancelled && (
-        <FoodPreparationAnimation status={currentStatus} />
+        <FoodPreparationAnimation status={currentStatus} reducedMotion={prefersReducedMotion} />
       )}
 
       <div className="container mx-auto px-4 py-6 md:py-8 lg:py-10">
