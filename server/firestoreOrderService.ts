@@ -1,12 +1,19 @@
-import { adminDb } from "./firebase-admin";
+import { adminDb, isFirebaseInitialized } from "./firebase-admin";
 import admin from "firebase-admin";
 import type { Order, InsertOrder } from "@shared/schema";
 
 const ORDERS_COLLECTION = "orders";
 
+function ensureFirebaseInitialized() {
+  if (!isFirebaseInitialized || !adminDb) {
+    throw new Error("Firebase is not initialized. Please configure FIREBASE_SERVICE_ACCOUNT_KEY.");
+  }
+}
+
 export async function createOrder(orderData: InsertOrder): Promise<Order> {
+  ensureFirebaseInitialized();
   const now = admin.firestore.Timestamp.now();
-  const docRef = await adminDb.collection(ORDERS_COLLECTION).add({
+  const docRef = await adminDb!.collection(ORDERS_COLLECTION).add({
     firebaseUid: orderData.firebaseUid,
     userEmail: orderData.userEmail,
     userName: orderData.userName || null,
@@ -41,7 +48,8 @@ export async function createOrder(orderData: InsertOrder): Promise<Order> {
 }
 
 export async function getOrderById(orderId: string): Promise<Order | undefined> {
-  const doc = await adminDb.collection(ORDERS_COLLECTION).doc(orderId).get();
+  ensureFirebaseInitialized();
+  const doc = await adminDb!.collection(ORDERS_COLLECTION).doc(orderId).get();
 
   if (!doc.exists) {
     return undefined;
@@ -67,8 +75,9 @@ export async function getOrderById(orderId: string): Promise<Order | undefined> 
 }
 
 export async function getRecentOrders(limit: number = 50): Promise<Order[]> {
+  ensureFirebaseInitialized();
   try {
-    const snapshot = await adminDb
+    const snapshot = await adminDb!
       .collection(ORDERS_COLLECTION)
       .orderBy("createdAt", "desc")
       .limit(limit)
@@ -98,7 +107,7 @@ export async function getRecentOrders(limit: number = 50): Promise<Order[]> {
     
     if (error.code === 9 || error.message?.includes("index")) {
       console.log("Index required. Falling back to client-side sorting...");
-      const snapshot = await adminDb
+      const snapshot = await adminDb!
         .collection(ORDERS_COLLECTION)
         .get();
 
@@ -132,8 +141,9 @@ export async function getRecentOrders(limit: number = 50): Promise<Order[]> {
 }
 
 export async function getOrdersByUser(firebaseUid: string): Promise<Order[]> {
+  ensureFirebaseInitialized();
   try {
-    const snapshot = await adminDb
+    const snapshot = await adminDb!
       .collection(ORDERS_COLLECTION)
       .where("firebaseUid", "==", firebaseUid)
       .orderBy("createdAt", "desc")
@@ -163,7 +173,7 @@ export async function getOrdersByUser(firebaseUid: string): Promise<Order[]> {
     
     if (error.code === 9 || error.message?.includes("index")) {
       console.log("Composite index required. Falling back to client-side sorting...");
-      const snapshot = await adminDb
+      const snapshot = await adminDb!
         .collection(ORDERS_COLLECTION)
         .where("firebaseUid", "==", firebaseUid)
         .get();
@@ -204,12 +214,13 @@ export async function updateOrderStatus(
   rejectionReason?: string,
   cancelledBy?: string
 ): Promise<Order> {
+  ensureFirebaseInitialized();
   const validStatuses = ["pending", "preparing", "completed", "rejected", "cancelled"];
   if (!validStatuses.includes(status)) {
     throw new Error(`Invalid status: ${status}. Must be one of: ${validStatuses.join(", ")}`);
   }
 
-  const docRef = adminDb.collection(ORDERS_COLLECTION).doc(orderId);
+  const docRef = adminDb!.collection(ORDERS_COLLECTION).doc(orderId);
   const doc = await docRef.get();
 
   if (!doc.exists) {
@@ -264,7 +275,8 @@ export async function updateOrderStatus(
 }
 
 export async function updateGuestArrived(orderId: string, arrived: boolean): Promise<Order> {
-  const docRef = adminDb.collection(ORDERS_COLLECTION).doc(orderId);
+  ensureFirebaseInitialized();
+  const docRef = adminDb!.collection(ORDERS_COLLECTION).doc(orderId);
   const doc = await docRef.get();
 
   if (!doc.exists) {

@@ -2,6 +2,8 @@ import admin from "firebase-admin";
 
 const serviceAccount = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
 
+let isInitialized = false;
+
 if (!admin.apps.length) {
   if (serviceAccount) {
     try {
@@ -9,15 +11,18 @@ if (!admin.apps.length) {
       admin.initializeApp({
         credential: admin.credential.cert(parsedServiceAccount),
       });
-      console.log("Firebase Admin initialized with service account");
+      isInitialized = true;
+      console.log("✓ Firebase Admin initialized with service account");
     } catch (error) {
       console.error("Failed to parse Firebase service account:", error);
-      throw new Error("Invalid FIREBASE_SERVICE_ACCOUNT_KEY format");
+      console.warn("⚠ Firebase Admin not initialized - Firestore features will not work");
     }
   } else {
-    throw new Error("FIREBASE_SERVICE_ACCOUNT_KEY environment variable is required");
+    console.warn("⚠ FIREBASE_SERVICE_ACCOUNT_KEY not found - Firebase Admin not initialized");
+    console.warn("⚠ Firestore-dependent features (orders, menu management) will not work");
   }
 }
 
-export const adminDb = admin.firestore();
+export const adminDb = isInitialized ? admin.firestore() : null;
+export const isFirebaseInitialized = isInitialized;
 export default admin;
