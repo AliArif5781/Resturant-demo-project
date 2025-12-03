@@ -40,36 +40,53 @@ function StatusWidget({
   pulse?: boolean;
   testId: string;
 }) {
-  const colorClasses: Record<string, { bg: string; border: string; text: string; iconBg: string }> = {
+  const colorClasses: Record<string, { 
+    bg: string; 
+    border: string; 
+    text: string; 
+    iconBg: string;
+    gradient: string;
+    shadow: string;
+  }> = {
     orange: {
-      bg: "bg-orange-50 dark:bg-orange-950/30",
-      border: "border-orange-200 dark:border-orange-800",
+      bg: "bg-gradient-to-br from-orange-50 to-amber-50 dark:from-orange-950/40 dark:to-amber-950/40",
+      border: "border-orange-200/60 dark:border-orange-800/60",
       text: "text-orange-700 dark:text-orange-300",
-      iconBg: "bg-orange-100 dark:bg-orange-900/50"
+      iconBg: "bg-gradient-to-br from-orange-100 to-amber-100 dark:from-orange-900/60 dark:to-amber-900/60",
+      gradient: "from-orange-500 to-amber-500",
+      shadow: "shadow-orange-200/50 dark:shadow-orange-900/30"
     },
     blue: {
-      bg: "bg-blue-50 dark:bg-blue-950/30",
-      border: "border-blue-200 dark:border-blue-800",
+      bg: "bg-gradient-to-br from-blue-50 to-cyan-50 dark:from-blue-950/40 dark:to-cyan-950/40",
+      border: "border-blue-200/60 dark:border-blue-800/60",
       text: "text-blue-700 dark:text-blue-300",
-      iconBg: "bg-blue-100 dark:bg-blue-900/50"
+      iconBg: "bg-gradient-to-br from-blue-100 to-cyan-100 dark:from-blue-900/60 dark:to-cyan-900/60",
+      gradient: "from-blue-500 to-cyan-500",
+      shadow: "shadow-blue-200/50 dark:shadow-blue-900/30"
     },
     green: {
-      bg: "bg-green-50 dark:bg-green-950/30",
-      border: "border-green-200 dark:border-green-800",
-      text: "text-green-700 dark:text-green-300",
-      iconBg: "bg-green-100 dark:bg-green-900/50"
+      bg: "bg-gradient-to-br from-emerald-50 to-green-50 dark:from-emerald-950/40 dark:to-green-950/40",
+      border: "border-emerald-200/60 dark:border-emerald-800/60",
+      text: "text-emerald-700 dark:text-emerald-300",
+      iconBg: "bg-gradient-to-br from-emerald-100 to-green-100 dark:from-emerald-900/60 dark:to-green-900/60",
+      gradient: "from-emerald-500 to-green-500",
+      shadow: "shadow-emerald-200/50 dark:shadow-emerald-900/30"
     },
     red: {
-      bg: "bg-red-50 dark:bg-red-950/30",
-      border: "border-red-200 dark:border-red-800",
+      bg: "bg-gradient-to-br from-red-50 to-rose-50 dark:from-red-950/40 dark:to-rose-950/40",
+      border: "border-red-200/60 dark:border-red-800/60",
       text: "text-red-700 dark:text-red-300",
-      iconBg: "bg-red-100 dark:bg-red-900/50"
+      iconBg: "bg-gradient-to-br from-red-100 to-rose-100 dark:from-red-900/60 dark:to-rose-900/60",
+      gradient: "from-red-500 to-rose-500",
+      shadow: "shadow-red-200/50 dark:shadow-red-900/30"
     },
     gray: {
-      bg: "bg-muted/50",
-      border: "border-border",
-      text: "text-muted-foreground",
-      iconBg: "bg-muted"
+      bg: "bg-gradient-to-br from-slate-50 to-gray-50 dark:from-slate-950/40 dark:to-gray-950/40",
+      border: "border-slate-200/60 dark:border-slate-800/60",
+      text: "text-slate-700 dark:text-slate-300",
+      iconBg: "bg-gradient-to-br from-slate-100 to-gray-100 dark:from-slate-900/60 dark:to-gray-900/60",
+      gradient: "from-slate-500 to-gray-500",
+      shadow: "shadow-slate-200/50 dark:shadow-slate-900/30"
     }
   };
 
@@ -77,43 +94,49 @@ function StatusWidget({
 
   return (
     <motion.div
-      whileHover={{ scale: 1.02 }}
+      whileHover={{ scale: 1.03, y: -2 }}
       whileTap={{ scale: 0.98 }}
       transition={{ type: "spring", stiffness: 400, damping: 17 }}
     >
       <Card 
-        className={`cursor-pointer transition-all duration-200 ${colors.bg} ${colors.border} border-2 ${
-          isActive ? "ring-2 ring-primary ring-offset-2" : ""
-        }`}
+        className={`cursor-pointer transition-all duration-300 ${colors.bg} ${colors.border} border shadow-lg ${colors.shadow} ${
+          isActive ? "ring-2 ring-primary ring-offset-2 ring-offset-background" : ""
+        } overflow-hidden relative`}
         onClick={onClick}
         data-testid={testId}
       >
-        <CardContent className="p-4 md:p-6">
+        <div className={`absolute inset-0 bg-gradient-to-r ${colors.gradient} opacity-0 hover:opacity-5 transition-opacity duration-300`} />
+        <CardContent className="p-4 md:p-6 relative">
           <div className="flex items-center justify-between gap-4">
-            <div className="space-y-1">
-              <p className={`text-sm font-medium ${colors.text}`}>{title}</p>
+            <div className="space-y-2">
+              <p className={`text-sm font-semibold uppercase tracking-wide ${colors.text} opacity-80`}>{title}</p>
               <div className="flex items-baseline gap-2">
-                <span className={`text-3xl md:text-4xl font-bold ${colors.text}`}>
+                <motion.span 
+                  key={count}
+                  initial={{ scale: 1.2, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  className={`text-3xl md:text-4xl font-bold ${colors.text}`}
+                >
                   {count}
-                </span>
+                </motion.span>
                 {pulse && count > 0 && (
                   <motion.span
-                    animate={{ scale: [1, 1.2, 1] }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                    className="text-xs text-orange-600 dark:text-orange-400 font-medium"
+                    animate={{ scale: [1, 1.15, 1], opacity: [0.8, 1, 0.8] }}
+                    transition={{ duration: 1.5, repeat: Infinity }}
+                    className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-orange-500 text-white shadow-sm"
                   >
                     NEW
                   </motion.span>
                 )}
               </div>
             </div>
-            <div className={`p-3 md:p-4 rounded-full ${colors.iconBg} relative`}>
-              <Icon className={`h-6 w-6 md:h-8 md:w-8 ${colors.text}`} />
+            <div className={`p-3 md:p-4 rounded-2xl ${colors.iconBg} relative shadow-inner`}>
+              <Icon className={`h-6 w-6 md:h-7 md:w-7 ${colors.text}`} />
               {pulse && count > 0 && (
                 <motion.div
-                  className="absolute -top-1 -right-1 w-3 h-3 bg-orange-500 rounded-full"
-                  animate={{ scale: [1, 1.3, 1], opacity: [1, 0.7, 1] }}
-                  transition={{ duration: 1.5, repeat: Infinity }}
+                  className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-r from-orange-500 to-red-500 rounded-full shadow-lg"
+                  animate={{ scale: [1, 1.2, 1], boxShadow: ["0 0 0 0 rgba(249,115,22,0.4)", "0 0 0 8px rgba(249,115,22,0)", "0 0 0 0 rgba(249,115,22,0)"] }}
+                  transition={{ duration: 2, repeat: Infinity }}
                 />
               )}
             </div>
@@ -536,19 +559,23 @@ export default function AdminDashboard() {
         </motion.div>
       )}
 
-      <header className="border-b bg-gradient-to-r from-primary/5 via-background to-primary/5 sticky top-0 z-40 backdrop-blur-md">
-        <div className="container mx-auto px-4 py-3">
+      <header className="border-b bg-gradient-to-r from-primary/10 via-background to-orange-50/50 dark:from-primary/5 dark:via-background dark:to-orange-950/20 sticky top-0 z-40 backdrop-blur-md shadow-sm">
+        <div className="container mx-auto px-4 py-4">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-primary/10">
-                <ChefHat className="h-6 w-6 text-primary" />
-              </div>
+            <div className="flex items-center gap-4">
+              <motion.div 
+                className="p-3 rounded-xl bg-gradient-to-br from-orange-500 to-amber-500 shadow-lg shadow-orange-500/20"
+                whileHover={{ scale: 1.05, rotate: 5 }}
+                transition={{ type: "spring", stiffness: 400, damping: 17 }}
+              >
+                <ChefHat className="h-6 w-6 text-white" />
+              </motion.div>
               <div>
-                <h1 className="text-lg sm:text-xl font-bold" data-testid="title-admin-dashboard">
+                <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-orange-600 to-amber-600 dark:from-orange-400 dark:to-amber-400 bg-clip-text text-transparent" data-testid="title-admin-dashboard">
                   Karahi Point Admin
                 </h1>
-                <p className="text-xs text-muted-foreground hidden sm:block">
-                  {currentUser?.displayName || currentUser?.email}
+                <p className="text-sm text-muted-foreground hidden sm:block">
+                  Welcome back, {currentUser?.displayName || currentUser?.email?.split('@')[0]}
                 </p>
               </div>
             </div>
@@ -598,29 +625,34 @@ export default function AdminDashboard() {
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-6 md:mb-8"
+          className="mb-8 md:mb-10"
         >
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div>
-              <h2 className="text-2xl md:text-3xl font-bold">Dashboard</h2>
-              <p className="text-muted-foreground">
+            <div className="space-y-1">
+              <div className="flex items-center gap-3">
+                <div className="h-10 w-1.5 bg-gradient-to-b from-orange-500 to-amber-500 rounded-full" />
+                <h2 className="text-2xl md:text-3xl font-bold">Dashboard</h2>
+              </div>
+              <p className="text-muted-foreground ml-6">
                 Monitor and manage your restaurant orders in real-time
               </p>
             </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => refetch()}
-              className="gap-2 w-fit"
-              data-testid="button-refresh-orders"
-            >
-              <RefreshCw className="h-4 w-4" />
-              Refresh
-            </Button>
+            <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+              <Button
+                variant="outline"
+                size="default"
+                onClick={() => refetch()}
+                className="gap-2 shadow-sm border-2"
+                data-testid="button-refresh-orders"
+              >
+                <RefreshCw className="h-4 w-4" />
+                Refresh
+              </Button>
+            </motion.div>
           </div>
         </motion.div>
 
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-6 md:mb-8">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8 md:mb-10">
           <StatusWidget
             title="New Orders"
             count={orderCounts.pending}
