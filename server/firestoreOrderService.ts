@@ -156,6 +156,7 @@ export async function updateOrderStatus(
     updateData.preparationTime = null;
     updateData.rejectionReason = null;
   } else if (status === "completed") {
+    updateData.preparationTime = null;
     updateData.rejectionReason = null;
     updateData.cancelledBy = null;
   } else if (status === "pending") {
