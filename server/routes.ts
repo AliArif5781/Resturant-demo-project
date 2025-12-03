@@ -4,6 +4,7 @@ import { storage } from "./storage";
 import { insertOrderSchema, insertMenuItemSchema } from "@shared/schema";
 import { upload, uploadToCloudinary } from "./cloudinary";
 import * as firestoreMenu from "./firestoreMenuService";
+import * as firestoreOrder from "./firestoreOrderService";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || "")
@@ -76,7 +77,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Create a new order
+  // Create a new order - Uses Firestore
   app.post("/api/orders", async (req, res) => {
     try {
       const firebaseUid = req.headers["x-firebase-uid"] as string;
@@ -104,14 +105,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       };
 
       const validatedOrder = insertOrderSchema.parse(orderData);
-      const order = await storage.createOrder(validatedOrder);
+      const order = await firestoreOrder.createOrder(validatedOrder);
       res.json({ order });
     } catch (error: any) {
       res.status(400).json({ message: error.message });
     }
   });
 
-  // Get recent orders (for admin dashboard - ADMIN ONLY)
+  // Get recent orders (for admin dashboard - ADMIN ONLY) - Uses Firestore
   app.get("/api/orders", async (req, res) => {
     try {
       const firebaseUid = req.headers["x-firebase-uid"] as string;
@@ -130,15 +131,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "Admin access required" });
       }
 
-      const limit = req.query.limit ? parseInt(req.query.limit as string) : 10;
-      const orders = await storage.getRecentOrders(limit);
+      const limit = req.query.limit ? parseInt(req.query.limit as string) : 50;
+      const orders = await firestoreOrder.getRecentOrders(limit);
       res.json({ orders });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
   });
 
-  // Get orders by user
+  // Get orders by user - Uses Firestore
   app.get("/api/orders/user/:firebaseUid", async (req, res) => {
     try {
       const requestingUid = req.headers["x-firebase-uid"] as string;
@@ -158,14 +159,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "Access denied" });
       }
 
-      const orders = await storage.getOrdersByUser(firebaseUid);
+      const orders = await firestoreOrder.getOrdersByUser(firebaseUid);
       res.json({ orders });
     } catch (error: any) {
       res.status(500).json({ message: error.message });
     }
   });
 
-  // Get single order by ID
+  // Get single order by ID - Uses Firestore
   app.get("/api/orders/:orderId", async (req, res) => {
     try {
       const firebaseUid = req.headers["x-firebase-uid"] as string;
@@ -181,7 +182,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "User not found" });
       }
 
-      const order = await storage.getOrderById(orderId);
+      const order = await firestoreOrder.getOrderById(orderId);
       if (!order) {
         return res.status(404).json({ message: "Order not found" });
       }
@@ -197,7 +198,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Update order status (ADMIN ONLY)
+  // Update order status (ADMIN ONLY) - Uses Firestore
   app.patch("/api/orders/:orderId/status", async (req, res) => {
     try {
       const firebaseUid = req.headers["x-firebase-uid"] as string;
@@ -239,14 +240,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const finalRejectionReason = status === "rejected" ? trimmedRejectionReason : undefined;
       const finalCancelledBy = status === "cancelled" ? "admin" : undefined;
 
-      const updatedOrder = await storage.updateOrderStatus(orderId, status, finalPrepTime, finalRejectionReason, finalCancelledBy);
+      const updatedOrder = await firestoreOrder.updateOrderStatus(orderId, status, finalPrepTime, finalRejectionReason, finalCancelledBy);
       res.json({ order: updatedOrder });
     } catch (error: any) {
       res.status(400).json({ message: error.message });
     }
   });
 
-  // Mark guest as arrived
+  // Mark guest as arrived - Uses Firestore
   app.patch("/api/orders/:orderId/arrived", async (req, res) => {
     try {
       const firebaseUid = req.headers["x-firebase-uid"] as string;
@@ -263,7 +264,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Get the order to verify ownership
-      const order = await storage.getOrderById(orderId);
+      const order = await firestoreOrder.getOrderById(orderId);
       if (!order) {
         return res.status(404).json({ message: "Order not found" });
       }
@@ -273,14 +274,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "Access denied" });
       }
 
-      const updatedOrder = await storage.updateGuestArrived(orderId, true);
+      const updatedOrder = await firestoreOrder.updateGuestArrived(orderId, true);
       res.json({ order: updatedOrder });
     } catch (error: any) {
       res.status(400).json({ message: error.message });
     }
   });
 
-  // Cancel order (USER - own orders only, and only if status is pending)
+  // Cancel order (USER - own orders only, and only if status is pending) - Uses Firestore
   app.patch("/api/orders/:orderId/cancel", async (req, res) => {
     try {
       const firebaseUid = req.headers["x-firebase-uid"] as string;
@@ -297,7 +298,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Get the order to verify ownership and status
-      const order = await storage.getOrderById(orderId);
+      const order = await firestoreOrder.getOrderById(orderId);
       if (!order) {
         return res.status(404).json({ message: "Order not found" });
       }
@@ -314,7 +315,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
-      const updatedOrder = await storage.updateOrderStatus(orderId, "cancelled", undefined, undefined, "guest");
+      const updatedOrder = await firestoreOrder.updateOrderStatus(orderId, "cancelled", undefined, undefined, "guest");
       res.json({ order: updatedOrder });
     } catch (error: any) {
       res.status(400).json({ message: error.message });
