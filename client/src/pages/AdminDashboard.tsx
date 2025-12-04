@@ -272,9 +272,9 @@ function OrderCard({
             <div className="flex flex-wrap gap-2">
               <Button
                 size="sm"
-                variant="outline"
+                variant="secondary"
                 onClick={() => onViewDetails(order)}
-                className="gap-2"
+                className="gap-2 bg-blue-100 hover:bg-blue-200 text-blue-700 dark:bg-blue-900/50 dark:hover:bg-blue-800/60 dark:text-blue-300 border border-blue-300 dark:border-blue-700"
                 data-testid={`button-view-details-${order.id}`}
               >
                 <Eye className="h-4 w-4" />
