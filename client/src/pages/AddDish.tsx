@@ -26,6 +26,13 @@ const CATEGORIES = [
   { value: "Drinks", label: "Drinks" },
 ];
 
+const SPICY_LEVELS = [
+  { value: "none", label: "Not Spicy" },
+  { value: "low", label: "Low" },
+  { value: "medium", label: "Medium" },
+  { value: "high", label: "High" },
+];
+
 const dishFormSchema = z.object({
   name: z.string().min(1, "Dish name is required"),
   description: z.string().min(1, "Description is required"),
@@ -33,6 +40,7 @@ const dishFormSchema = z.object({
   calories: z.string().min(1, "Calories is required").refine((val) => !isNaN(parseInt(val)) && parseInt(val) >= 0, "Calories must be a non-negative number"),
   protein: z.string().min(1, "Protein is required").refine((val) => !isNaN(parseInt(val)) && parseInt(val) >= 0, "Protein must be a non-negative number"),
   category: z.string().min(1, "Category is required"),
+  spicy: z.string().optional(),
 });
 
 type DishFormData = z.infer<typeof dishFormSchema>;
@@ -62,6 +70,7 @@ export default function AddDish() {
       calories: "",
       protein: "",
       category: "",
+      spicy: "none",
     },
   });
 
@@ -118,6 +127,7 @@ export default function AddDish() {
         protein: data.protein,
         image: imageUrl,
         category: data.category,
+        spicy: data.spicy === "none" ? null : data.spicy,
       });
       return response.json();
     },
@@ -161,6 +171,7 @@ export default function AddDish() {
         protein: data.protein,
         image: imageUrl,
         category: data.category,
+        spicy: data.spicy === "none" ? null : data.spicy,
       });
       return response.json();
     },
@@ -280,6 +291,7 @@ export default function AddDish() {
       calories: String(item.calories),
       protein: String(item.protein),
       category: item.category,
+      spicy: item.spicy || "none",
     });
   };
 
@@ -459,6 +471,34 @@ export default function AddDish() {
                             {CATEGORIES.map((category) => (
                               <SelectItem key={category.value} value={category.value} data-testid={`option-category-${category.value}`}>
                                 {category.label}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="spicy"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center gap-1">
+                          <Flame className="h-4 w-4 text-red-500" />
+                          Spicy Level
+                        </FormLabel>
+                        <Select onValueChange={field.onChange} value={field.value || "none"}>
+                          <FormControl>
+                            <SelectTrigger data-testid="select-dish-spicy">
+                              <SelectValue placeholder="Select spicy level" />
+                            </SelectTrigger>
+                          </FormControl>
+                          <SelectContent>
+                            {SPICY_LEVELS.map((level) => (
+                              <SelectItem key={level.value} value={level.value} data-testid={`option-spicy-${level.value}`}>
+                                {level.label}
                               </SelectItem>
                             ))}
                           </SelectContent>

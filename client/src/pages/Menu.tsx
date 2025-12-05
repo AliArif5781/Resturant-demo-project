@@ -21,6 +21,7 @@ interface MenuItem {
   protein: number;
   image: string;
   category: string;
+  spicy?: string | null;
 }
 
 const categories = [
@@ -92,6 +93,7 @@ export default function Menu() {
       protein: parseInt(String(item.protein)),
       image: item.image,
       category: item.category,
+      spicy: item.spicy,
     }));
   }, [apiMenuData]);
 
@@ -443,6 +445,22 @@ export default function Menu() {
                       <Dumbbell className="h-3 w-3 mr-1" />
                       {item.protein}g protein
                     </Badge>
+                    {item.spicy && item.spicy !== "none" && (
+                      <Badge 
+                        variant="outline" 
+                        className={`${
+                          item.spicy === "high" 
+                            ? "bg-red-50 dark:bg-red-950 text-red-700 dark:text-red-300 border-red-200 dark:border-red-800" 
+                            : item.spicy === "medium"
+                            ? "bg-amber-50 dark:bg-amber-950 text-amber-700 dark:text-amber-300 border-amber-200 dark:border-amber-800"
+                            : "bg-yellow-50 dark:bg-yellow-950 text-yellow-700 dark:text-yellow-300 border-yellow-200 dark:border-yellow-800"
+                        }`}
+                        data-testid={`badge-spicy-${item.id}`}
+                      >
+                        <Flame className="h-3 w-3 mr-1" />
+                        {item.spicy.charAt(0).toUpperCase() + item.spicy.slice(1)} Spicy
+                      </Badge>
+                    )}
                   </div>
                   <div className="flex items-center justify-between pt-2">
                     <p className="text-xl font-bold text-primary" data-testid={`text-item-price-${item.id}`}>{item.price}</p>

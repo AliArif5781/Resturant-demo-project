@@ -28,6 +28,7 @@ export async function getAllMenuItems(): Promise<MenuItem[]> {
       protein: data.protein,
       image: data.image,
       category: data.category,
+      spicy: data.spicy || null,
       createdAt: data.createdAt?.toDate?.() || new Date(),
     } as MenuItem;
   });
@@ -51,6 +52,7 @@ export async function getMenuItemById(id: string): Promise<MenuItem | undefined>
     protein: data.protein,
     image: data.image,
     category: data.category,
+    spicy: data.spicy || null,
     createdAt: data.createdAt?.toDate?.() || new Date(),
   } as MenuItem;
 }
@@ -66,6 +68,7 @@ export async function createMenuItem(item: InsertMenuItem): Promise<MenuItem> {
     protein: item.protein,
     image: item.image,
     category: item.category,
+    spicy: item.spicy || null,
     createdAt: now,
   });
 
@@ -78,6 +81,7 @@ export async function createMenuItem(item: InsertMenuItem): Promise<MenuItem> {
     protein: item.protein,
     image: item.image,
     category: item.category,
+    spicy: item.spicy || null,
     createdAt: now.toDate(),
   } as MenuItem;
 }
@@ -108,6 +112,7 @@ export async function updateMenuItem(
     protein: data.protein,
     image: data.image,
     category: data.category,
+    spicy: data.spicy || null,
     createdAt: data.createdAt?.toDate?.() || new Date(),
   } as MenuItem;
 }

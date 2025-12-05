@@ -53,6 +53,7 @@ export const menuItems = pgTable("menu_items", {
   protein: decimal("protein", { precision: 10, scale: 0 }).notNull(),
   image: text("image").notNull(),
   category: text("category").notNull(),
+  spicy: text("spicy"),
   createdAt: timestamp("created_at").notNull().defaultNow(),
 });
 
