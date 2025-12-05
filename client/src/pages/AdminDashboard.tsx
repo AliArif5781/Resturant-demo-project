@@ -926,9 +926,9 @@ export default function AdminDashboard() {
                         )}
                       </div>
                       <div className="flex items-center justify-between pt-2 border-t">
-                        <span className="text-sm text-muted-foreground">${item.price} each</span>
+                        <span className="text-sm text-muted-foreground">${String(item.price).replace('$', '')} each</span>
                         <span className="font-semibold text-primary">
-                          ${(Number(item.price) * item.quantity).toFixed(2)}
+                          ${(parseFloat(String(item.price).replace('$', '')) * item.quantity).toFixed(2)}
                         </span>
                       </div>
                     </div>
