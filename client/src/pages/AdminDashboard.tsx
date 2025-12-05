@@ -874,7 +874,7 @@ export default function AdminDashboard() {
                   </p>
                   <p className="flex items-center gap-2">
                     <Package className="h-4 w-4" />
-                    Order #{selectedOrderForDetails.id.substring(0, 8).toUpperCase()}
+                    <span className="font-bold">Order #{selectedOrderForDetails.id.substring(0, 8).toUpperCase()}</span>
                   </p>
                   <p className="flex items-center gap-2">
                     <Clock className="h-4 w-4" />
