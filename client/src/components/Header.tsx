@@ -121,22 +121,24 @@ export default function Header({
 
             {isAdminNotification && (
               <Link href="/admin">
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className="relative text-white/90 rounded-full"
-                  data-testid="button-notifications"
-                >
-                  <Bell className="h-5 w-5" />
+                <div className="relative">
+                  <Button
+                    size="icon"
+                    variant="ghost"
+                    className="text-white/90 rounded-full"
+                    data-testid="button-notifications"
+                  >
+                    <Bell className="h-5 w-5" />
+                  </Button>
                   {pendingOrderCount > 0 && (
-                    <Badge
-                      className="absolute -top-1 -right-1 h-4 w-4 min-w-[1rem] flex items-center justify-center p-0 text-[10px] font-semibold bg-primary text-primary-foreground rounded-full"
+                    <span
+                      className="absolute -top-1 -right-1 h-5 min-w-[1.25rem] flex items-center justify-center px-1 text-[10px] font-bold bg-primary text-primary-foreground rounded-full pointer-events-none"
                       data-testid="badge-notification-count"
                     >
                       {pendingOrderCount > 99 ? "99+" : pendingOrderCount}
-                    </Badge>
+                    </span>
                   )}
-                </Button>
+                </div>
               </Link>
             )}
 
