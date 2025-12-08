@@ -101,22 +101,24 @@ export default function Header({
               </Button>
             </Link>
             <Link href="/cart">
-              <Button
-                size="icon"
-                variant="ghost"
-                className="relative text-white/90 rounded-full"
-                data-testid="button-cart"
-              >
-                <ShoppingCart className="h-5 w-5" />
+              <div className="relative">
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="text-white/90 rounded-full"
+                  data-testid="button-cart"
+                >
+                  <ShoppingCart className="h-5 w-5" />
+                </Button>
                 {totalItems > 0 && (
-                  <Badge
-                    className="absolute -top-1 -right-1 h-4 w-4 min-w-[1rem] flex items-center justify-center p-0 text-[10px] font-semibold bg-primary text-primary-foreground rounded-full"
+                  <span
+                    className="absolute -top-1 -right-1 h-5 min-w-[1.25rem] flex items-center justify-center px-1 text-[10px] font-bold bg-primary text-primary-foreground rounded-full pointer-events-none"
                     data-testid="badge-cart-count"
                   >
                     {totalItems}
-                  </Badge>
+                  </span>
                 )}
-              </Button>
+              </div>
             </Link>
 
             {isAdminNotification && (
