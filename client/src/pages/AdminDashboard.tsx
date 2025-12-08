@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useLocation, Link } from "wouter";
 import { useAuth } from "@/contexts/AuthContext";
+import { useOrderNotifications } from "@/contexts/OrderNotificationContext";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -340,6 +341,7 @@ function OrderCard({
 export default function AdminDashboard() {
   const [, setLocation] = useLocation();
   const { currentUser, signout, getUserRole } = useAuth();
+  const { pendingOrderCount, markOrdersSeen } = useOrderNotifications();
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -598,6 +600,26 @@ export default function AdminDashboard() {
               >
                 <LayoutDashboard className="h-4 w-4" />
                 <span className="hidden sm:inline">Dashboard</span>
+              </Button>
+              <Button 
+                variant="outline" 
+                size="icon"
+                className="relative"
+                onClick={() => {
+                  markOrdersSeen();
+                  setActiveFilter("pending");
+                }}
+                data-testid="button-notifications-admin"
+              >
+                <Bell className="h-4 w-4" />
+                {pendingOrderCount > 0 && (
+                  <Badge
+                    className="absolute -top-1 -right-1 h-4 w-4 min-w-[1rem] flex items-center justify-center p-0 text-[10px] font-semibold bg-red-500 text-white rounded-full animate-pulse"
+                    data-testid="badge-notification-count-admin"
+                  >
+                    {pendingOrderCount > 99 ? "99+" : pendingOrderCount}
+                  </Badge>
+                )}
               </Button>
               <Button 
                 variant="outline" 

@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, useCallback, useRef } from "react";
 import { useAuth } from "./AuthContext";
+import { useToast } from "@/hooks/use-toast";
 import type { Order } from "@shared/schema";
 
 interface OrderNotificationContextType {
@@ -11,16 +12,15 @@ interface OrderNotificationContextType {
 
 const OrderNotificationContext = createContext<OrderNotificationContextType | null>(null);
 
-const NOTIFICATION_SOUND_URL = "data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdXaBhYqJhYN+fn18fH1/goaJiYWFg4F9fHx9f4GEh4mJh4WDgX59fH1+gIOGiImHhYOBfn19fn+Bg4aHiIaEgoB+fX19f4GDhoeHhoSCgH9+fX5/gYOFh4eGhIOBf359fn+BgoSGh4aFhIKAf35+f4CBg4WGhoWEg4F/fn5+f4CCg4WGhoWEgoB/fn5+f4CBg4WGhoWEgoB/fn5/f4CBg4WGhoWEgoB/fn5/f4CBg4WGhoWEgoGAf35/f4CBg4WGhoWEgoGAf35/f4CBg4SFhoWEg4GAf35/f4CBg4SFhoWEg4GAf35/f4CBg4SFhoWEg4GAf39/f4CBg4SFhYSEg4GAf39/f4CBg4SFhYSDgoGAf39/f4CBgoSFhYSDgoGAf39/f4CBgoSFhYSDgoGAf39/f4CBgoSFhYSDgoGAf39/f4CBgoSFhYSDgoGAf39/f4CBgoSFhYSDgoGAf39/f4CBgoSFhYSDgoGAf39/f4CBgoSFhYSDgoGAf39/f4CBgoSFhYSDgoGAf39/f4CBgoSFhYSDgoGAf39/f4CBgoSFhYSDgoGAf39/f4CBgoSFhYSDgoGAf39/f4CBgoSFhYSDgoGAf39/f4CBgoOEhYSDgoGAf39/f4CBgoOEhYSDgoGAf39/f4CBgoOEhYSDgoGAf39/f4CBgoOEhYSDgoGAf39/f4CBgoOEhYSDgoGAf39/gICBgoOEhYSDgoGAf39/gICBgoOEhYSDgoGAf39/gICBgoOEhISCgoGAf39/gICBgoOEhISCgoGAf39/gICBgoOEhISCgoGAf39/gICBgoOEhISCgoGAf39/gICBgoOEhISCgoGAf39/gICBgoOEhISCgoGAf39/gICBgoOEhISCgoGAf39/gICBgoOEhISCgoGAf39/gICBgoOEhISCgoGAf39/gICBgoOEhISCgoGAf39/gICBgoOEhISCgoGAf39/gICBgoOEhISCgoGAf39/gICBgoOEhISCgoGAf39/gICBgoOEhISDgoGAf39/gICBgoOEhISDgoGAf39/gICBgoOEhISDgoGAf39/gICBgoOEhISDgoGAf39/gICBgoOEhISDgoGAf39/gICBgoOEhISDgoGAf39/gICBgoOEhISDgoGAf39/gICBgoOEhISDgoGAf35/f4CBgoOEhISDgoGAf35/f4CBgoOEhISDgoGAf35/f4CBgoOEhISDgoGAf35/f4CBgoOEhISDgoGAf35/f4CBgoOEhISDgoGAf35/f4CBgoOEhISDgoGAf35/f4CBgoOEhISDgoGAf35/f4CBgoOEhISDgoGAf35/f4CBgoOEhISDgoGAf35/f4CBgoOEhISDgoGAf35/f4CBgoOEhISDgoGAf35/f4CBgoOEhISDgoGAf35/f4CBgoOEhISDgoGAf35/f4CBgoOEhISDgoGAf35/f4CBgoOEhISDgoGAf35/f4CBgoOEhISDgoGAf35/f4CBgoOEhISDgoGAf35/f4CBgoOEhISDgoGAf35/f4CBgoODhISDgoGAf35/f4CBgoODhISDgoGAf35/f4CBgoODhISDgoGAf35/f4CBgoODhISDgoGAf35/f4CBgoODhISDgoGAf35/f4CBgoODhISDgoGAf35/f4CBgoODhISDgoGAf35/f4CBgoODhISDgoGAf35/f4CBgoODhISDgoGAf35/f4CBgoODhISDgoGAf35/f4CBgoODhISDgoGAf35/f4CBgoODhISDgoGAf35/f4CBgoODhISDgoGAf35/f4CBgoODhIOCgoGAf35/f4CBgoODhIOCgoGAf35/f4CBgoODg4OCgoGAf35/f4CBgoODg4OCgoGAf35/f4CBgoODg4OCgoGAf35/f4CBgoODg4OCgoGAf35/f4CBgoODg4OCgoGAf35/f4CBgoODg4OCgoGAf35/f4A=";
-
 export function OrderNotificationProvider({ children }: { children: React.ReactNode }) {
   const { currentUser, getUserRole } = useAuth();
+  const { toast } = useToast();
   const [pendingOrderCount, setPendingOrderCount] = useState(0);
   const [newOrdersCount, setNewOrdersCount] = useState(0);
   const [isAdmin, setIsAdmin] = useState(false);
   const seenOrderIdsRef = useRef<Set<string>>(new Set());
   const pendingOrderIdsRef = useRef<string[]>([]);
-  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const audioContextRef = useRef<AudioContext | null>(null);
   const isFirstLoadRef = useRef(true);
 
   useEffect(() => {
@@ -35,14 +35,63 @@ export function OrderNotificationProvider({ children }: { children: React.ReactN
     checkAdminRole();
   }, [currentUser, getUserRole]);
 
-  const playNotificationSound = useCallback(() => {
-    if (!audioRef.current) {
-      audioRef.current = new Audio(NOTIFICATION_SOUND_URL);
-      audioRef.current.volume = 0.5;
+  const playNotificationSound = useCallback(async () => {
+    try {
+      if (!audioContextRef.current) {
+        audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+      }
+      const ctx = audioContextRef.current;
+      
+      if (ctx.state === 'suspended') {
+        await ctx.resume();
+      }
+      
+      const playTone = (frequency: number, startTime: number, duration: number, volume: number = 0.3) => {
+        const oscillator = ctx.createOscillator();
+        const gainNode = ctx.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(ctx.destination);
+        
+        oscillator.frequency.value = frequency;
+        oscillator.type = 'sine';
+        
+        gainNode.gain.setValueAtTime(0, startTime);
+        gainNode.gain.linearRampToValueAtTime(volume, startTime + 0.02);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, startTime + duration);
+        
+        oscillator.start(startTime);
+        oscillator.stop(startTime + duration);
+      };
+
+      const now = ctx.currentTime;
+      
+      playTone(880, now, 0.25, 0.25);
+      playTone(1100, now + 0.25, 0.25, 0.25);
+      playTone(880, now + 0.5, 0.25, 0.25);
+      playTone(1100, now + 0.75, 0.25, 0.25);
+      
+      playTone(880, now + 1.2, 0.25, 0.25);
+      playTone(1100, now + 1.45, 0.25, 0.25);
+      playTone(880, now + 1.7, 0.25, 0.25);
+      playTone(1100, now + 1.95, 0.25, 0.25);
+      
+      playTone(1320, now + 2.4, 0.4, 0.3);
+      
+    } catch (error) {
+      console.error("Failed to play notification sound:", error);
     }
-    audioRef.current.currentTime = 0;
-    audioRef.current.play().catch(() => {});
   }, []);
+
+  const showNewOrderToast = useCallback((orderCount: number) => {
+    toast({
+      title: "New Order Received!",
+      description: orderCount === 1 
+        ? "A new order has been placed and is waiting for your attention."
+        : `${orderCount} new orders have been placed.`,
+      duration: 5000,
+    });
+  }, [toast]);
 
   const fetchOrders = useCallback(async () => {
     if (!isAdmin || !currentUser) return;
@@ -70,6 +119,7 @@ export function OrderNotificationProvider({ children }: { children: React.ReactN
           const trulyNewOrders = unseenOrders.filter((order) => !previousIds.has(order.id));
           if (trulyNewOrders.length > 0) {
             playNotificationSound();
+            showNewOrderToast(trulyNewOrders.length);
           }
         }
         
@@ -87,7 +137,7 @@ export function OrderNotificationProvider({ children }: { children: React.ReactN
     } catch (error) {
       console.error("Failed to fetch orders:", error);
     }
-  }, [isAdmin, currentUser, playNotificationSound]);
+  }, [isAdmin, currentUser, playNotificationSound, showNewOrderToast]);
 
   useEffect(() => {
     if (isAdmin && currentUser) {
