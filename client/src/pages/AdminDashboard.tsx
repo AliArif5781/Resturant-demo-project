@@ -601,26 +601,27 @@ export default function AdminDashboard() {
                 <LayoutDashboard className="h-4 w-4" />
                 <span className="hidden sm:inline">Dashboard</span>
               </Button>
-              <Button 
-                variant="outline" 
-                size="icon"
-                className="relative"
-                onClick={() => {
-                  markOrdersSeen();
-                  setActiveFilter("pending");
-                }}
-                data-testid="button-notifications-admin"
-              >
-                <Bell className="h-4 w-4" />
+              <div className="relative">
+                <Button 
+                  variant="outline" 
+                  size="icon"
+                  onClick={() => {
+                    markOrdersSeen();
+                    setActiveFilter("pending");
+                  }}
+                  data-testid="button-notifications-admin"
+                >
+                  <Bell className="h-4 w-4" />
+                </Button>
                 {pendingOrderCount > 0 && (
-                  <Badge
-                    className="absolute -top-1 -right-1 h-4 w-4 min-w-[1rem] flex items-center justify-center p-0 text-[10px] font-semibold bg-red-500 text-white rounded-full animate-pulse"
+                  <span
+                    className="absolute -top-1.5 -right-1.5 h-5 min-w-[1.25rem] flex items-center justify-center px-1 text-[10px] font-bold bg-red-500 text-white rounded-full animate-pulse pointer-events-none"
                     data-testid="badge-notification-count-admin"
                   >
                     {pendingOrderCount > 99 ? "99+" : pendingOrderCount}
-                  </Badge>
+                  </span>
                 )}
-              </Button>
+              </div>
               <Button 
                 variant="outline" 
                 size="sm"
