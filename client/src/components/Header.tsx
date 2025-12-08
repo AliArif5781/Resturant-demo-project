@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { User, ShoppingCart, LogOut, Package, UtensilsCrossed, Menu, LayoutDashboard } from "lucide-react";
+import { User, ShoppingCart, LogOut, Package, UtensilsCrossed, Menu, LayoutDashboard, Bell } from "lucide-react";
+import { useOrderNotifications } from "@/contexts/OrderNotificationContext";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -27,6 +28,7 @@ export default function Header({
 }: HeaderProps = {}) {
   const { totalItems } = useCart();
   const { currentUser, signout, getUserRole } = useAuth();
+  const { pendingOrderCount, isAdmin: isAdminNotification } = useOrderNotifications();
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const [userRole, setUserRole] = useState<string | null>(null);
@@ -116,6 +118,27 @@ export default function Header({
                 )}
               </Button>
             </Link>
+
+            {isAdminNotification && (
+              <Link href="/admin">
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="relative text-white/90 rounded-full"
+                  data-testid="button-notifications"
+                >
+                  <Bell className="h-5 w-5" />
+                  {pendingOrderCount > 0 && (
+                    <Badge
+                      className="absolute -top-1 -right-1 h-4 w-4 min-w-[1rem] flex items-center justify-center p-0 text-[10px] font-semibold bg-primary text-primary-foreground rounded-full"
+                      data-testid="badge-notification-count"
+                    >
+                      {pendingOrderCount > 99 ? "99+" : pendingOrderCount}
+                    </Badge>
+                  )}
+                </Button>
+              </Link>
+            )}
 
             {currentUser ? (
               <DropdownMenu>

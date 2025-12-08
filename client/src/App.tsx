@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { CartProvider } from "@/contexts/CartContext";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { OrderNotificationProvider } from "@/contexts/OrderNotificationContext";
 import Home from "@/pages/Home";
 import Menu from "@/pages/Menu";
 import Cart from "@/pages/Cart";
@@ -42,10 +43,12 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <AuthProvider>
-          <CartProvider>
-            <Toaster />
-            <Router />
-          </CartProvider>
+          <OrderNotificationProvider>
+            <CartProvider>
+              <Toaster />
+              <Router />
+            </CartProvider>
+          </OrderNotificationProvider>
         </AuthProvider>
       </TooltipProvider>
     </QueryClientProvider>
