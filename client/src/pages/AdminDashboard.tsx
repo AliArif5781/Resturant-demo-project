@@ -167,26 +167,31 @@ function OrderCard({
 }) {
   const items = Array.isArray(order.items) ? order.items : [];
   
-  const statusConfig: Record<string, { badge: string; className: string }> = {
+  const statusConfig: Record<string, { badge: string; className: string; cardBorder: string }> = {
     pending: { 
       badge: "Pending", 
-      className: "bg-orange-100 dark:bg-orange-900/50 text-orange-800 dark:text-orange-200 border-orange-300 dark:border-orange-700" 
+      className: "bg-orange-100 dark:bg-orange-900/50 text-orange-800 dark:text-orange-200 border-orange-300 dark:border-orange-700",
+      cardBorder: "border-2 border-orange-400 dark:border-orange-500"
     },
     preparing: { 
       badge: "In Progress", 
-      className: "bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 border-blue-300 dark:border-blue-700" 
+      className: "bg-blue-100 dark:bg-blue-900/50 text-blue-800 dark:text-blue-200 border-blue-300 dark:border-blue-700",
+      cardBorder: "border-2 border-blue-400 dark:border-blue-500"
     },
     completed: { 
       badge: "Completed", 
-      className: "bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-200 border-green-300 dark:border-green-700" 
+      className: "bg-green-100 dark:bg-green-900/50 text-green-800 dark:text-green-200 border-green-300 dark:border-green-700",
+      cardBorder: ""
     },
     rejected: { 
       badge: "Rejected", 
-      className: "bg-red-100 dark:bg-red-900/50 text-red-800 dark:text-red-200 border-red-300 dark:border-red-700" 
+      className: "bg-red-100 dark:bg-red-900/50 text-red-800 dark:text-red-200 border-red-300 dark:border-red-700",
+      cardBorder: ""
     },
     cancelled: { 
       badge: order.cancelledBy === "guest" ? "Cancelled by Guest" : "Cancelled", 
-      className: "bg-gray-100 dark:bg-gray-900/50 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-700" 
+      className: "bg-gray-100 dark:bg-gray-900/50 text-gray-800 dark:text-gray-200 border-gray-300 dark:border-gray-700",
+      cardBorder: ""
     }
   };
 
@@ -199,7 +204,7 @@ function OrderCard({
       exit={{ opacity: 0, y: -10 }}
       transition={{ duration: 0.2 }}
     >
-      <Card className="hover-elevate transition-all duration-200" data-testid={`card-order-${order.id}`}>
+      <Card className={`hover-elevate transition-all duration-200 ${config.cardBorder}`} data-testid={`card-order-${order.id}`}>
         <CardContent className="p-4 md:p-6">
           <div className="flex flex-col gap-4">
             <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
