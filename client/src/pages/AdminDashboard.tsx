@@ -218,10 +218,10 @@ function OrderCard({
                       <h3 className="font-semibold text-lg" data-testid={`text-order-user-${order.id}`}>
                         {order.userName || order.userEmail}
                       </h3>
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Clock className="h-3.5 w-3.5" />
-                        <span>
-                          {new Date(order.createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })} {new Date(order.createdAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}
+                      <div className="flex items-center gap-2 text-sm">
+                        <Clock className="h-3.5 w-3.5 text-orange-500" />
+                        <span className="font-medium text-foreground/80">
+                          {new Date(order.createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })} at {new Date(order.createdAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}
                         </span>
                       </div>
                     </div>
