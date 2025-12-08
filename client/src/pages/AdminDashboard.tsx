@@ -427,6 +427,7 @@ export default function AdminDashboard() {
 
   const handleProceedClick = (orderId: string) => {
     setSelectedOrderId(orderId);
+    setPreparationTime("30");
     setShowPrepTimeDialog(true);
   };
 
@@ -793,20 +794,33 @@ export default function AdminDashboard() {
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
+            <div className="space-y-3">
+              <Label>Quick Select</Label>
+              <div className="flex flex-wrap gap-2">
+                {[15, 20, 30, 45, 60].map((time) => (
+                  <Button
+                    key={time}
+                    type="button"
+                    variant={preparationTime === String(time) ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setPreparationTime(String(time))}
+                    data-testid={`button-time-${time}`}
+                  >
+                    {time} min
+                  </Button>
+                ))}
+              </div>
+            </div>
             <div className="space-y-2">
-              <Label htmlFor="prep-time">Preparation Time (minutes)</Label>
+              <Label htmlFor="prep-time">Or enter custom time (minutes)</Label>
               <Input
                 id="prep-time"
                 type="number"
-                placeholder="e.g., 20"
+                placeholder="e.g., 25"
                 value={preparationTime}
                 onChange={(e) => setPreparationTime(e.target.value)}
                 data-testid="input-preparation-time"
-                autoFocus
               />
-              <p className="text-xs text-muted-foreground">
-                Enter the time in minutes (e.g., 15, 30, 45)
-              </p>
             </div>
           </div>
           <DialogFooter>
