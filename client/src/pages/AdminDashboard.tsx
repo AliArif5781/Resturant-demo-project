@@ -221,7 +221,7 @@ function OrderCard({
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <Clock className="h-3.5 w-3.5" />
                         <span>
-                          {new Date(order.createdAt).toLocaleDateString()} {new Date(order.createdAt).toLocaleTimeString()}
+                          {new Date(order.createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })} {new Date(order.createdAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}
                         </span>
                       </div>
                     </div>
@@ -920,7 +920,7 @@ export default function AdminDashboard() {
                   </p>
                   <p className="flex items-center gap-2">
                     <Clock className="h-4 w-4" />
-                    {new Date(selectedOrderForDetails.createdAt).toLocaleDateString()} {new Date(selectedOrderForDetails.createdAt).toLocaleTimeString()}
+                    {new Date(selectedOrderForDetails.createdAt).toLocaleDateString('en-US', { day: 'numeric', month: 'long', year: 'numeric' })} {new Date(selectedOrderForDetails.createdAt).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true })}
                   </p>
                 </div>
               )}
