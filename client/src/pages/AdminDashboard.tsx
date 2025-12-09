@@ -28,8 +28,8 @@ function useCountdownTimer(startTime: string | Date, durationMinutes: number) {
 
   useEffect(() => {
     const start = new Date(startTime).getTime();
-    // Add 1 second buffer to account for network/processing delay
-    const endTime = start + (durationMinutes * 60 * 1000) + 1000;
+    // Add 5 second buffer to account for network/processing delay
+    const endTime = start + (durationMinutes * 60 * 1000) + 5000;
     
     const calculateTimeLeft = () => {
       const now = Date.now();
@@ -40,7 +40,8 @@ function useCountdownTimer(startTime: string | Date, durationMinutes: number) {
         setTimeLeft(0);
         setIsExpired(true);
       } else {
-        setTimeLeft(remaining);
+        // Cap at the exact duration to avoid showing more than set time
+        setTimeLeft(Math.min(remaining, durationMinutes * 60));
         setIsExpired(false);
       }
     };
@@ -77,27 +78,11 @@ function PreparationTimer({
   const timerStartTime = order.acceptedAt || order.createdAt;
   const timer = useCountdownTimer(timerStartTime, prepTime);
 
-  const timerBgClass = timer.isExpired 
-    ? "bg-red-50 dark:bg-red-950/50 border-red-200 dark:border-red-800" 
-    : "bg-blue-50 dark:bg-blue-950/50 border-blue-200 dark:border-blue-800";
-  
-  const timerTextClass = timer.isExpired 
-    ? "text-red-700 dark:text-red-300" 
-    : "text-blue-700 dark:text-blue-300";
-  
-  const timerIconClass = timer.isExpired 
-    ? "text-red-600 dark:text-red-400" 
-    : "text-blue-600 dark:text-blue-400";
-
-  const buttonClass = timer.isExpired 
-    ? "bg-red-600 hover:bg-red-700 text-white" 
-    : "bg-green-600 hover:bg-green-700 text-white";
-
   return (
     <div className="flex flex-col md:flex-row gap-2 w-full md:w-auto">
-      <div className={`flex items-center gap-2 px-3 py-1.5 rounded-md border ${timerBgClass}`}>
-        <Timer className={`h-4 w-4 ${timerIconClass}`} />
-        <span className={`text-sm font-medium ${timerTextClass}`}>
+      <div className="flex items-center gap-2 px-3 py-1.5 rounded-md border bg-blue-50 dark:bg-blue-950/50 border-blue-200 dark:border-blue-800">
+        <Timer className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+        <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
           {timer.isExpired ? "Time's up! 0:00" : `Time left: ${timer.formatted}`}
         </span>
       </div>
@@ -105,7 +90,7 @@ function PreparationTimer({
         size="sm"
         onClick={() => onComplete(order.id)}
         disabled={completingOrderId === order.id}
-        className={`gap-2 ${buttonClass}`}
+        className="gap-2 bg-green-600 hover:bg-green-700 text-white"
         data-testid={`button-completed-${order.id}`}
       >
         <CheckCircle className="h-4 w-4" />
