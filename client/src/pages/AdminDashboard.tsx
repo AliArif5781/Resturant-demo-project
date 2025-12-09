@@ -71,7 +71,9 @@ function PreparationTimer({
   completingOrderId: string | null;
 }) {
   const prepTime = parseInt(order.preparationTime || "30", 10);
-  const timer = useCountdownTimer(order.createdAt, prepTime);
+  // Use acceptedAt (when order was accepted) instead of createdAt (when order was placed)
+  const timerStartTime = order.acceptedAt || order.createdAt;
+  const timer = useCountdownTimer(timerStartTime, prepTime);
 
   const timerBgClass = timer.isExpired 
     ? "bg-red-50 dark:bg-red-950/50 border-red-200 dark:border-red-800" 
