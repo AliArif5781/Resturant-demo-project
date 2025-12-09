@@ -342,8 +342,8 @@ function OrderCard({
                     <Package className="h-4 w-4" />
                     <span>{items.length} {items.length === 1 ? "item" : "items"}</span>
                   </div>
-                  <div className="flex items-center font-semibold text-primary">
-                    <DollarSign className="h-4 w-4 -mr-0.5" />
+                  <div className="flex items-center font-bold text-base text-green-600 dark:text-green-400">
+                    <DollarSign className="h-5 w-5 -mr-0.5" />
                     <span data-testid={`text-order-total-${order.id}`}>{order.total}</span>
                   </div>
                 </div>
