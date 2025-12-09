@@ -107,16 +107,16 @@ function StatusWidget({
         data-testid={testId}
       >
         <div className={`absolute inset-0 bg-gradient-to-r ${colors.gradient} opacity-0 hover:opacity-5 transition-opacity duration-300`} />
-        <CardContent className="p-4 md:p-6 relative">
-          <div className="flex items-center justify-between gap-4">
-            <div className="space-y-2">
-              <p className={`text-sm font-semibold uppercase tracking-wide ${colors.text} opacity-80 whitespace-nowrap`}>{title}</p>
-              <div className="flex items-baseline gap-2">
+        <CardContent className="p-3 sm:p-4 md:p-6 relative">
+          <div className="flex items-center justify-between gap-2 sm:gap-4">
+            <div className="space-y-1 sm:space-y-2 min-w-0 flex-1">
+              <p className={`text-xs sm:text-sm font-semibold uppercase tracking-wide ${colors.text} opacity-80 truncate`}>{title}</p>
+              <div className="flex items-baseline gap-1 sm:gap-2 flex-wrap">
                 <motion.span 
                   key={count}
                   initial={{ scale: 1.2, opacity: 0 }}
                   animate={{ scale: 1, opacity: 1 }}
-                  className={`text-3xl md:text-4xl font-bold ${colors.text}`}
+                  className={`text-2xl sm:text-3xl md:text-4xl font-bold ${colors.text}`}
                 >
                   {count}
                 </motion.span>
@@ -124,18 +124,18 @@ function StatusWidget({
                   <motion.span
                     animate={{ scale: [1, 1.15, 1], opacity: [0.8, 1, 0.8] }}
                     transition={{ duration: 1.5, repeat: Infinity }}
-                    className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-orange-500 text-white shadow-sm"
+                    className="inline-flex items-center px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold bg-orange-500 text-white shadow-sm"
                   >
                     NEW
                   </motion.span>
                 )}
               </div>
             </div>
-            <div className={`p-3 md:p-4 rounded-2xl ${colors.iconBg} relative shadow-inner`}>
-              <Icon className={`h-6 w-6 md:h-7 md:w-7 ${colors.text}`} />
+            <div className={`p-2 sm:p-3 md:p-4 rounded-xl sm:rounded-2xl ${colors.iconBg} relative shadow-inner flex-shrink-0`}>
+              <Icon className={`h-5 w-5 sm:h-6 sm:w-6 md:h-7 md:w-7 ${colors.text}`} />
               {pulse && count > 0 && (
                 <motion.div
-                  className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-r from-orange-500 to-red-500 rounded-full shadow-lg"
+                  className="absolute -top-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 bg-gradient-to-r from-orange-500 to-red-500 rounded-full shadow-lg"
                   animate={{ scale: [1, 1.2, 1], boxShadow: ["0 0 0 0 rgba(249,115,22,0.4)", "0 0 0 8px rgba(249,115,22,0)", "0 0 0 0 rgba(249,115,22,0)"] }}
                   transition={{ duration: 2, repeat: Infinity }}
                 />
@@ -681,7 +681,7 @@ export default function AdminDashboard() {
           </div>
         </motion.div>
 
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8 md:mb-10">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 md:gap-6 lg:grid-cols-4 mb-8 md:mb-10">
           <StatusWidget
             title="New Orders"
             count={orderCounts.pending}
