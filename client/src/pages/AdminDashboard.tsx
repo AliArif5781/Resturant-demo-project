@@ -22,6 +22,94 @@ import { motion, AnimatePresence } from "framer-motion";
 
 type OrderStatus = "all" | "pending" | "preparing" | "completed" | "rejected" | "cancelled";
 
+function useCountdownTimer(startTime: string | Date, durationMinutes: number) {
+  const [timeLeft, setTimeLeft] = useState<number>(0);
+  const [isExpired, setIsExpired] = useState(false);
+
+  useEffect(() => {
+    const calculateTimeLeft = () => {
+      const start = new Date(startTime).getTime();
+      const endTime = start + (durationMinutes * 60 * 1000);
+      const now = Date.now();
+      const remaining = Math.floor((endTime - now) / 1000);
+      
+      if (remaining <= 0) {
+        setTimeLeft(Math.abs(remaining));
+        setIsExpired(true);
+      } else {
+        setTimeLeft(remaining);
+        setIsExpired(false);
+      }
+    };
+
+    calculateTimeLeft();
+    const interval = setInterval(calculateTimeLeft, 1000);
+    return () => clearInterval(interval);
+  }, [startTime, durationMinutes]);
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  return {
+    timeLeft,
+    isExpired,
+    formatted: isExpired ? `-${formatTime(timeLeft)}` : formatTime(timeLeft)
+  };
+}
+
+function PreparationTimer({ 
+  order,
+  onComplete,
+  completingOrderId
+}: { 
+  order: Order;
+  onComplete: (orderId: string) => void;
+  completingOrderId: string | null;
+}) {
+  const prepTime = parseInt(order.preparationTime || "30", 10);
+  const timer = useCountdownTimer(order.createdAt, prepTime);
+
+  const timerBgClass = timer.isExpired 
+    ? "bg-red-50 dark:bg-red-950/50 border-red-200 dark:border-red-800" 
+    : "bg-blue-50 dark:bg-blue-950/50 border-blue-200 dark:border-blue-800";
+  
+  const timerTextClass = timer.isExpired 
+    ? "text-red-700 dark:text-red-300" 
+    : "text-blue-700 dark:text-blue-300";
+  
+  const timerIconClass = timer.isExpired 
+    ? "text-red-600 dark:text-red-400" 
+    : "text-blue-600 dark:text-blue-400";
+
+  const buttonClass = timer.isExpired 
+    ? "bg-red-600 hover:bg-red-700 text-white" 
+    : "bg-green-600 hover:bg-green-700 text-white";
+
+  return (
+    <div className="flex flex-col md:flex-row gap-2 w-full md:w-auto">
+      <div className={`flex items-center gap-2 px-3 py-1.5 rounded-md border ${timerBgClass}`}>
+        <Timer className={`h-4 w-4 ${timerIconClass}`} />
+        <span className={`text-sm font-medium ${timerTextClass}`}>
+          {timer.isExpired ? "Over by: " : "Time left: "}{timer.formatted}
+        </span>
+      </div>
+      <Button
+        size="sm"
+        onClick={() => onComplete(order.id)}
+        disabled={completingOrderId === order.id}
+        className={`gap-2 ${buttonClass}`}
+        data-testid={`button-completed-${order.id}`}
+      >
+        <CheckCircle className="h-4 w-4" />
+        {completingOrderId === order.id ? "Completing..." : "Mark Complete"}
+      </Button>
+    </div>
+  );
+}
+
 function StatusWidget({ 
   title, 
   count, 
@@ -252,8 +340,8 @@ function OrderCard({
                     <Package className="h-4 w-4" />
                     <span>{items.length} {items.length === 1 ? "item" : "items"}</span>
                   </div>
-                  <div className="flex items-center gap-1.5 font-semibold text-primary">
-                    <DollarSign className="h-4 w-4" />
+                  <div className="flex items-center font-semibold text-primary">
+                    <DollarSign className="h-4 w-4 -mr-0.5" />
                     <span data-testid={`text-order-total-${order.id}`}>{order.total}</span>
                   </div>
                 </div>
@@ -314,26 +402,11 @@ function OrderCard({
               )}
 
               {order.status === "preparing" && (
-                <div className="flex flex-col md:flex-row gap-2 w-full md:w-auto">
-                  {order.preparationTime && (
-                    <div className="flex items-center gap-2 px-3 py-1.5 bg-blue-50 dark:bg-blue-950/50 rounded-md border border-blue-200 dark:border-blue-800">
-                      <Timer className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-                      <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
-                        Est: {order.preparationTime}
-                      </span>
-                    </div>
-                  )}
-                  <Button
-                    size="sm"
-                    onClick={() => onComplete(order.id)}
-                    disabled={completingOrderId === order.id}
-                    className="gap-2 bg-green-600 hover:bg-green-700 text-white"
-                    data-testid={`button-completed-${order.id}`}
-                  >
-                    <CheckCircle className="h-4 w-4" />
-                    {completingOrderId === order.id ? "Completing..." : "Mark Complete"}
-                  </Button>
-                </div>
+                <PreparationTimer 
+                  order={order} 
+                  onComplete={onComplete} 
+                  completingOrderId={completingOrderId} 
+                />
               )}
             </div>
           </div>
