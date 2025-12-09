@@ -28,11 +28,13 @@ function useCountdownTimer(startTime: string | Date, durationMinutes: number) {
 
   useEffect(() => {
     const start = new Date(startTime).getTime();
-    const endTime = start + (durationMinutes * 60 * 1000);
+    // Add 1 second buffer to account for network/processing delay
+    const endTime = start + (durationMinutes * 60 * 1000) + 1000;
     
     const calculateTimeLeft = () => {
       const now = Date.now();
-      const remaining = Math.floor((endTime - now) / 1000);
+      // Use Math.ceil to round up and avoid showing less time than expected
+      const remaining = Math.ceil((endTime - now) / 1000);
       
       if (remaining <= 0) {
         setTimeLeft(0);
