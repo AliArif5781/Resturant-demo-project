@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, forwardRef } from "react";
 import { useLocation, Link } from "wouter";
 import { useAuth } from "@/contexts/AuthContext";
 import { useOrderNotifications } from "@/contexts/OrderNotificationContext";
@@ -238,15 +238,7 @@ function StatusWidget({
   );
 }
 
-function OrderCard({ 
-  order, 
-  onProceed, 
-  onReject, 
-  onComplete, 
-  onViewDetails,
-  isUpdating,
-  completingOrderId 
-}: { 
+interface OrderCardProps {
   order: Order;
   onProceed: (orderId: string) => void;
   onReject: (orderId: string) => void;
@@ -254,7 +246,17 @@ function OrderCard({
   onViewDetails: (order: Order) => void;
   isUpdating: boolean;
   completingOrderId: string | null;
-}) {
+}
+
+const OrderCard = forwardRef<HTMLDivElement, OrderCardProps>(({ 
+  order, 
+  onProceed, 
+  onReject, 
+  onComplete, 
+  onViewDetails,
+  isUpdating,
+  completingOrderId 
+}, ref) => {
   const items = Array.isArray(order.items) ? order.items : [];
   
   const statusConfig: Record<string, { badge: string; className: string; cardBorder: string }> = {
@@ -416,7 +418,9 @@ function OrderCard({
       </Card>
     </motion.div>
   );
-}
+});
+
+OrderCard.displayName = "OrderCard";
 
 export default function AdminDashboard() {
   const [, setLocation] = useLocation();
