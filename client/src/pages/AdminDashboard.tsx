@@ -78,11 +78,23 @@ function PreparationTimer({
   const timerStartTime = order.acceptedAt || order.createdAt;
   const timer = useCountdownTimer(timerStartTime, prepTime);
 
+  const timerBgClass = timer.isExpired 
+    ? "bg-red-50 dark:bg-red-950/50 border-red-200 dark:border-red-800" 
+    : "bg-green-50 dark:bg-green-950/50 border-green-200 dark:border-green-800";
+  
+  const timerTextClass = timer.isExpired 
+    ? "text-red-700 dark:text-red-300" 
+    : "text-green-700 dark:text-green-300";
+  
+  const timerIconClass = timer.isExpired 
+    ? "text-red-600 dark:text-red-400" 
+    : "text-green-600 dark:text-green-400";
+
   return (
     <div className="flex flex-col md:flex-row gap-2 w-full md:w-auto">
-      <div className="flex items-center gap-2 px-3 py-1.5 rounded-md border bg-blue-50 dark:bg-blue-950/50 border-blue-200 dark:border-blue-800">
-        <Timer className="h-4 w-4 text-blue-600 dark:text-blue-400" />
-        <span className="text-sm font-medium text-blue-700 dark:text-blue-300">
+      <div className={`flex items-center gap-2 px-3 py-1.5 rounded-md border ${timerBgClass}`}>
+        <Timer className={`h-4 w-4 ${timerIconClass}`} />
+        <span className={`text-sm font-medium ${timerTextClass}`}>
           {timer.isExpired ? "Time's up! 0:00" : `Time left: ${timer.formatted}`}
         </span>
       </div>
