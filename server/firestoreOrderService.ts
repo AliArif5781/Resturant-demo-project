@@ -71,6 +71,7 @@ export async function getOrderById(orderId: string): Promise<Order | undefined> 
     cancelledBy: data.cancelledBy || null,
     guestArrived: data.guestArrived || false,
     createdAt: data.createdAt?.toDate?.() || new Date(),
+    acceptedAt: data.acceptedAt?.toDate?.() || null,
   } as Order;
 }
 
@@ -100,6 +101,7 @@ export async function getRecentOrders(limit: number = 50): Promise<Order[]> {
         cancelledBy: data.cancelledBy || null,
         guestArrived: data.guestArrived || false,
         createdAt: data.createdAt?.toDate?.() || new Date(),
+        acceptedAt: data.acceptedAt?.toDate?.() || null,
       } as Order;
     });
   } catch (error: any) {
@@ -128,6 +130,7 @@ export async function getRecentOrders(limit: number = 50): Promise<Order[]> {
           cancelledBy: data.cancelledBy || null,
           guestArrived: data.guestArrived || false,
           createdAt: data.createdAt?.toDate?.() || new Date(),
+          acceptedAt: data.acceptedAt?.toDate?.() || null,
         } as Order;
       });
 
@@ -233,6 +236,7 @@ export async function updateOrderStatus(
     updateData.preparationTime = preparationTime || null;
     updateData.rejectionReason = null;
     updateData.cancelledBy = null;
+    updateData.acceptedAt = new Date();
   } else if (status === "rejected") {
     updateData.rejectionReason = rejectionReason || null;
     updateData.preparationTime = null;
@@ -271,6 +275,7 @@ export async function updateOrderStatus(
     cancelledBy: data.cancelledBy || null,
     guestArrived: data.guestArrived || false,
     createdAt: data.createdAt?.toDate?.() || new Date(),
+    acceptedAt: data.acceptedAt?.toDate?.() || null,
   } as Order;
 }
 

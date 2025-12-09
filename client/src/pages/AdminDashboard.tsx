@@ -23,18 +23,19 @@ import { motion, AnimatePresence } from "framer-motion";
 type OrderStatus = "all" | "pending" | "preparing" | "completed" | "rejected" | "cancelled";
 
 function useCountdownTimer(startTime: string | Date, durationMinutes: number) {
-  const [timeLeft, setTimeLeft] = useState<number>(0);
+  const [timeLeft, setTimeLeft] = useState<number>(durationMinutes * 60);
   const [isExpired, setIsExpired] = useState(false);
 
   useEffect(() => {
+    const start = new Date(startTime).getTime();
+    const endTime = start + (durationMinutes * 60 * 1000);
+    
     const calculateTimeLeft = () => {
-      const start = new Date(startTime).getTime();
-      const endTime = start + (durationMinutes * 60 * 1000);
       const now = Date.now();
       const remaining = Math.floor((endTime - now) / 1000);
       
       if (remaining <= 0) {
-        setTimeLeft(Math.abs(remaining));
+        setTimeLeft(0);
         setIsExpired(true);
       } else {
         setTimeLeft(remaining);
@@ -56,7 +57,7 @@ function useCountdownTimer(startTime: string | Date, durationMinutes: number) {
   return {
     timeLeft,
     isExpired,
-    formatted: isExpired ? `-${formatTime(timeLeft)}` : formatTime(timeLeft)
+    formatted: formatTime(timeLeft)
   };
 }
 
@@ -93,7 +94,7 @@ function PreparationTimer({
       <div className={`flex items-center gap-2 px-3 py-1.5 rounded-md border ${timerBgClass}`}>
         <Timer className={`h-4 w-4 ${timerIconClass}`} />
         <span className={`text-sm font-medium ${timerTextClass}`}>
-          {timer.isExpired ? "Over by: " : "Time left: "}{timer.formatted}
+          {timer.isExpired ? "Time's up! 0:00" : `Time left: ${timer.formatted}`}
         </span>
       </div>
       <Button

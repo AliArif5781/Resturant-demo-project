@@ -34,6 +34,7 @@ export const orders = pgTable("orders", {
   cancelledBy: text("cancelled_by"),
   guestArrived: boolean("guest_arrived").default(false).notNull(),
   createdAt: timestamp("created_at").notNull().defaultNow(),
+  acceptedAt: timestamp("accepted_at"),
 });
 
 export const insertOrderSchema = createInsertSchema(orders).omit({
