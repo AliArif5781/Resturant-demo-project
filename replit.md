@@ -41,9 +41,8 @@ Preferred communication style: Simple, everyday language.
 **Technology Stack:**
 - **Runtime:** Node.js with TypeScript
 - **Framework:** Express.js
-- **Database ORM:** Drizzle ORM
-- **Database:** PostgreSQL (via Neon serverless)
-- **Session Management:** connect-pg-simple for PostgreSQL-backed sessions
+- **Database:** Firebase Firestore (sole database)
+- **Authentication:** Firebase Authentication
 
 **Project Structure:**
 - `server/` - Express server implementation
@@ -59,35 +58,35 @@ Preferred communication style: Simple, everyday language.
 
 **Storage Layer:**
 - Interface-based storage design (`IStorage`) for flexibility
-- In-memory storage implementation (`MemStorage`) for development
-- Database schema defined using Drizzle ORM with Zod validation
+- All data stored in Firebase Firestore collections
+- Zod schemas for validation in `shared/schema.ts`
 - UUID-based primary keys for all entities
+
+**Firestore Services:**
+- `server/firebase-admin.ts` - Firebase Admin initialization
+- `server/firestoreUserService.ts` - User CRUD operations
+- `server/firestoreMenuService.ts` - Menu items CRUD operations
+- `server/firestoreOrderService.ts` - Orders CRUD operations
+- `server/storage.ts` - FirestoreStorage class implementing IStorage interface
 
 **Key Architectural Decisions:**
 - Separation of concerns between routes, storage, and business logic
-- Environment-based configuration (DATABASE_URL from environment)
+- Firebase Firestore as the sole database (no PostgreSQL)
 - Build process bundles backend with esbuild for production deployment
 - Development mode uses tsx for TypeScript execution without compilation
 
-### Database Design
+### Database Design (Firestore Collections)
 
-**Current Schema:**
-- Users table with Firebase authentication sync
-- Orders table for order management
-- Schema defined in `shared/schema.ts` for type safety across stack
-- Drizzle migrations stored in `migrations/` directory
+**Collections:**
+- `users` - User accounts with Firebase auth sync
+- `orders` - Customer orders with status tracking
+- `menuItems` - Restaurant menu items
 
-**Database Provider:**
-- Neon serverless PostgreSQL for users and orders
-- Connection pooling handled by `@neondatabase/serverless`
-- Schema synchronization via `drizzle-kit push` command
-
-**Firestore Integration (Menu Items):**
-- Menu items are stored in Firebase Firestore (collection: `menuItems`)
-- Server-side Firebase Admin SDK for secure Firestore access
-- `server/firebase-admin.ts` - Firebase Admin initialization
-- `server/firestoreMenuService.ts` - CRUD operations for menu items
-- Requires `FIREBASE_SERVICE_ACCOUNT_KEY` secret for server-side access
+**Required Environment Variables:**
+- `FIREBASE_SERVICE_ACCOUNT_KEY` - Server-side Firebase Admin SDK credentials
+- `VITE_FIREBASE_API_KEY` - Client-side Firebase API key
+- `VITE_FIREBASE_PROJECT_ID` - Firebase project ID
+- `VITE_FIREBASE_APP_ID` - Firebase app ID
 
 ### External Dependencies
 
@@ -136,3 +135,11 @@ Preferred communication style: Simple, everyday language.
 - Firebase Authentication for user sign-in
 - No email/SMS notifications (yet to be implemented)
 - No real-time websockets (polling-based updates)
+
+## Recent Changes
+
+- **December 11, 2025:** Migrated from PostgreSQL/Drizzle to Firebase Firestore only
+  - Removed all PostgreSQL dependencies (@neondatabase/serverless, pg, drizzle-orm, drizzle-kit)
+  - Created FirestoreUserService for user data management
+  - Updated shared/schema.ts to use plain TypeScript interfaces with Zod validation
+  - Updated storage.ts to use FirestoreStorage class
