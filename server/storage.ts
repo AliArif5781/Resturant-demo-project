@@ -1,8 +1,7 @@
 import { type User, type InsertUser, type Order, type InsertOrder, type MenuItem, type InsertMenuItem } from "@shared/schema";
-import { randomUUID } from "crypto";
-
-// modify the interface with any CRUD methods
-// you might need
+import * as firestoreUser from "./firestoreUserService";
+import * as firestoreOrder from "./firestoreOrderService";
+import * as firestoreMenu from "./firestoreMenuService";
 
 export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
@@ -21,168 +20,62 @@ export interface IStorage {
   deleteMenuItem(id: string): Promise<void>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<string, User>;
-  private orders: Map<string, Order>;
-  private menuItems: Map<string, MenuItem>;
-
-  constructor() {
-    this.users = new Map();
-    this.orders = new Map();
-    this.menuItems = new Map();
-  }
-
+export class FirestoreStorage implements IStorage {
   async getUser(id: string): Promise<User | undefined> {
-    return this.users.get(id);
+    return firestoreUser.getUser(id);
   }
 
   async getUserByFirebaseUid(firebaseUid: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.firebaseUid === firebaseUid,
-    );
+    return firestoreUser.getUserByFirebaseUid(firebaseUid);
   }
 
   async upsertUser(insertUser: InsertUser): Promise<User> {
-    const existingUser = await this.getUserByFirebaseUid(insertUser.firebaseUid);
-    
-    if (existingUser) {
-      const updatedUser: User = {
-        ...existingUser,
-        email: insertUser.email,
-        displayName: insertUser.displayName ?? null,
-        photoURL: insertUser.photoURL ?? null,
-        role: insertUser.role ?? existingUser.role,
-      };
-      this.users.set(existingUser.id, updatedUser);
-      return updatedUser;
-    }
-
-    const id = randomUUID();
-    const user: User = {
-      id,
-      firebaseUid: insertUser.firebaseUid,
-      email: insertUser.email,
-      displayName: insertUser.displayName ?? null,
-      photoURL: insertUser.photoURL ?? null,
-      role: insertUser.role ?? "user",
-    };
-    this.users.set(id, user);
-    return user;
+    return firestoreUser.upsertUser(insertUser);
   }
 
   async createOrder(insertOrder: InsertOrder): Promise<Order> {
-    const id = randomUUID();
-    const order: Order = {
-      id,
-      firebaseUid: insertOrder.firebaseUid,
-      userEmail: insertOrder.userEmail,
-      userName: insertOrder.userName ?? null,
-      items: insertOrder.items,
-      subtotal: insertOrder.subtotal,
-      tax: insertOrder.tax,
-      total: insertOrder.total,
-      status: insertOrder.status ?? "pending",
-      preparationTime: insertOrder.preparationTime ?? null,
-      rejectionReason: insertOrder.rejectionReason ?? null,
-      cancelledBy: insertOrder.cancelledBy ?? null,
-      guestArrived: insertOrder.guestArrived ?? false,
-      createdAt: new Date(),
-    };
-    this.orders.set(id, order);
-    return order;
+    return firestoreOrder.createOrder(insertOrder);
   }
 
   async getOrderById(orderId: string): Promise<Order | undefined> {
-    return this.orders.get(orderId);
+    return firestoreOrder.getOrderById(orderId);
   }
 
   async getRecentOrders(limit: number = 10): Promise<Order[]> {
-    const allOrders = Array.from(this.orders.values());
-    return allOrders
-      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
-      .slice(0, limit);
+    return firestoreOrder.getRecentOrders(limit);
   }
 
   async getOrdersByUser(firebaseUid: string): Promise<Order[]> {
-    return Array.from(this.orders.values())
-      .filter((order) => order.firebaseUid === firebaseUid)
-      .sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+    return firestoreOrder.getOrdersByUser(firebaseUid);
   }
 
   async updateOrderStatus(orderId: string, status: string, preparationTime?: string, rejectionReason?: string, cancelledBy?: string): Promise<Order> {
-    const order = this.orders.get(orderId);
-    if (!order) {
-      throw new Error("Order not found");
-    }
-    const updatedOrder = { 
-      ...order, 
-      status, 
-      // Only keep preparationTime if explicitly provided, otherwise clear it
-      preparationTime: preparationTime !== undefined ? preparationTime : null,
-      // Only keep rejectionReason if explicitly provided, otherwise clear it
-      rejectionReason: rejectionReason !== undefined ? rejectionReason : null,
-      // Clear cancelledBy when moving away from cancelled status, or set it if explicitly provided
-      cancelledBy: cancelledBy !== undefined ? cancelledBy : (status === "cancelled" ? order.cancelledBy : null)
-    };
-    this.orders.set(orderId, updatedOrder);
-    return updatedOrder;
+    return firestoreOrder.updateOrderStatus(orderId, status, preparationTime, rejectionReason, cancelledBy);
   }
 
   async updateGuestArrived(orderId: string, arrived: boolean): Promise<Order> {
-    const order = this.orders.get(orderId);
-    if (!order) {
-      throw new Error("Order not found");
-    }
-    const updatedOrder = { ...order, guestArrived: arrived };
-    this.orders.set(orderId, updatedOrder);
-    return updatedOrder;
+    return firestoreOrder.updateGuestArrived(orderId, arrived);
   }
 
   async createMenuItem(insertMenuItem: InsertMenuItem): Promise<MenuItem> {
-    const id = randomUUID();
-    const menuItem: MenuItem = {
-      id,
-      name: insertMenuItem.name,
-      description: insertMenuItem.description,
-      price: insertMenuItem.price,
-      calories: insertMenuItem.calories,
-      protein: insertMenuItem.protein,
-      image: insertMenuItem.image,
-      category: insertMenuItem.category,
-      createdAt: new Date(),
-    };
-    this.menuItems.set(id, menuItem);
-    return menuItem;
+    return firestoreMenu.createMenuItem(insertMenuItem);
   }
 
   async getAllMenuItems(): Promise<MenuItem[]> {
-    return Array.from(this.menuItems.values()).sort(
-      (a, b) => b.createdAt.getTime() - a.createdAt.getTime()
-    );
+    return firestoreMenu.getAllMenuItems();
   }
 
   async getMenuItemById(id: string): Promise<MenuItem | undefined> {
-    return this.menuItems.get(id);
+    return firestoreMenu.getMenuItemById(id);
   }
 
   async updateMenuItem(id: string, updateData: Partial<InsertMenuItem>): Promise<MenuItem> {
-    const menuItem = this.menuItems.get(id);
-    if (!menuItem) {
-      throw new Error("Menu item not found");
-    }
-    const updatedItem = { ...menuItem, ...updateData };
-    this.menuItems.set(id, updatedItem);
-    return updatedItem;
+    return firestoreMenu.updateMenuItem(id, updateData);
   }
 
   async deleteMenuItem(id: string): Promise<void> {
-    if (!this.menuItems.has(id)) {
-      throw new Error("Menu item not found");
-    }
-    this.menuItems.delete(id);
+    return firestoreMenu.deleteMenuItem(id);
   }
 }
 
-import { PgStorage } from "./pgStorage";
-
-export const storage = new PgStorage();
+export const storage = new FirestoreStorage();
